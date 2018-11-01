@@ -1,0 +1,109 @@
+@import "../colors.scss";
+
+.kloudless-meeting-scheduler {
+  .primary--text {
+    color: $primary !important;
+  }
+  .accent--text {
+    color: $accent !important;
+  }
+  .success--text {
+    color: $success !important;
+  }
+  .error--text {
+    color: $error !important;
+  }
+  .primary {
+    color: $white;
+    background-color: $primary !important;
+  }
+  .accent {
+    color: $white;
+    background-color: $accent !important;
+  }
+  .success {
+    color: $white;
+    background-color: $success !important;
+  }
+  .error {
+    color: $white;
+    background-color: $error !important;
+  }
+
+  @for $i from 1 through 9 {
+    .opacity-#{$i} {
+      opacity: 0.1 * $i;
+    }
+  }
+
+  // do not show scroll bar in attach mode
+  overflow-y: hidden;
+}
+
+
+$content-width: 500px;
+$widget-padding: 15px;
+$content-height: 650px;
+$footer-height: 30px;
+$modal-header-height: 30px;
+$error-height: 50px;
+
+.kloudless-meeting-scheduler .application {
+  
+  width: $content-width + $widget-padding;
+  margin: auto;
+  
+  .app-padding {
+    height: $content-height + $footer-height + $widget-padding;
+    overflow: hidden;
+    background-color: $background;
+    padding: $widget-padding $widget-padding 0 $widget-padding;
+    border-radius: 10px;
+  }
+
+  .app-scroll-content {
+    width: 100%;
+    height: $content-height;
+    overflow-y: auto !important;
+    transition: height 1s;
+    
+    &.has-error {
+      height: $content-height - $error-height;
+    }
+  }
+  .service-error-message {
+    height: 0;
+    transition: height 1s;
+    width: 100%;
+    &.has-error {
+      height: $error-height;
+      padding: 5px;
+      overflow-y: auto;
+    }
+    
+  }
+  .v-content__wrap > .container {
+    padding: 10px;
+  }
+  .application--wrap {
+    // remove unwanted white spaces
+    min-height: 0;
+  }
+
+  .v-dialog {
+    width: $content-width + ($widget-padding * 2);
+    max-height: $content-height + $footer-height + $widget-padding;
+    box-shadow: none;
+    /* disable scroll in dialog widget */
+    overflow-y: hidden;
+    .header {
+      height: $modal-header-height;
+    }
+    .app-scroll-content {
+      height: $content-height - $modal-header-height;
+      &.has-error {
+        height: $content-height - $modal-header-height - $error-height;
+      }
+    }
+  }
+}

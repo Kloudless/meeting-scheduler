@@ -1,0 +1,25 @@
+div.mb-4
+  div(v-if="account.id")
+    v-layout(row, wrap, align-center)
+      v-flex(xs2)
+        v-icon(color="accent" large) account_circle
+      v-flex(xs10)
+        v-layout(row, wrap, align-center)
+          v-flex(xs11)
+            div(v-if="loading.account")
+              v-progress-circular(indeterminate, size="24", color="primary")
+            div(v-else).text-xs-left.subheading {{ account.account }}
+          v-flex(xs1)
+            div(v-if="!loading.account")
+              v-icon(color="error" @click="removeAccount") cancel
+    v-layout(row, wrap, align-center).mt-4
+      v-flex(xs12)
+        Dropdown(label="Calendar *", name="calendarId",
+                 :loading="loading.calendar",
+                 :value="account.calendarId", :options="calendars"
+                 @update="setCalendarId")
+
+  Button(v-else,
+  :btnProps="{outline: true}",
+  @click="onAddAccount")
+    | Connect Calendar

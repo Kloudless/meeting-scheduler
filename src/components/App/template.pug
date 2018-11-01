@@ -1,2 +1,30 @@
-div
-  router-view
+div.kloudless-meeting-scheduler
+  v-app(id="")
+    div(data-app="true")
+    template(v-if="initViews")
+      template(v-if="options.mode === 'attach'")
+        div.app-padding
+          div.service-error-message.error(
+            :class="{'has-error': requestErrorMsg}")
+            div {{ requestErrorMsg }}
+          div.app-scroll-content(:class="{'has-error': requestErrorMsg}")
+            v-content
+              v-container.text-xs-center
+                router-view
+          Footer
+      template(v-else)
+        v-dialog(v-model="dialog", persistent)
+          div.app-padding
+            div.header
+              div.text-xs-right
+                v-icon(color="primary", size="28", @click="closeDialog")
+                  | cancel
+            div.service-error-message.error(
+              :class="{'has-error': requestErrorMsg}")
+              div {{ requestErrorMsg }}
+            div.app-scroll-content(:class="{'has-error': requestErrorMsg}")
+              v-content
+                v-container.text-xs-center
+                  router-view(@close='closeDialog')
+            Footer
+       

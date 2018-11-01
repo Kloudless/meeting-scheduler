@@ -1,0 +1,91 @@
+div
+  div(v-if="loading.timeSlots")
+    Title Retrieving Event Details...
+    v-progress-circular(size="70", color="primary", indeterminate)
+  div(v-else)
+    Title {{ stepTitles[step] }}
+
+    template(v-if="step === 0")
+      div.timeslots-scroll-panel
+        template(v-if="timeSlots.availableSlots.length")
+          template(v-for="(slots, date) in slotGroups")
+            div.text-xs-left.headline.accent--text.opacity-9.font-weight-medium
+              | {{ formatDate('date', date) }}
+            v-container(grid-list-xs)
+              v-layout(row wrap)
+                template(v-for="slot in slots")
+                  v-flex(xs4)
+                    Button(v-if="timeSlots.selectedSlot === slot",
+                          :padding="false"
+                          @click="selectTimeSlot(slot, false)").hour-block
+                      v-layout(row, wrap, align-center)
+                        v-flex(xs5)
+                          div.hour {{ formatDate('hour', slot.start) }}
+                          div.ampm.white--text.opacity-4
+                            | {{ formatDate('amPm', slot.start) }}
+                        v-flex(xs2)
+                          div.hour-to.white--text.opacity-4.pt-1 -
+                        v-flex(xs5)
+                          div.hour {{ formatDate('hour', slot.end) }}
+                          div.ampm.white--text.opacity-4
+                            | {{ formatDate('amPm', slot.end) }}
+                    Button(v-else, :padding="false",
+                          :btnProps="{depressed: true, outline: true}",
+                          @click="selectTimeSlot(slot, true)").hour-block
+                      span.hour.pr-1 {{ formatDate('hour', slot.start) }}
+                      span.ampm.primary--text.opacity-4
+                        | {{ formatDate('amPm', slot.start) }}
+        div(v-else).headline.accent--text
+          | Sorry. There are no available times for this event.
+      v-container(grid-list-xs).px-0
+        v-layout(row wrap)
+          v-flex(xs8)
+            div.text-xs-left.subheading.success--text
+              | All times are in {{timezone}} time
+          v-flex(xs4)
+            div.text-xs-right
+              Button(@click="moveStep(1)",
+                    :disabled="!timeSlots.selectedSlot").mx-0 Next
+
+  template(v-if="step === 1")
+    div.timeslots-scroll-panel
+      v-form(ref="form", v-model="isTargetFormValid")
+        TextInput(name="name" label="Name *", :value="timeSlots.name",
+          :rules=['required'],
+          placeholder="Johnny Appleseed", @update="updateInput")
+        TextInput(name="email" label="Email *", :value="timeSlots.email",
+          :rules=['required', 'email'],
+          placeholder="youremail@example.com", @update="updateInput")
+    v-container(grid-list-xs).px-0
+      v-layout(row wrap, align-center)
+        v-flex(xs6).text-xs-left
+          Button(@click="moveStep(-1)").mx-0 Back
+        v-flex(xs6)
+          div.text-xs-right
+            Button(@click="moveStep(1)",
+                  :disabled="!isTargetFormValid").mx-0 Next
+
+  template(v-if="step === 2")
+    div.timeslots-scroll-panel.text-xs-left
+      div.headline.accent--text.font-weight-bold {{ meetingWindow.title }}
+      div.mb-5.subheading {{ meetingWindow.location }}
+      div.mb-2.caption.accent--text.opacity-4 SCHEDULED TIME
+      div.mb-4
+        div.title.accent--text.opacity-9.font-weight-bold
+          | {{ formatDate('fullHour', timeSlots.selectedSlot.start) }}
+          | -
+          | {{ formatDate('fullHour', timeSlots.selectedSlot.end) }}
+          | ({{timezone}} time)
+        div.subheading.accent--text.opacity-9
+          | {{ formatDate('date', timeSlots.selectedSlot.start) }}
+      div.mb-2.caption.accent--text.opacity-4 CONTACT INFO
+      div.mb-4
+        div.title.accent--text.opacity-9.font-weight-bold {{ timeSlots.name }}
+        div.subheading.accent--text.opacity-9 {{ timeSlots.email }}
+    v-container(grid-list-xs).px-0
+      v-layout(row wrap, align-center)
+        v-flex(xs6).text-xs-left
+          Button(@click="moveStep(-1)").mx-0 Back
+        v-flex(xs6).text-xs-right
+          Button(@click="submit", :loading="loading.submit").mx-0
+            | Schedule Meeting

@@ -1,0 +1,22 @@
+@import "../../colors.scss";
+
+.kloudless-meeting-scheduler {
+  .v-input.v-text-field {
+    padding-top: 0;
+    .v-input__slot{
+      &:hover::before {
+        border-color: $accent !important;
+        opacity: 0.5;
+      }
+      &::before {
+        border-color: $accent;
+        opacity: 0.05;
+      }
+      input::placeholder {
+        font-style: italic;
+        color: $accent;
+        opacity: 0.25;
+      }
+    }
+  }
+}

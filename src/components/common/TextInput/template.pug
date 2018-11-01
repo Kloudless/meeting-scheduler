@@ -1,0 +1,4 @@
+InputField(:label="label")
+  v-text-field(:name="name", :placeholder="placeholder", :value="value",
+    :readonly="readonly", :rules="formRules", 
+    @input='$emit("update", {"name": name, "value": $event})')

@@ -1,0 +1,21 @@
+div
+  Title Meeting scheduled!
+  div.mt-5.subheading A calendar invite will be sent to your email shortly.
+  div.text-xs-left
+    div.mt-5.caption.accent--text.opacity-4 EVENT INFO
+    div.mb-4
+      div.title.accent--text.opacity-9.font-weight-bold
+        | {{ meetingWindow.title }}
+      div.subheading.accent--text.opacity-9
+        | {{ meetingWindow.location }}
+    div.mb-4
+      div.title.accent--text.opacity-9.font-weight-bold
+        | {{ formatDate('fullHour', timeSlots.selectedSlot.start) }}
+        | -
+        | {{ formatDate('fullHour', timeSlots.selectedSlot.end) }}
+        | ({{timezone}} time)
+      div.subheading.accent--text.opacity-9
+        | {{ formatDate('date', timeSlots.selectedSlot.start) }}
+  Button(v-if="isModal", @click="$emit('close')").mt-5
+    | Finish
+  

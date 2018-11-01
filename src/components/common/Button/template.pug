@@ -1,0 +1,4 @@
+v-btn(v-bind="btnProps", :loading="loading", color="primary", depressed,
+  @click="$emit('click', $event)", :disabled="disabled").font-weight-bold
+  div(:class="{'pa-3': padding}")
+    slot

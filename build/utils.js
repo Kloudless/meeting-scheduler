@@ -24,8 +24,11 @@ exports.cssLoaders = function (options) {
   var postcssLoader = {
     loader: 'postcss-loader',
     options: {
-      sourceMap: options.sourceMap
-    }
+      sourceMap: options.sourceMap,
+      plugins: (loader) => [
+        require('postcss-discard-font-face')(['woff']),
+      ]
+    },
   }
 
   // generate loader string to be used with extract text plugin

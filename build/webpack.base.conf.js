@@ -2,29 +2,20 @@
 const path = require('path')
 const utils = require('./utils')
 const config = require('../config')
-const vueLoaderConfig = require('./vue-loader.conf')
+const vueLoaderConfig = require('./vue-loader.conf');
 
-function resolve (dir) {
+function resolveFromRoot (dir) {
   return path.join(__dirname, '..', dir)
 }
 
 module.exports = {
   context: path.resolve(__dirname, '../'),
-  entry: {
-    app: './src/main.js'
-  },
-  output: {
-    path: config.build.assetsRoot,
-    filename: '[name].js',
-    publicPath: process.env.NODE_ENV === 'production'
-      ? config.build.assetsPublicPath
-      : config.dev.assetsPublicPath
-  },
+  
   resolve: {
     extensions: ['.js', '.vue', '.json'],
     alias: {
       'vue$': 'vue/dist/vue.esm.js',
-      '@': resolve('src'),
+      '@': resolveFromRoot('src'),
     },
     modules: [
       'src', 'node_modules'
@@ -36,7 +27,7 @@ module.exports = {
         test: /\.(js|vue)$/,
         loader: 'eslint-loader',
         enforce: 'pre',
-        include: [resolve('src'), resolve('test')],
+        include: [resolveFromRoot('src'), resolveFromRoot('test')],
         options: {
           formatter: require('eslint-friendly-formatter'),
           emitWarning: !config.dev.showEslintErrorsInOverlay
@@ -50,7 +41,14 @@ module.exports = {
       {
         test: /\.js$/,
         loader: 'babel-loader',
-        include: [resolve('src'), resolve('test')]
+        include: [resolveFromRoot('src'), resolveFromRoot('test')],
+      },
+      {
+        test: /kloudless-authenticator\/src\/auth-widget.js$/,
+        use: [
+          'babel-loader',
+          path.resolve(__dirname, './auth-widget-remove-polyfill-loader.js'),
+        ]
       },
       // vue component folders.
       {
@@ -66,7 +64,7 @@ module.exports = {
         ]
       },
       {
-        test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,
+        test: /\.(png|jpe?g|gif)(\?.*)?$/,
         loader: 'url-loader',
         options: {
           limit: 10000,
@@ -82,13 +80,13 @@ module.exports = {
         }
       },
       {
-        test: /\.(woff2?|eot|ttf|otf)(\?.*)?$/,
+        test: /\.(woff2?|eot|ttf|otf|svg)(\?.*)?$/,
         loader: 'url-loader',
         options: {
-          limit: 10000,
-          name: utils.assetsPath('fonts/[name].[hash:7].[ext]')
+          limit: 60 * 1024,
+          name: utils.assetsPath('fonts/[name].[ext]')
         }
       }
     ]
-  }
+  },
 }

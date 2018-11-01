@@ -1,0 +1,23 @@
+@import "../../colors.scss";
+
+.kloudless-meeting-scheduler {
+  .v-expansion-panel {
+    box-shadow: none;
+
+    /* arrow icon */
+    & .v-expansion-panel__header__icon > .v-icon {
+      color: $primary !important;
+    }
+  }
+
+  .theme--light.v-expansion-panel .v-expansion-panel__container {
+    background-color: transparent;
+    
+  }
+
+  .v-expansion-panel__header {
+    padding: 0;
+    border-bottom: 1px solid #{$primary}33;
+  }
+  
+}

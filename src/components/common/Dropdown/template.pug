@@ -1,0 +1,6 @@
+
+InputField(:label="label")
+  v-autocomplete(
+    v-model="selected", :items="options", :rules="formRules",
+    item-text="text", :label="placeholder", :loading="loading"
+    @change="onChange")

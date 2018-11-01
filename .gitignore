@@ -5,6 +5,7 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 /test/unit/coverage/
+/build/css/MeetingScheduler.css
 
 # Editor directories and files
 .idea
@@ -14,8 +15,6 @@ yarn-error.log*
 *.njsproj
 *.sln
 
-
-# built_lib_test
-export_lib_test/node_modules/
-export_lib_test/CalendarUI.js
+# font files from dependencies
+MaterialIcons-Regular.*
 

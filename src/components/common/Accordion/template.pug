@@ -1,0 +1,7 @@
+v-expansion-panel(:value="expandLocation").mb-4
+  v-expansion-panel-content
+    div(slot="header").text-xs-left.headline.primary--text.font-weight-bold
+      | {{ title }}
+    v-content
+      v-container.text-xs-center
+        slot

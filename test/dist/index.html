@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Meeting Scheduler</title>
+    <link rel="stylesheet" href="../../dist/meeting-scheduler.min.css">
+  </head>
+  <body>
+    
+    <div id="kloudless-meeting-scheduler"></div>
+    <h1> Test Meeting Scheduler</h1>
+    <div>
+      <label>Launch options</label>
+      <textarea id="options"
+          cols="100" rows="20" style="border: 1px solid black">{}</textarea>
+    </div>
+    <br/>
+    <br/>
+    <br/>
+    <button 
+     style="margin-left:20px;border: 1px solid black;padding: 10px;"
+     onclick="window.launchMeetingScheduler()">Launch</button>
+    <script src="../../dist/meeting-scheduler.min.js"></script>
+    <script src="../../dev-server/test_launch.js"></script>
+    <script>
+      setupTestLaunch(window.Kloudless.scheduler);
+    </script>
+  </body>
+</html>

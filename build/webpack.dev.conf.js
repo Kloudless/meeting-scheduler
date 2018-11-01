@@ -1,4 +1,5 @@
 'use strict'
+const path = require('path');
 const utils = require('./utils')
 const webpack = require('webpack')
 const config = require('../config')
@@ -7,8 +8,17 @@ const baseWebpackConfig = require('./webpack.base.conf')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin')
 const portfinder = require('portfinder')
+const variables = require('../config/variables');
 
 const devWebpackConfig = merge(baseWebpackConfig, {
+  entry: {
+    app: './dev-server/index.js'
+  },
+  output: {
+    path: config.build.assetsRoot,
+    filename: '[name].js',
+    publicPath: config.dev.assetsPublicPath,
+  },
   module: {
     rules: utils.styleLoaders({ sourceMap: config.dev.cssSourceMap, usePostCSS: true })
   },
@@ -21,6 +31,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
     historyApiFallback: true,
     hot: true,
     compress: true,
+    contentBase: path.resolve(__dirname, '../dev-server/'),
     host: process.env.HOST || config.dev.host,
     port: process.env.PORT || config.dev.port,
     open: config.dev.autoOpenBrowser,
@@ -36,18 +47,18 @@ const devWebpackConfig = merge(baseWebpackConfig, {
     }
   },
   plugins: [
-    new webpack.DefinePlugin({
-      'process.env': require('../config/dev.env'),
-      'KLOUDLESS_APP_ID': JSON.stringify(process.env.KLOUDLESS_APP_ID),
-      'KLOUDLESS_API_KEY': JSON.stringify(process.env.KLOUDLESS_API_KEY)
-    }),
+    new webpack.DefinePlugin(
+      Object.assign({
+        'process.env': require('../config/dev.env'),
+      }, variables),
+    ),
     new webpack.HotModuleReplacementPlugin(),
     new webpack.NamedModulesPlugin(), // HMR shows correct file names in console on update.
     new webpack.NoEmitOnErrorsPlugin(),
     // https://github.com/ampedandwired/html-webpack-plugin
     new HtmlWebpackPlugin({
       filename: 'index.html',
-      template: 'index.html',
+      template: path.resolve(__dirname, '../dev-server/index.html'),
       inject: true
     }),
   ]
