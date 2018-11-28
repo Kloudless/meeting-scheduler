@@ -11,12 +11,17 @@ function getJson(state) {
     organizer: state.organizer,
   };
 
-  const now = moment().format('YYYY-MM-DD');
+  const start = moment(state.beginHour, 'HH:mm:ss')
+    .utcOffset(state.utcOffset, true);
+  const end = moment(state.endHour, 'HH:mm:ss')
+    .utcOffset(state.utcOffset, true);
+  // if state.endHour is '24:00:00', the time will be recorded as `00:00:00`
+  // and the date will be added 1
 
   json.availability = [
     {
-      start: `${now}T${state.beginHour}${state.utcOffset}`,
-      end: `${now}T${state.endHour}${state.utcOffset}`,
+      start: start.format(),
+      end: end.format(),
       recurring: {
         month: '*',
         day: '*',
