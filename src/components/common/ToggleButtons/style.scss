@@ -5,38 +5,4 @@
     height: 72px;
     box-shadow: none;
   }
-
-  .toggle-buttons-button.v-btn {
-    padding: 0 24px 0 24px !important;
-    height: 100%;
-    & > .v-btn__content {
-      text-transform: none;
-      height: 100%;
-      .text {
-        font-size: 16px;
-      }
-      .caption {
-        opacity: 0.4;
-      }
-    }
-    &.v-btn--active {
-      background-color: $primary !important;
-      .text {
-        color: $background;
-      }
-      .caption {
-        color: $white;
-      }
-    }
-    &:not(.v-btn--active) {
-      background-color: $background !important;
-      .text {
-        color: $primary;
-      }
-      .caption {
-        color: $primary;
-      }
-      opacity: 1;
-    }
-  }
 }

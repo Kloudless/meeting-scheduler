@@ -1,10 +1,11 @@
-
 import InputField from '../InputField';
+import ToggleButton from './ToggleButton';
 
 export default {
   name: 'ToggleButtons',
   components: {
     InputField,
+    ToggleButton,
   },
   data() {
     let value;
