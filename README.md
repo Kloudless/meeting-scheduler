@@ -2,21 +2,21 @@
 
 The Kloudless Meeting Scheduler is a JavaScript library that allows your
 users to create and schedule meetings using 
-the [Kloudless Calendar API](https://developers.kloudless.com/docs/v1/calendar).
+the [Kloudless Calendar API](https://developers.kloudless.com/docs/latest/calendar).
 
 
 There are 2 modes available for this widget:
 
-- **Setup View**:
-  Allow users to connect their calendar via Kloudless and create an event.
-  Users can setup event details and available time slots inside the widget. 
-  After the event is created, a public URL with unique event ID is displayed,
-  and this URL can be shared to others to schedule the event.
+- The **Setup View**:
+  Allows a user to connect their calendar via Kloudless and describe an event.
+  Users can add event details and available time slots within the widget. 
+  The widget then displays a public URL with a unique event ID to share with
+  others to schedule the event.
 
-- **Schedule View**:
-  Launch the widget with a specific Event ID, and users can schedule
-  an event on their calendar. Users will be able to choose from
-  available time slots.
+- The **Schedule View**:
+  Launches the widget with a specific Event ID. Users can choose from the
+  event's available time slots to schedule an event on their calendar.
+  A meeting invitation will be sent from the event organizer to the user.
   
 [Visit our JSFiddle example of the Meeting Scheduler!](https://jsfiddle.net/Hong19/u0j3hmx7/show)
 
@@ -28,9 +28,9 @@ There are 2 modes available for this widget:
   * [Launch the widget inside your app](!launch-the-widget-inside-your-app)
 * [Examples](#examples)
   * [Launch the Setup View](#launch-the-setup-view)
-  * [Launch the Setup View with connected calendar account](#launch-the-setup-view-with-connected-calendar-account)
+  * [Launch the Setup View with a connected calendar account](#launch-the-setup-view-with-a-connected-calendar-account)
   * [Launch with Attach Mode](#launch-with-attach-mode)
-  * [Customize event URL format](#customize-event-url-format)
+  * [Customize the event URL format](#customize-the-event-url-format)
   * [Launch the Schedule View](#launch-the-schedule-view)
 * [Methods](#methods)
   * [launch](#launchoptions)
@@ -44,11 +44,12 @@ There are 2 modes available for this widget:
 ## Supported Browsers
 - Google Chrome 70.0+
 - Mozilla Firefox 63.0+
+- Microsoft Edge
 
 ## Usage
 
 ### Getting started
-A [Kloudless App](https://developers.kloudless.com/new) is required to use
+A [Kloudless App](https://developers.kloudless.com/applications/*) is required to use
 this widget.
 
 ### Embed the widget
@@ -60,32 +61,33 @@ any additional code:
 <iframe src="https://api.kloudless.com/m/b/<app_id>" with="515px" height="695px">
 ```
 
-Replace `<app_id>` with your Kloudless App ID. You can get the App ID by
-visiting
-[App Details page](https://developers.kloudless.com/applications/*/details),
-select your app and you can copy you App ID in the details.
+Replace `<app_id>` with your Kloudless App ID. You can obtain the App ID by
+visiting the
+[App Details page](https://developers.kloudless.com/applications/*/details) of
+the Kloudless developer portal.
 
 
 For the `Schedule View`, the generated event URLs are also hosted by Kloudless,
 so you don't need to do anything else.
-(See [this example](#customize-event-url-format) for detailed explanation).
+(See [this example](#customize-the-event-url-format) for detailed explanation).
 
 
 ### Launch the widget inside your app
 
-You can also include the widget and launch it from inside your app.
+You can also include and launch the widget from within your web application.
 Before doing so, **make sure you have added your website domain to
-your App's `Trusted DOMain` list in
-[UI Tools Page](https://developers.kloudless.com/applications/*/ui-tools/file-explore).**
+your App's list of `Trusted Domains` on the
+[UI Tools Page](https://developers.kloudless.com/applications/*/ui-tools/file-explorer).**
+This allows your web page to receive access tokens to the Kloudless API.
 
-Then, to include the widget to your app:
+To include the widget on your page, add the following HTML tags:
 ```html
 <link rel="stylesheet" href="https://static-cdn.kloudless.com/p/platform/sdk/kloudless.scheduler.css">
 <script type="text/javascript" src="https://static-cdn.kloudless.com/p/platform/sdk/kloudless.scheduler.js"></script>
 ```
 
-The script will expose `window.Kloudless.scheduler` object, you can then launch
-the widget with this object:
+The script will expose a `window.Kloudless.scheduler` object that can be used to launch
+the widget:
 
 ```javascript
 const scheduler = new window.Kloudless.scheduler();
@@ -101,8 +103,8 @@ scheduler.launch({
 })
 ```
 
-Optionally, if you'd like to use the widget in your webpack project, it can
-also be imported with ES6 import / export syntax as shown below. The CSS and JS
+If you'd like to use the widget in your webpack project instead, it can
+also be imported with ES6 import/export syntax as shown below. The CSS and JS
 files to use will be located in `dist/` after executing a build as described in
 the [Building](#building) section.
 
@@ -127,9 +129,9 @@ scheduler.launch({
 
 ### Launch the Setup View
 A Kloudless App ID is required to launch the Setup View.
-You can get your App ID by visiting
-[App Details page](https://developers.kloudless.com/applications/*/details),
-select your app and you can copy you App ID in the details.
+You can obtain an App ID by visiting the
+[App Details page](https://developers.kloudless.com/applications/*/details)
+of the Kloudless developer portal.
 
 ```javascript
 scheduler.launch({
@@ -141,8 +143,8 @@ scheduler.launch({
 By default, a full-screen modal will be displayed when launching the widget.
 You can also choose to attach the widget within any DOM element.
 
-Set the `mode` option to `attach`, and provide the CSS selector to the DOM
-element you'd like the widget to be attached with the `element` option:
+Set the `mode` option to `attach` and the `element` option to a CSS selector
+for the DOM element you'd like the widget to be included within:
 
 
 ```html
@@ -164,11 +166,11 @@ scheduler.launch({
 })
 ```
 
-### Launch the Setup View with connected calendar account
+### Launch the Setup View with a connected calendar account
 If you would like to launch the widget with an existing calendar account,
-you can import the calendar with a specified Bearer token in the
-widget's configuration options. Users will not need to connect an account
-and will instead use the imported account.
+you can import the calendar with a specific Bearer token using the
+widget's configuration options. The user will not need to connect an account
+and the widget will instead use the imported account.
 
 ```javascript
 scheduler.launch({
@@ -177,17 +179,17 @@ scheduler.launch({
 })
 ```
 
-### Customize event URL format
-By default, the created event URL is in the following format:
-`https://kloudl.es/m/EVENT_ID`. Kloudless hosts this URL by default
-for the developer, so users can schedule events.
+### Customize the event URL format
+By default, the event URLs created by the Setup View are in the following format:
+`https://kloudl.es/m/EVENT_ID`. Kloudless hosts this URL by default so your users
+can launch the Schedule View to schedule events.
 
-However, if you'd like to host your own schedule event page,
-or if you are using self-hosted Kloudless API Server, you would need to
-setup the widget with your own event URL format by using `eventUrlFormat`.
+However, if you'd like to host your own page that launches the Schedule View, or
+you'd like to customize the view in any way, you would need to
+configure a custom event URL format by using the `eventUrlFormat` option.
 
-`eventUrlFormat` option is a string contains `EVENT_ID` as the placeholder
-for the actual event id when creating events. For ecxample:
+The `eventUrlFormat` option is a template string that contains the text `EVENT_ID`
+as a placeholder for the actual event ID. An example is shown below.
 
 ```javascript
 scheduler.launch({
@@ -196,15 +198,19 @@ scheduler.launch({
 })
 ```
 
+The Meeting Scheduler will replace `EVENT_ID` to generate the appropriate URL for
+each configured event.
+
+Since the Schedule View is now accessible to users at a different URL, that page 
+must take steps to launch the Schedule View as described below.
 
 ### Launch the Schedule View
-If you are using the default public event URL format, you don't need additional
-code to launch the Schedule View, Kloudless will handle schedule view when
-users open the event URL
-(see [Customize event URL format](#customize-event-url-format)).
+Kloudless launches the Schedule View for users visiting hosted event pages automatically.
+See how to [customize the event URL format](#customize-the-event-url-format) for more
+information.
 
-If you have set `eventUrlFormat` option, you will need to write your own code
-to parse event id from URL and pass it to the widget by using `eventId` option:
+If you have set the `eventUrlFormat` option, you will need to write your own code
+to parse the event ID from the URL and pass it to the widget in the `eventId` option:
 
 ```javascript
 function getEventId() {
@@ -217,8 +223,8 @@ scheduler.launch({
 ```
 
 ### And More
-Check [launch(options)](#launch(options)) for full list of available options and
-usage.
+Check [launch(options)](#launch(options)) for a full list of available options and
+their usage.
 
 
 
@@ -231,9 +237,9 @@ An object containing the following keys:
 - `mode`: _Optional (default: 'modal')_: 'modal' or 'attach'  
   If set to 'modal', a modal window is shown and the widget is displayed
     inside the modal.  
-  If set to 'attach', the widget is appended to the element specified in
+  If set to 'attach', the widget is appended to the element specified in the
     `element` parameter. Failing to provide a valid `element` option will cause
-    the widget failed to be launched.
+    the widget to fail to be launched.
 - `element`: _Required only for `attach` mode_: String or Element  
   The DOM element that the widget will be attached to. All contents under
   the element will be removed before attaching the widget.  
@@ -242,28 +248,33 @@ An object containing the following keys:
   This option is ignored if `mode` is `modal`.
   - Example: [Launch with attach mode](#launch-with-attach-mode)
 
-- If you'd like to launch the Setup View, provide:
-  - `appId`: _Required_: String  
-    Your Kloudless application App ID.
-    - Example: [Launch the Setup View](#launch-the-setup-view)
-  - `accountToken`: _Optional (default: null)_: String
-  If you have connected a calendar account to your application, the widget can
-  launch automatically with the account Bearer token.
-    - Example:
-    [Launch the Setup View with connected calendar account](#launch-the-setup-view-with-connected-calendar-account)
-  - `eventUrlFormat`: _Optional (default: 'https://kloudl.es/m/EVENT_ID')_:
-  String  
-    A string to represent format of the generated event URL.  
-    The `EVENT_ID` in the string will be replaced with actual event id.
-    If not specified, the generated URL is `(Current URL)(& or ?)event=EVENT_ID`
-    - Example: [Customize event URL format](#customize-event-url-format)
-- If you'd like to launch the Schedule View, provide:
-  - `eventId`: _Required_: String  
-    The event ID generated when you created the event.
-    - Example: [Launch the Schedule View](#launch-the-schedule-view)
+In addition to the common options above, the different modes available each have
+their own options as described above
+
+Setup View options:
+- `appId`: _Required_: String  
+  Your Kloudless application App ID.
+  - An example is shown above: [Launch the Setup View](#launch-the-setup-view)
+- `accountToken`: _Optional (default: null)_: String
+  If you would like to launch the widget with an existing calendar account,
+  you can import the calendar with a specific Bearer token using the
+  `accountToken` option. The user will not need to connect an account
+  and the widget will instead use this imported account.
+  - Example: [Launch the Setup View with a connected calendar account](#launch-the-setup-view-with-a-connected-calendar-account)
+- `eventUrlFormat`: _Optional (default: 'https://kloudl.es/m/EVENT_ID')_: String  
+  A template string for the URL provided to users to schedule the event.  
+  The `EVENT_ID` in the string will be replaced with the actual event ID.
+  If not specified, the generated URL is `(Current URL)(& or ?)event=EVENT_ID`
+  - Example: [Customize the event URL format](#customize-the-event-url-format)
+
+Schedule View options:
+- `eventId`: _Required_: String  
+  The event ID generated when you the event was set up.
+  - Example: [Launch the Schedule View](#launch-the-schedule-view)
 
 ### destroy()
-Destroy the meeting scheduler widget
+Remove the configured meeting scheduler widget from the page and free up
+memory used by the JavaScript.
 
 ## Contribute
 
@@ -273,9 +284,9 @@ Clone this repository
 # install dependencies
 yarn install
 
-# by setting KLOUDLESS_APP_ID, the test page will fill up appId automatically
+# By setting KLOUDLESS_APP_ID, the test page will populate `appId` automatically
 export KLOUDLESS_APP_ID=<your_app_id>
-# Set this if you'd like to specify Kloudless API server URL
+# Set this if you'd like to specify a non-default Kloudless API server URL
 export BASE_URL=<your_kloudless_api_server_url>
 
 # serve with hot reload at localhost:8080
@@ -284,7 +295,8 @@ npm run dev
 npm start
 ```
 
-When launching the dev server, by default the `eventUrlFormat` will be `http://localhost:8080/eventId=EVENT_ID`, you can use this URL to test
+When launching the dev server, the `eventUrlFormat` will be
+`http://localhost:8080/eventId=EVENT_ID` by default. You can use this URL to test
 the Schedule View locally.
 
 ### Building
@@ -292,11 +304,11 @@ the Schedule View locally.
 # install dependencies
 yarn install
 
-# build for production with minification
-# the result will be in /dist
+# build for production with minification.
+# the result will be in /dist.
 npm run build
 
-# If you'd like to specify Kloudless API server URL
+# Set this if you'd like to specify a non-default Kloudless API server URL
 BASE_URL=<your_kloudless_api_server_url> npm run build
 
 ```
