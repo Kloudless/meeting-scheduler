@@ -18,7 +18,7 @@ There are 2 modes available for this widget:
   event's available time slots to schedule an event on their calendar.
   A meeting invitation will be sent from the event organizer to the user.
   
-[Visit our JSFiddle example of the Meeting Scheduler!](https://jsfiddle.net/Hong19/u0j3hmx7/show)
+[Visit our JSFiddle example of the Meeting Scheduler!](https://fiddle.jshell.net/Hong19/u0j3hmx7/show/light)
 
 ## Table of Contents
 * [Supported Browsers](#supported-browsers)
