@@ -1,6 +1,6 @@
 # operations required before building CSS
 
-cd build/css
+cd config/build_css
 
 # remove the previous build
 rm -r MeetingScheduler.css;

@@ -1,10 +1,10 @@
+import '../config/build_css/MeetingScheduler.css';
+
 import Vue from 'vue';
 import router from 'router';
 import App from 'components/App';
 import Vuetify from 'vuetify';
 import store from 'store';
-import '../build/css/MeetingScheduler.css';
-
 
 Vue.config.productionTip = false;
 Vue.use(Vuetify);
@@ -91,7 +91,3 @@ class MeetingScheduler {
 }
 
 export default MeetingScheduler;
-
-export const Kloudless = {
-  scheduler: MeetingScheduler,
-};
