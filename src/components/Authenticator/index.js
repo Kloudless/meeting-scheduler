@@ -1,17 +1,7 @@
-import KloudlessAuth from 'kloudless-authenticator/src/auth-widget';
+import authenticator from '@kloudless/authenticator';
 import { mapState } from 'vuex';
 import Dropdown from '../common/Dropdown';
 import Button from '../common/Button';
-
-/** auth-widget was designed to be bound to window.Kloudless with script tag.
- * Manually assign KloudlessAuth into window.Kloudless here.
- * Use setTimeout because in production build, the scheduler is bound to
- * window.Kloudless after the whole script is loaded via script tag.
- */
-setTimeout(() => {
-  window.Kloudless = window.Kloudless || {};
-  Object.assign(window.Kloudless, KloudlessAuth);
-}, 1);
 
 export default {
   name: 'Authenticator',
@@ -34,8 +24,8 @@ export default {
   }),
   methods: {
     onAddAccount(e) {
-      KloudlessAuth.stop(e.target);
-      const auth = KloudlessAuth.authenticator(
+      authenticator.stop(e.target);
+      const auth = authenticator.authenticator(
         e.target,
         {
           client_id: this.appId,

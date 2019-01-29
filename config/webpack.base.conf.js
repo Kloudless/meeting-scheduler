@@ -56,13 +56,6 @@ function generateConfig(env = {}) {
           },
         },
         {
-          test: /kloudless-authenticator\/src\/auth-widget.js$/,
-          use: [
-            'babel-loader',
-            path.resolve(loadersPath, 'auth-widget-remove-polyfill-loader.js'),
-          ],
-        },
-        {
           test: /\.js$/,
           include: [srcPath, testPath],
           use: [

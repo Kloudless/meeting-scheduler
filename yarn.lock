@@ -591,6 +591,10 @@
     lodash "^4.17.10"
     to-fast-properties "^2.0.0"
 
+"@kloudless/authenticator@https://github.com/Kloudless/authenticator.js.git":
+  version "1.0.0"
+  resolved "https://github.com/Kloudless/authenticator.js.git#37132a0829ee231cd61587e164a2ea0544e2d951"
+
 "@types/babel-types@*", "@types/babel-types@^7.0.0":
   version "7.0.4"
   resolved "https://registry.yarnpkg.com/@types/babel-types/-/babel-types-7.0.4.tgz#bfd5b0d0d1ba13e351dff65b6e52783b816826c8"
@@ -5475,10 +5479,6 @@ kleur@^3.0.0:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/kleur/-/kleur-3.0.1.tgz#4f5b313f5fa315432a400f19a24db78d451ede62"
   integrity sha512-P3kRv+B+Ra070ng2VKQqW4qW7gd/v3iD8sy/zOdcYRsfiD+QBokQNOps/AfP6Hr48cBhIIBFWckB9aO+IZhrWg==
-
-"kloudless-authenticator@https://github.com/Kloudless/authenticator.js.git":
-  version "1.0.0"
-  resolved "https://github.com/Kloudless/authenticator.js.git#b879f7a350574b78fff57bc189224920113ba210"
 
 lazy-cache@^1.0.3:
   version "1.0.4"
