@@ -4,6 +4,11 @@ The Kloudless Meeting Scheduler is a JavaScript library that allows your
 users to create and schedule meetings using 
 the [Kloudless Calendar API](https://developers.kloudless.com/docs/latest/calendar).
 
+It currently integrates with:
+* Google Calendar
+* Outlook Calendar, and Exchange Online
+* Exchange Server 2016+
+* CalDAV
 
 There are 2 modes available for this widget:
 
