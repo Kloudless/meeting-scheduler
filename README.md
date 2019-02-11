@@ -27,14 +27,18 @@ There are 2 modes available for this widget:
   The widget then displays a public URL with a unique event ID to share with
   others to schedule the event.
 
-  ![Setup View](img/setup_view.gif)
-
+  <p align="center">
+    <img src="img/setup_view.gif" height="500" />
+  </p>
+  
 - The **Schedule View**:
   Launches the widget with a specific Event ID. Users can choose from the
   event's available time slots to schedule an event on their calendar.
   A meeting invitation will be sent from the event organizer to the user.
 
-  ![Schedule View](img/schedule_view.gif)
+  <p align="center">
+    <img src="img/schedule_view.gif" height="500" />
+  </p>
   
 [Visit our JSBin example of the Meeting Scheduler!](https://jsbin.com/juvizaz)
 
