@@ -10,12 +10,14 @@ for calls 9am-5pm on weekdays.
 The Meeting Scheduler generates a link anyone can use to schedule a meeting with
 the user at an available time.
 
-It currently integrates with the following cloud apps using the
+It currently integrates with the following calendar providers using the
 [Kloudless Calendar API](https://kloudless.com/products/calendar/):
 * Google Calendar
 * Outlook Calendar, and Exchange Online
 * Exchange Server 2016+
 * CalDAV
+
+[Visit our JSBin example of the Meeting Scheduler!](https://jsbin.com/juvizaz)
 
 There are 2 modes available for this widget:
 
@@ -25,10 +27,14 @@ There are 2 modes available for this widget:
   The widget then displays a public URL with a unique event ID to share with
   others to schedule the event.
 
+  ![Setup View](img/setup_view.gif)
+
 - The **Schedule View**:
   Launches the widget with a specific Event ID. Users can choose from the
   event's available time slots to schedule an event on their calendar.
   A meeting invitation will be sent from the event organizer to the user.
+
+  ![Schedule View](img/schedule_view.gif)
   
 [Visit our JSBin example of the Meeting Scheduler!](https://jsbin.com/juvizaz)
 
