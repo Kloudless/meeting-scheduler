@@ -593,7 +593,7 @@
 
 "@kloudless/authenticator@https://github.com/Kloudless/authenticator.js.git":
   version "1.0.0"
-  resolved "https://github.com/Kloudless/authenticator.js.git#37132a0829ee231cd61587e164a2ea0544e2d951"
+  resolved "https://github.com/Kloudless/authenticator.js.git#b3974efc7209c3d1d8dc7dd408fa2e9535ad02bf"
 
 "@types/babel-types@*", "@types/babel-types@^7.0.0":
   version "7.0.4"
