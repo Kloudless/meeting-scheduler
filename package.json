@@ -19,7 +19,8 @@
   "jestWebpackResolver": {
     "webpackConfig": "config/webpack.test.conf.js"
   },
-  "dependencies": {
+  "dependencies": {},
+  "devDependencies": {
     "@kloudless/authenticator": "https://github.com/Kloudless/authenticator.js.git",
     "axios": "0.18.0",
     "moment": "2.22.2",
@@ -27,9 +28,7 @@
     "vue": "2.5.17",
     "vue-router": "3.0.1",
     "vuetify": "1.2.5",
-    "vuex": "3.0.1"
-  },
-  "devDependencies": {
+    "vuex": "3.0.1",
     "@babel/core": "7.2.2",
     "@babel/polyfill": "7.2.5",
     "@babel/preset-env": "7.2.3",
@@ -37,7 +36,7 @@
     "autoprefixer": "9.4.3",
     "babel-core": "7.0.0-bridge.0",
     "babel-eslint": "10.0.1",
-    "babel-jest": "23.6.0",
+    "babel-jest": "24.7.1",
     "babel-loader": "8.0.4",
     "copy-webpack-plugin": "4.0.1",
     "css-loader": "2.1.0",
@@ -60,7 +59,7 @@
     "jest-webpack-resolver": "0.3.0",
     "material-design-icons-iconfont": "4.0.3",
     "mini-css-extract-plugin": "0.5.0",
-    "node-sass": "4.9.3",
+    "node-sass": "4.11.0",
     "postcss-discard-font-face": "3.0.0",
     "postcss-loader": "3.0.0",
     "pug": "2.0.3",

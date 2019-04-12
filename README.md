@@ -304,7 +304,7 @@ memory used by the JavaScript.
 Clone this repository
 ```bash
 # install dependencies
-yarn install
+npm install
 
 # By setting KLOUDLESS_APP_ID, the test page will populate `appId` automatically
 export KLOUDLESS_APP_ID=<your_app_id>
@@ -324,7 +324,7 @@ the Schedule View locally.
 ### Building
 ```bash
 # install dependencies
-yarn install
+npm install
 
 # build for production with minification.
 # the result will be in /dist.
