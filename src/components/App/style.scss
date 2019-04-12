@@ -1,41 +1,42 @@
 @import "../colors.scss";
 
-.kloudless-meeting-scheduler {
-  .primary--text {
-    color: $primary !important;
-  }
-  .accent--text {
-    color: $accent !important;
-  }
-  .success--text {
-    color: $success !important;
-  }
-  .error--text {
-    color: $error !important;
-  }
-  .primary {
-    color: $white;
-    background-color: $primary !important;
-  }
-  .accent {
-    color: $white;
-    background-color: $accent !important;
-  }
-  .success {
-    color: $white;
-    background-color: $success !important;
-  }
-  .error {
-    color: $white;
-    background-color: $error !important;
-  }
+.primary--text {
+  color: $primary !important;
+}
+.accent--text {
+  color: $accent !important;
+}
+.success--text {
+  color: $success !important;
+}
+.error--text {
+  color: $error !important;
+}
+.primary {
+  color: $white;
+  background-color: $primary !important;
+}
+.accent {
+  color: $white;
+  background-color: $accent !important;
+}
+.success {
+  color: $white;
+  background-color: $success !important;
+}
+.error {
+  color: $white;
+  background-color: $error !important;
+}
 
-  @for $i from 1 through 9 {
-    .opacity-#{$i} {
-      opacity: 0.1 * $i;
-    }
+@for $i from 1 through 9 {
+  .opacity-#{$i} {
+    opacity: 0.1 * $i;
   }
+}
 
+// "html" will be transformed to MASTER_CLASS in bundle
+html {
   // do not show scroll bar in attach mode
   overflow-y: hidden;
 }
@@ -48,7 +49,7 @@ $footer-height: 30px;
 $modal-header-height: 30px;
 $error-height: 50px;
 
-.kloudless-meeting-scheduler .application {
+.application {
   
   width: $content-width + $widget-padding;
   margin: auto;

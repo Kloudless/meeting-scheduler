@@ -1,7 +1,6 @@
 import { mapState } from 'vuex';
 import Footer from '../Footer';
 
-
 export default {
   name: 'App',
   props: ['options'],

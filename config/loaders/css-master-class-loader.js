@@ -1,58 +1,40 @@
 /**
- * Parse css files we use and generate new css file for meeting scheduler.
+ * Custom CSS Loader for Meeting Scheduler.
  * Vuetify CSS has some global definitions, including it will have side
  * effects on HTMLs outside the Vue app. It is not suitable
  * to be used as sub component or widget.
  *
- * Hence, this script is created to parse the CSS file and:
+ * Hence, this loader is created to parse the input CSS and:
  * 1. prepend CSS selectors with MASTER_CLASS
  * 2. prepend keyframe names with `${MASTER_CLASS}-`
  * 3. update animation properties to use the new keyframe name
  * With the above approaches, we can wrap the original css into a scope,
  * including this stylesheet won't affect styles on the rest of the page.
  *
- * Minimization will be handled by webpack.
  */
-const fs = require('fs');
-const path = require('path');
-const readline = require('readline');
-
 const MASTER_CLASS = 'kloudless-meeting-scheduler';
-const sources = [
-  path.resolve(__dirname, './roboto.css'),
-  path.resolve(__dirname, '../../node_modules/vuetify/dist/vuetify.css'),
-  path.resolve(
-    __dirname,
-    '../../node_modules/material-design-icons-iconfont/' +
-    'dist/material-design-icons.css',
-  ),
-];
 
-const outputCss = [];
 
-function parseCssFile(filePath) {
-  const stream = fs.createReadStream(filePath, 'utf8');
+module.exports = function cssLoader(source) {
+  const sourceLines = source.split(/\r?\n|\r(?!\n)/);
+  const outputCss = [];
 
-  const lineReader = readline.createInterface({
-    input: stream,
-  });
   let isInsideKeyFrame = false;
-
-  lineReader.on('line', (line) => {
+  sourceLines.forEach((line) => {
     let nextLine;
 
     if (isInsideKeyFrame) {
       // don't change anything inside keyframe
       nextLine = line;
-      if (line.search(/^}/) === 0 ) {
+      if (/^}/.test(line)) {
         // leaving keyframe definition, revert the flag
         isInsideKeyFrame = false;
       }
     } else {
       /* eslint-disable no-lonely-if */
-      if (line.search(/^\s*[^@/]+(\s*\{|,)$/) === 0) {
+      if (/^\s*[^@/]+(\s*\{|,)$/.test(line)) {
         // if this line is css selector
-        if (line.search(/^html/) === 0) {
+        if (/^html/.test(line)) {
           // Replace html with master class
           nextLine = line.replace(/^html/, `.${MASTER_CLASS}`);
         } else {
@@ -62,34 +44,21 @@ function parseCssFile(filePath) {
             (_, p1, p2, p3) => `${p1}.${MASTER_CLASS} ${p2}${p3}`,
           );
         }
-      } else if (line.search(/^@(-webkit-)?keyframe/) === 0) {
+      } else if (/^@(-webkit-)?keyframe/.test(line)) {
         // beginning of keyframe definition
         // set flag to true and prepend keyframe name with ${MASTER_CLASS}-
         isInsideKeyFrame = true;
-        nextLine = line.replace(/\s([a-z-]+)\s*{$/g, (_, p1) =>
-          ` ${MASTER_CLASS}-${p1} {`);
-      } else if (line.search(/^\s*(-webkit-)?animation/) === 0) {
+        nextLine = line.replace(/\s([a-z-]+)\s*{$/g, (_, p1) => (
+          ` ${MASTER_CLASS}-${p1} {`));
+      } else if (/^\s*(-webkit-)?animation/.test(line)) {
         // for animation properties, change name to  ${MASTER_CLASS}-${name}
-        nextLine = line.replace(/(-webkit-)?animation: /, match =>
-          `${match}${MASTER_CLASS}-`);
+        nextLine = line.replace(/(-webkit-)?animation: /, match => (
+          `${match}${MASTER_CLASS}-`));
       } else {
         nextLine = line;
       }
     }
     outputCss.push(nextLine);
   });
-
-  lineReader.on('close', () => {
-    sources.shift();
-    if (sources.length > 0) {
-      parseCssFile(sources[0]);
-    } else {
-      fs.writeFileSync(
-        path.resolve(__dirname, './MeetingScheduler.css'),
-        outputCss.join('\n'),
-        'utf8',
-      );
-    }
-  });
-}
-parseCssFile(sources[0]);
+  return outputCss.join('\n');
+};

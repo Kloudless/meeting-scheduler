@@ -1,14 +1,55 @@
-import '../config/build_css/MeetingScheduler.css';
+// Vuetify base stylesheet, required
+import 'vuetify/src/stylus/app.styl';
+
+// Only import used components here
+import Vuetify, {
+  VApp,
+  VDialog,
+  VIcon,
+  VContent,
+  VContainer,
+  VForm,
+  VExpansionPanel,
+  VExpansionPanelContent,
+  VTextField,
+  VBtn,
+  VBtnToggle,
+  VLayout,
+  VFlex,
+  VAutocomplete,
+  VProgressCircular,
+} from 'vuetify/lib';
+
+// font styles
+import 'css/roboto.css';
+import 'material-design-icons-iconfont/dist/material-design-icons.css';
 
 import Vue from 'vue';
 import router from 'router';
 import App from 'components/App';
-import Vuetify from 'vuetify';
+
 import store from 'store';
 
 Vue.config.productionTip = false;
-Vue.use(Vuetify);
-
+Vue.use(Vuetify, {
+  components: {
+    VApp,
+    VDialog,
+    VIcon,
+    VContent,
+    VContainer,
+    VForm,
+    VExpansionPanel,
+    VExpansionPanelContent,
+    VTextField,
+    VBtn,
+    VBtnToggle,
+    VLayout,
+    VFlex,
+    VAutocomplete,
+    VProgressCircular,
+  },
+});
 
 class MeetingScheduler {
   /**

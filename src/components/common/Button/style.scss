@@ -1,13 +1,12 @@
 @import "../../colors.scss";
 
-.kloudless-meeting-scheduler { 
-  button.v-btn {
-    border-radius: 5px;
-    height: 100%;
-  }
-  .theme--light.v-btn.v-btn--disabled:not(.v-btn--icon):not(.v-btn--flat) {
-    background-color: $primary !important;
-    color: $white !important;
-    opacity: 0.2;
-  }
+
+button.v-btn {
+  border-radius: 5px;
+  height: 100%;
+}
+.theme--light.v-btn.v-btn--disabled:not(.v-btn--icon):not(.v-btn--flat) {
+  background-color: $primary !important;
+  color: $white !important;
+  opacity: 0.2;
 }

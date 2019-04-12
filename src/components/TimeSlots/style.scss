@@ -2,37 +2,35 @@
 
 $scroll-panel-height: 420px;
 
-.kloudless-meeting-scheduler {
+.timeslots-scroll-panel {
+  height: $scroll-panel-height;
+  overflow-y: auto;
+  .container {
+    padding-top: 12px;
+  }
+}
+.has-error .timeslots-scroll-panel {
+  height: $scroll-panel-height - $error-height;
+}
+
+.hour-block {
+  padding: 8px;
+  width: 120px;
+  height: 55px !important;
+  .hour {
+    font-size: 16px;
+    font-weight: bold;
+  }
+  .ampm {
+    font-size: 12px;
+  }
+}
+
+.v-dialog {
   .timeslots-scroll-panel {
-    height: $scroll-panel-height;
-    overflow-y: auto;
-    .container {
-      padding-top: 12px;
-    }
+    height: $scroll-panel-height - $modal-header-height;
   }
   .has-error .timeslots-scroll-panel {
-    height: $scroll-panel-height - $error-height;
-  }
-
-  .hour-block {
-    padding: 8px;
-    width: 120px;
-    height: 55px !important;
-    .hour {
-      font-size: 16px;
-      font-weight: bold;
-    }
-    .ampm {
-      font-size: 12px;
-    }
-  }
-
-  .v-dialog {
-    .timeslots-scroll-panel {
-      height: $scroll-panel-height - $modal-header-height;
-    }
-    .has-error .timeslots-scroll-panel {
-      height: $scroll-panel-height - $modal-header-height - $error-height;
-    }
+    height: $scroll-panel-height - $modal-header-height - $error-height;
   }
 }

@@ -1,8 +1,10 @@
 const path = require('path');
 const webpack = require('webpack');
 
-
 const loadersPath = path.resolve(__dirname, 'loaders');
+const cssMasterClassLoader = path.resolve(
+  loadersPath, 'css-master-class-loader',
+);
 const srcPath = path.resolve(__dirname, '../src/');
 const testPath = path.resolve(__dirname, '../test/');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
@@ -10,6 +12,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const PostCssDiscardFontFace = require('postcss-discard-font-face');
 const CssNano = require('cssnano');
 const AutoPrefixer = require('autoprefixer');
+
 
 function generateConfig(env = {}) {
   const devMode = env.mode === 'development';
@@ -29,6 +32,7 @@ function generateConfig(env = {}) {
         ].concat(cssMinifier),
       },
     },
+    cssMasterClassLoader,
   ];
 
   return {
@@ -84,19 +88,24 @@ function generateConfig(env = {}) {
           test: /\.css$/,
           use: styleLoaders,
         },
+        // Vuetify components import styl files for component styles
+        {
+          test: /\.styl$/,
+          use: styleLoaders.concat(['stylus-loader']),
+        },
         {
           test: /\.scss$/,
           loader: styleLoaders.concat(['sass-loader']),
         },
         {
-          test: /\.(png|jpe?g|gif)(\?.*)?$/,
+          test: /\.png$/,
           loader: 'url-loader',
           options: {
             limit: 10000,
           },
         },
         {
-          test: /\.(woff2?|eot|ttf|otf|svg)(\?.*)?$/,
+          test: /\.woff$/,
           loader: 'url-loader',
           options: {
             limit: 75 * 1024,
