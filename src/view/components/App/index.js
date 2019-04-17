@@ -9,7 +9,6 @@ export default {
   },
   data() {
     return {
-      dialog: false,
       initViews: false,
     };
   },
@@ -47,21 +46,10 @@ export default {
      * so that all vuetify components can find div(data-app)
      */
     this.initViews = true;
-
-    /** workaround:
-     * v-dialog will not render overlay if initialized with bonding model
-     * setting to true
-     * Solution: render v-dialog with model=false, then set to true shortly
-     */
-    if (this.options.mode === 'modal') {
-      setTimeout(() => {
-        this.dialog = true;
-      }, 1);
-    }
   },
   methods: {
     closeDialog() {
-      this.dialog = false;
+      // TODO: use message to destroy dialog
     },
   },
 };

@@ -1,4 +1,4 @@
-@import "../colors.scss";
+@import "../_variables.scss";
 
 .primary--text {
   color: $primary !important;
@@ -42,13 +42,6 @@ html {
 }
 
 
-$content-width: 500px;
-$widget-padding: 15px;
-$content-height: 650px;
-$footer-height: 30px;
-$modal-header-height: 30px;
-$error-height: 50px;
-
 .application {
   
   width: $content-width + $widget-padding;
@@ -91,12 +84,7 @@ $error-height: 50px;
     min-height: 0;
   }
 
-  .v-dialog {
-    width: $content-width + ($widget-padding * 2);
-    max-height: $content-height + $footer-height + $widget-padding;
-    box-shadow: none;
-    /* disable scroll in dialog widget */
-    overflow-y: hidden;
+  .app-dialog-view {
     .header {
       height: $modal-header-height;
     }

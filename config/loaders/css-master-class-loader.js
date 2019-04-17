@@ -19,6 +19,11 @@ module.exports = function cssLoader(source) {
   const sourceLines = source.split(/\r?\n|\r(?!\n)/);
   const outputCss = [];
 
+  if (sourceLines[0] && sourceLines[0]
+    .startsWith('/* NO_MASTER_CLASS_PREFIX */')) {
+    return source;
+  }
+
   let isInsideKeyFrame = false;
   sourceLines.forEach((line) => {
     let nextLine;

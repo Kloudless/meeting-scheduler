@@ -11,6 +11,7 @@ function stringify(obj) {
 window.setupTestLaunch = function setupTestLaunch(MeetingScheduler, appId) {
   const options = document.getElementById('options');
   const scheduler = new MeetingScheduler();
+  window.scheduler = scheduler;
 
   window.launchMeetingScheduler = () => {
     const launchOptions = JSON.parse(options.value);
@@ -29,6 +30,7 @@ window.setupTestLaunch = function setupTestLaunch(MeetingScheduler, appId) {
 
   const setupOption = {
     element: '#kloudless-meeting-scheduler',
+    iframe: false,
   };
 
   if (eventId) {

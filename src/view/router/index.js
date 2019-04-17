@@ -1,9 +1,9 @@
 import Vue from 'vue';
 import Router from 'vue-router';
-import MeetingWindow from 'components/MeetingWindow';
-import MeetingWindowDone from 'components/MeetingWindowDone';
-import TimeSlots from 'components/TimeSlots';
-import TimeSlotsDone from 'components/TimeSlotsDone';
+import MeetingWindow from 'view/components/MeetingWindow';
+import MeetingWindowDone from 'view/components/MeetingWindowDone';
+import TimeSlots from 'view/components/TimeSlots';
+import TimeSlotsDone from 'view/components/TimeSlotsDone';
 
 Vue.use(Router);
 

@@ -29,5 +29,10 @@ module.exports = {
     'no-param-reassign': ['error', { props: false }],
     'max-len': ['error', { code: 80 }],
     'operator-linebreak': 'off',
+    'no-underscore-dangle': [
+      'error', {
+        allow: ['_options'],
+        allowAfterThis: true,
+      }],
   },
 };

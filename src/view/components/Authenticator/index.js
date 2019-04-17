@@ -1,4 +1,4 @@
-import authenticator from '@kloudless/authenticator';
+import authenticator from '@kloudless/authenticator/src/auth-widget';
 import { mapState } from 'vuex';
 import Dropdown from '../common/Dropdown';
 import Button from '../common/Button';

@@ -1,4 +1,4 @@
-import Footer from 'components/Footer';
+import Footer from 'view/components/Footer';
 import store from 'store';
 import router from 'router';
 import { getWrapper } from './helpers.js';

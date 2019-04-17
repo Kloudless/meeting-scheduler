@@ -1,5 +1,4 @@
 const FriendlyErrorWebpackPlugin = require('friendly-errors-webpack-plugin');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const webpack = require('webpack');
 const path = require('path');
@@ -11,7 +10,8 @@ const devServerContentPath = path.resolve(__dirname, '../dev-server/');
 const devWebpackConfig = generateConfig({
   mode: 'development',
   entry: {
-    app: [path.resolve(devServerContentPath, 'index.js')],
+    index: [path.resolve(devServerContentPath, 'index.js')],
+    'embed/index': [path.resolve(devServerContentPath, 'embed/index.js')],
   },
   output: {
     path: devServerContentPath,
@@ -20,10 +20,6 @@ const devWebpackConfig = generateConfig({
   },
   plugins: [
     new webpack.HotModuleReplacementPlugin(),
-    new HtmlWebpackPlugin({
-      filename: 'index.html',
-      template: path.resolve(devServerContentPath, 'index.html'),
-    }),
     new FriendlyErrorWebpackPlugin({
       compilationSuccessInfo: {
         messages: ['Your application is running here: http://localhost:8080'],
