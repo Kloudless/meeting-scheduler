@@ -1,4 +1,3 @@
-/* global MESSAGE_PREFIX */
 import devtools from '@vue/devtools';
 import MeetingSchedulerView from 'view/MeetingSchedulerView';
 
@@ -10,29 +9,17 @@ if (devtools && devtools.connect) {
   devtools.connect('localhost', 8098);
 }
 
-setTimeout(() => {
-  document.getElementById('loading').remove();
-
-  const scheduler = new MeetingSchedulerView();
-
-  // TODO: better message interface
-  window.addEventListener('message', (event) => {
-    const { data } = event;
-    if (typeof data === 'object' && data.type.startsWith(MESSAGE_PREFIX)) {
-      // process event
-      const eventType = data.type.replace(MESSAGE_PREFIX, '');
-      if (eventType === 'launch') {
-        const options = Object.assign(data.payload, {
-          element: document.getElementById('kloudless-meeting-scheduler'),
-        });
-        scheduler.launch(options);
-      }
-    }
-  });
-  if (window.parent !== window) {
-    // only send this when embedded
-    window.parent.postMessage({
-      type: `${MESSAGE_PREFIX}loaded`,
+if (window.parent !== window) {
+  // only execute this script when launched inside iframe
+  const id = window.location.hash.substr(1);
+  setTimeout(() => {
+    const scheduler = new MeetingSchedulerView({
+      id,
     });
-  }
-}, 100);
+
+    scheduler.messenger.connect(window.parent);
+    scheduler.messenger.send({
+      event: 'iframe-loaded',
+    });
+  }, 0);
+}

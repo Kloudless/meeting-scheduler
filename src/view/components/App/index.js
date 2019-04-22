@@ -41,10 +41,15 @@ export default {
      * so that all vuetify components can find div(data-app)
      */
     this.initViews = true;
+    this.$store.dispatch('event', {
+      event: 'open',
+    });
   },
   methods: {
     closeDialog() {
-      // TODO: use message to destroy dialog
+      this.$store.dispatch('event', {
+        event: 'close',
+      });
     },
   },
 };

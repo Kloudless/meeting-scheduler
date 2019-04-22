@@ -53,11 +53,19 @@ export default {
           account: result.account.account,
           token: result.access_token,
         });
+        this.$store.dispatch('event', {
+          event: 'connectAccount',
+          account: result.account,
+          token: result.access_token,
+        });
       }
     },
     removeAccount() {
       this.$store.commit({
         type: 'account/reset',
+      });
+      this.$store.dispatch('event', {
+        event: 'removeAccount',
       });
     },
     setCalendarId(event) {

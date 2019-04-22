@@ -1,9 +1,12 @@
-/* global VERSION, BASE_URL, SCHEDULER_PATH, MESSAGE_PREFIX */
+/* global VERSION, BASE_URL, SCHEDULER_PATH */
 /**
  * loader script
  */
 /* eslint-disable no-console */
 import './loader.scss';
+import { CATEGORY, EventMessenger } from './event-messenger';
+
+let schedulerId = 0;
 
 const globalOptions = {
   baseUrl: BASE_URL,
@@ -12,8 +15,17 @@ const globalOptions = {
 
 class MeetingScheduler {
   constructor() {
+    schedulerId += 1;
+    this.id = schedulerId;
+
     this.doms = {};
+    this.options = {};
     this.launched = false;
+    this.messenger = new EventMessenger({
+      id: this.id,
+      category: CATEGORY.LOADER,
+      onMessage: this.onMessage.bind(this),
+    });
   }
 
   /**
@@ -93,53 +105,73 @@ class MeetingScheduler {
       parentElement.append(container);
     }
 
+    this.doms.container = container;
     this.options = _options;
 
     const iframe = document.createElement('iframe');
     iframe.setAttribute(
       'class', 'kloudless-meeting-scheduler-iframe',
     );
-    iframe.setAttribute('src', globalOptions.schedulerPath);
+    iframe.setAttribute('src', `${globalOptions.schedulerPath}#${this.id}`);
     container.append(iframe);
 
     this.doms.iframe = iframe;
-    this.messageEventHandler = this._onViewMessage.bind(this);
+    this.messenger.connect(iframe.contentWindow);
     window.addEventListener('message', this.messageEventHandler);
     this.launched = true;
     return this;
   }
 
-  // TODO: better message interface
-  _onViewMessage(event) {
-    const { data } = event;
-    if (typeof data === 'object' && data.type &&
-      data.type.startsWith(MESSAGE_PREFIX)) {
-      // process event
-      const eventType = data.type.replace(MESSAGE_PREFIX, '');
-      if (eventType === 'loaded') {
-        const options = Object.assign(
-          {},
-          this.options,
-          // element will be set inside iframe
-          { element: null, events: null, globalOptions },
-        );
-        this.doms.iframe.contentWindow.postMessage({
-          type: `${MESSAGE_PREFIX}launch`,
-          payload: options,
+  /**
+   * @param {Object} message
+   * Message object containing the following keys:
+   *  type: Represent vuex action type
+   *  event: event name
+   *  ...eventData: the rest of the keys will be treated as event data and
+   *  send to the callback, except 'scheduler'
+   * }
+   */
+  onMessage(message) {
+    /* eslint-disable no-unused-vars */
+    const {
+      type,
+      event,
+      // 'scheduler' is reserved for attaching scheduler instance
+      scheduler,
+      ...eventData
+    } = message;
+    /* eslint-enable */
+    switch (event) {
+      case 'iframe-loaded': {
+        this.messenger.send({
+          event: 'iframe-launch-view',
+          options: Object.assign(
+            {},
+            this.options,
+            // element will be set inside iframe
+            { element: null },
+          ),
         });
+        return;
       }
+      case 'close': {
+        this.destroy();
+        break;
+      }
+      default:
+        break;
     }
+    // TODO: invoke event callbacks
   }
 
   destroy() {
     if (this.launched) {
-      // elements will be removed after cleaning parentElement
-      // only need to unregister message event
-      if (this.messageEventHandler) {
-        window.removeEventListener('message', this.messageEventHandler);
-      }
       // empty the parent element
+      // if the view is launched in iframe, it will be removed as well
       this.doms.parentElement.innerHTML = '';
+      this.launched = false;
+      this.onMessage({ event: 'destroy' });
+      this.messenger.disconnect();
     }
   }
 
@@ -148,6 +180,9 @@ class MeetingScheduler {
       Object.keys(globalOptions).forEach((name) => {
         if (typeof options[name] !== 'undefined' && options[name] !== null) {
           globalOptions[name] = options[name];
+          if (name === 'schedulerPath') {
+            EventMessenger.setSchedulerOrigin(SCHEDULER_PATH);
+          }
         }
       });
     }
