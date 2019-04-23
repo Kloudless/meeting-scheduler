@@ -1,6 +1,6 @@
 import common from '../common.js';
 
-function getJson(state) {
+function getJson(state, recaptchaToken) {
   const json = {
     start: state.selectedSlot.start,
     end: state.selectedSlot.end,
@@ -8,6 +8,7 @@ function getJson(state) {
       name: state.name,
       email: state.email,
     }],
+    recaptcha_token: recaptchaToken,
   };
   return json;
 }
@@ -69,8 +70,17 @@ export default common.createModule({
         }, { root: true })
       ));
     },
-    submit({ dispatch, state, rootState }) {
-      const json = getJson(state);
+    /**
+     * Schedule the selected time slot.
+     *
+     * @param {object} payload
+     * {
+     *    type {string} - action type
+     *    recaptchaToken {string} - token returned by reCAPTCHA
+     * }
+     */
+    submit({ dispatch, state, rootState }, payload) {
+      const json = getJson(state, payload.recaptchaToken);
       const meetingWindowId = rootState.meetingWindow.id;
 
       // simulating service request for now

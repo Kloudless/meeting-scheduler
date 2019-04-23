@@ -1,3 +1,4 @@
+/* global grecaptcha */
 import moment from 'moment-timezone';
 import { mapState } from 'vuex';
 import date from '../../utils/date';
@@ -23,6 +24,8 @@ export default {
       ],
       isTargetFormValid: true,
       timeZone: moment.tz.guess(),
+      enableRecaptcha: false,
+      recaptchaId: null,
     };
   },
   computed: mapState({
@@ -52,6 +55,21 @@ export default {
       this.$store.dispatch({
         type: 'timeSlots/getTimeSlots',
         eventId: this.$route.params.eventId,
+      }).then(() => {
+        if (this.meetingWindow.recaptchaSiteKey) {
+          this.loadRecaptchaScript().then(() => {
+            const lang = 'en';
+            this.recaptchaId = grecaptcha.render('recaptcha', {
+              sitekey: this.meetingWindow.recaptchaSiteKey,
+              size: 'invisible',
+              callback: this.onRecaptchaVerify,
+              'error-callback': this.onRecaptchaError,
+              isolated: true,
+              lang,
+            });
+            this.enableRecaptcha = true;
+          });
+        }
       });
     }
   },
@@ -78,11 +96,69 @@ export default {
         value: event.value,
       });
     },
-    submit() {
-      const promise = this.$store.dispatch('timeSlots/submit');
+    submit(recaptchaToken) {
+      const promise = this.$store.dispatch('timeSlots/submit', {
+        recaptchaToken,
+      });
       promise.then(() => {
         this.$router.push('/timeSlotsDone/');
       });
+    },
+    /**
+     * Load reCaptcha script
+     *
+     * @returns {Promise}
+     */
+    loadRecaptchaScript() {
+      const recaptchaScript = document.createElement('script');
+      // TODO: modify the language of reCAPTCHA when we enable i18n
+      const lang = 'en';
+      recaptchaScript.src = 'https://www.google.com/recaptcha/api.js' +
+        `?onload=recaptchaLoaded&render=explicit&hl=${lang}`;
+      recaptchaScript.async = true;
+      recaptchaScript.defer = true;
+
+      this.onRecaptchaScriptLoad = new Promise((resolve) => {
+        if (typeof window !== 'undefined') {
+          // window.recaptchaLoaded will be called when reCaptcha script is
+          // loaded
+          window.recaptchaLoaded = resolve;
+        }
+      });
+
+      document.head.appendChild(recaptchaScript);
+
+      return this.onRecaptchaScriptLoad;
+    },
+    /**
+     * Run after reCAPTCHA successfully verified.
+     *
+     * @param {string} recaptchaToken - token returned by reCAPTCHA
+     */
+    onRecaptchaVerify(recaptchaToken) {
+      this.submit(recaptchaToken);
+    },
+    /**
+     * Run when any error is encountered by reCAPTCHA
+     */
+    onRecaptchaError() {
+      // There is no error message from recaptcha, the common errors may be
+      // invalid site key or no internet connection.
+      const message = 'Error: reCAPTCHA error. Please try again or contact ' +
+        'support.';
+      this.$store.commit({
+        type: 'api/setErrorMessage',
+        message,
+      });
+    },
+    executeRecaptcha() {
+      if (this.enableRecaptcha) {
+        this.onRecaptchaScriptLoad.then(
+          () => grecaptcha.execute(this.recaptchaId),
+        );
+      } else {
+        this.submit();
+      }
     },
   },
 };
