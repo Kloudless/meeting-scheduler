@@ -1,5 +1,4 @@
-import moment from 'moment';
-import 'moment-timezone';
+import moment from 'moment-timezone';
 import { mapState } from 'vuex';
 import date from '../../utils/date';
 import TextInput from '../common/TextInput';
@@ -23,7 +22,7 @@ export default {
         'Confirm your meeting details',
       ],
       isTargetFormValid: true,
-      timezone: moment.tz.guess(),
+      timeZone: moment.tz.guess(),
     };
   },
   computed: mapState({
@@ -67,7 +66,7 @@ export default {
       });
     },
     formatDate(format, dateStr) {
-      return date(format, dateStr);
+      return date(format, dateStr, this.timeZone);
     },
     moveStep(step) {
       this.step += step;

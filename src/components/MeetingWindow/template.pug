@@ -41,9 +41,9 @@ div
         :value="meetingWindow.organizer",
         placeholder="Johnny Appleseed", @update="updateInput")
       Dropdown(
-        label="Time Zone *", name="utcOffset", :value="meetingWindow.utcOffset",
-        :options="options.utcOffsets", @update="updateInput")
+        label="Time Zone *", name="timeZone", :value="meetingWindow.timeZone",
+        :options="options.timeZones", @update="updateInput")
     div.mt-5
-      Button(@click="submit", :loading="loading.submit",
-        :disabled="!isFormValid || !hasCalendar")
+      Button(@click="submit", :loading="loading.submit"
+             :disabled="!isFormValid || !hasCalendar")
         | Create Event

@@ -2080,11 +2080,6 @@ commondir@^1.0.1:
   resolved "https://registry.yarnpkg.com/commondir/-/commondir-1.0.1.tgz#ddd800da0c66127393cca5950ea968a3aaf1253b"
   integrity sha1-3dgA2gxmEnOTzKWVDqloo6rxJTs=
 
-compact-timezone-list@1.0.6:
-  version "1.0.6"
-  resolved "https://registry.yarnpkg.com/compact-timezone-list/-/compact-timezone-list-1.0.6.tgz#ff1459d78f1ed061c9e0431b13e3dfc5a05ad786"
-  integrity sha512-nlzYWRPyFW0Z0xZqnOVcLuJ93po72foFA6WjVMTJHhqrxpxmOGKCwWxO2GWDuW1bKyWQgoHDMohJMS7otlMNMQ==
-
 compare-versions@^3.2.1:
   version "3.4.0"
   resolved "https://registry.yarnpkg.com/compare-versions/-/compare-versions-3.4.0.tgz#e0747df5c9cb7f054d6d3dc3e1dbc444f9e92b26"
