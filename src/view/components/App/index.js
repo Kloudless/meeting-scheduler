@@ -16,11 +16,6 @@ export default {
     requestErrorMsg: state => state.api.errorMessage,
   }),
   created() {
-    this.$store.dispatch({
-      type: 'initialize',
-      launchOptions: this.options,
-    });
-
     let defaultRoute = '/meetingWindow/';
     if (this.options.eventId) {
       // Launch Schedule View if eventId is supplied

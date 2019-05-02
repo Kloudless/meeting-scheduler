@@ -79,9 +79,7 @@ export default {
       });
     },
     submit() {
-      const promise = this.$store.dispatch({
-        type: 'timeSlots/submit',
-      });
+      const promise = this.$store.dispatch('timeSlots/submit');
       promise.then(() => {
         this.$router.push('/timeSlotsDone/');
       });

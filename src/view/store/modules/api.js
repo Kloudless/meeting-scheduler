@@ -1,4 +1,4 @@
-/* global BASE_URL */
+/* global BASE_URL VERSION */
 /**
  * Vuex sub module to handle Kloudless API request, record parameters for
  * API requests, and toggle flags for loading status
@@ -8,27 +8,27 @@ import common from '../common.js';
 
 const baseUrl = BASE_URL;
 
-const schema = {
-  errorMessage: null,
-  appId: null,
-  loading: {
-    meetingWindow: {
-      submit: false,
-    },
-    timeSlots: {
-      timeSlots: true,
-      submit: false,
-    },
-    account: {
-      account: false,
-      calendar: false,
-    },
-  },
-};
-
-export default {
+export default common.createModule({
   namespaced: true,
-  state: common.createState(schema),
+  initState() {
+    return {
+      errorMessage: null,
+      appId: null,
+      loading: {
+        meetingWindow: {
+          submit: false,
+        },
+        timeSlots: {
+          timeSlots: true,
+          submit: false,
+        },
+        account: {
+          account: false,
+          calendar: false,
+        },
+      },
+    };
+  },
   mutations: {
     setErrorMessage(state, payload) {
       state.errorMessage = payload.message;
@@ -37,7 +37,6 @@ export default {
       const flags = payload.flag.split('/');
       state.loading[flags[0]][flags[1]] = payload.loading;
     },
-    reset: common.mutations.createResetMutation(schema),
   },
   actions: {
     request({ rootState, commit }, payload) {
@@ -51,9 +50,19 @@ export default {
       }, payload.options);
 
       const prefix = options.baseApi ?
-        `v1/accounts${account.id ? `/${account.id}` : ''}` : 'v1/meetings';
+        'v1/accounts/me' : 'v1/meetings';
 
-      const token = rootState.launchOptions.eventId || account.token;
+      let token;
+      switch (options.tokenType) {
+        case 'account':
+          ({ token } = account);
+          break;
+        case 'event':
+          token = rootState.launchOptions.eventId;
+          break;
+        default:
+          token = '';
+      }
 
       const promise = axios({
         method: options.method,
@@ -61,7 +70,7 @@ export default {
         headers: {
           Authorization: `Bearer ${token}`,
           Accept: 'application/json',
-          'X-Kloudless-Source': 'meeting-scheduler/1.0.1',
+          'X-Kloudless-Source': `meeting-scheduler/${VERSION}`,
         },
         params: options.params,
         data: options.data,
@@ -83,10 +92,25 @@ export default {
           });
           return (options.onSuccess || Object)(response.data);
         }).catch((error) => {
-          const message = `Error: ${error.message}. Please contact Support.`;
+          let message;
+          if (error.response) {
+            const { response } = error;
+            if (response.headers['content-type'] === 'application/json') {
+              message = response.data.message || response.statusText;
+            } else {
+              message = response.statusText;
+            }
+          } else if (this.request) {
+            message = 'There is no response from service';
+          } else {
+            // The exception is thrown before making a request
+            // axios will provide error message in this case
+            ({ message } = error);
+          }
+          const errorMessage = `Error: ${message}. Please contact Support.`;
           commit({
             type: 'setErrorMessage',
-            message,
+            message: errorMessage,
           });
           (options.onError || Object)(error);
           throw error;
@@ -103,4 +127,4 @@ export default {
         });
     },
   },
-};
+});

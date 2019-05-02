@@ -1,16 +1,17 @@
-import common from '../common.js';
+import common from '../common';
 
-const schema = {
-  id: null,
-  account: null,
-  token: null,
-  calendars: [],
-  calendarId: null,
-};
 
-export default {
+export default common.createModule({
   namespaced: true,
-  state: common.createState(schema),
+  initState() {
+    return {
+      id: null,
+      account: null,
+      token: null,
+      calendars: [],
+      calendarId: null,
+    };
+  },
   mutations: {
     setAccount(state, payload) {
       const { id, account, token } = payload;
@@ -28,9 +29,6 @@ export default {
     },
     setCalendarId(state, payload) {
       state.calendarId = payload.calendarId;
-    },
-    removeAccount(state) {
-      Object.assign(state, schema);
     },
   },
   actions: {
@@ -56,8 +54,8 @@ export default {
             baseApi: true,
             uri: '',
             loading: 'account/account',
-            onSuccess: (data) => {
-              const accountObj = data.objects[0];
+            tokenType: 'account',
+            onSuccess: (accountObj) => {
               commit({
                 type: 'setAccount',
                 id: accountObj.id,
@@ -66,7 +64,7 @@ export default {
               });
             },
             onError: () => {
-              commit('removeAccount');
+              commit('reset');
             },
           },
         }, { root: true });
@@ -79,6 +77,7 @@ export default {
             baseApi: true,
             uri: 'cal/calendars',
             loading: 'account/calendar',
+            tokenType: 'account',
             onSuccess: (data) => {
               const calendars = data.objects || [];
               commit({
@@ -100,4 +99,4 @@ export default {
       });
     },
   },
-};
+});

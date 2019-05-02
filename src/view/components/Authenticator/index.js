@@ -42,8 +42,7 @@ export default {
           message: 'An error occurred connecting your account.',
         }, { root: true });
       } else {
-        this.$store.dispatch({
-          type: 'account/setAccount',
+        this.$store.dispatch('account/setAccount', {
           id: result.account.id,
           account: result.account.account,
           token: result.access_token,
@@ -52,7 +51,7 @@ export default {
     },
     removeAccount() {
       this.$store.commit({
-        type: 'account/removeAccount',
+        type: 'account/reset',
       });
     },
     setCalendarId(event) {
