@@ -1,6 +1,5 @@
 import { mapState } from 'vuex';
-import moment from 'moment';
-import 'moment-timezone';
+import moment from 'moment-timezone';
 import Title from '../common/Title';
 import Button from '../common/Button';
 import date from '../../utils/date';
@@ -14,7 +13,7 @@ export default {
   },
   data() {
     return {
-      timezone: moment.tz.guess(),
+      timeZone: moment.tz.guess(),
     };
   },
   computed: mapState({
@@ -26,7 +25,7 @@ export default {
   ],
   methods: {
     formatDate(format, dateStr) {
-      return date(format, dateStr);
+      return date(format, dateStr, this.timeZone);
     },
   },
 };

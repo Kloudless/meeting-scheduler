@@ -3,9 +3,11 @@
  * e.g. dropdown options
  */
 
-import { minimalTimezoneSet } from 'compact-timezone-list';
+import moment from 'moment-timezone';
 
 export default '';
+
+const now = moment();
 
 export const options = {
   durations: [
@@ -50,8 +52,8 @@ export const options = {
     { text: '11:00 PM', value: '23:00:00' },
     { text: '00:00 AM', value: '24:00:00' },
   ],
-  utcOffsets: minimalTimezoneSet.map(timezone => ({
-    text: timezone.label,
-    value: timezone.offset,
+  timeZones: moment.tz.names().map(tz => ({
+    text: `(GMT${now.tz(tz).format('Z')}) ${tz}`,
+    value: tz,
   })),
 };

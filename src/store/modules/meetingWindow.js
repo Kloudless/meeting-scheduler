@@ -9,12 +9,13 @@ function getJson(state) {
     description: state.description,
     duration: state.duration,
     organizer: state.organizer,
+    time_zone: state.timeZone,
   };
 
-  const start = moment(state.beginHour, 'HH:mm:ss')
-    .utcOffset(state.utcOffset, true);
-  const end = moment(state.endHour, 'HH:mm:ss')
-    .utcOffset(state.utcOffset, true);
+  // TODO: remove state.timeZone which is deprecated since DEV-1997
+  const start = moment.tz(state.beginHour, 'HH:mm:ss', state.timeZone);
+  const end = moment.tz(state.endHour, 'HH:mm:ss', state.timeZone);
+
   // if state.endHour is '24:00:00', the time will be recorded as `00:00:00`
   // and the date will be added 1
 
@@ -40,7 +41,7 @@ const schema = {
   location: '',
   description: '',
   access: '',
-  utcOffset: moment().format('Z'),
+  timeZone: moment.tz.guess(),
   weekday: '',
   beginHour: '08:00:00',
   endHour: '17:00:00',
