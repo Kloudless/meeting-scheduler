@@ -61,7 +61,7 @@ export default {
         headers: {
           Authorization: `Bearer ${token}`,
           Accept: 'application/json',
-          'X-Kloudless-Source': 'meeting-scheduler/1.0',
+          'X-Kloudless-Source': 'meeting-scheduler/1.0.1',
         },
         params: options.params,
         data: options.data,
