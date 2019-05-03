@@ -53,7 +53,7 @@ export const options = {
     { text: '00:00 AM', value: '24:00:00' },
   ],
   timeZones: moment.tz.names().map(tz => ({
-    text: `(GMT${now.tz(tz).format('Z')}) ${tz}`,
+    text: `(GMT${now.tz(tz).format('Z')}) ${tz.replace(/_/g, ' ')}`,
     value: tz,
   })),
 };
