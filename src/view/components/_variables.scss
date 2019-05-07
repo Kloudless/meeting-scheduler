@@ -1,9 +1,3 @@
-/*
-  Doesn't use Vuetify's color options because we need to customize
-  colors for components that don't support or have limited support of
-  color APIs. Hence, define and manage all colors in scss instead.
-*/
-
 $primary: #7566ff;
 $background: #f5f7fa;
 $accent: #04214a;

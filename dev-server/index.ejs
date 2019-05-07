@@ -3,6 +3,9 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <% if (distTest) { %>
+      <link rel="stylesheet" href="../../dist/meeting-scheduler.min.css">
+    <% } %>
     <title>Meeting Scheduler</title>
   </head>
   <body>
@@ -28,12 +31,22 @@
     <br/>
     <button
      style="margin-left:20px;border: 1px solid black;padding: 10px;"
-     onclick="window.launchMeetingScheduler(0)">Launch Scheduler</button>
+     onclick="window.launchMeetingScheduler(0)">Launch Scheduler
+    </button>
     <button
      style="margin-left:20px;border: 1px solid black;padding: 10px;"
      onclick="window.launchMeetingScheduler(1)">
       Launch Another Scheduler
     </button>
-    <script type="text/javascript" src="index.js"></script>
+    <% if (distTest) { %>
+      <script src="../../dist/meeting-scheduler.min.js"></script>
+      <script src="../../dev-server/test_launch.js"></script>
+      <script>
+        window.Kloudless.scheduler.setOptions({
+          schedulerPath: '../../dist/scheduler/index.html'
+        });
+        setupTestLaunch(window.Kloudless.scheduler);
+      </script>
+    <% } %>
   </body>
 </html>

@@ -1,9 +1,8 @@
-/* NO_MASTER_CLASS_PREFIX */
-
 @import './view/components/_variables.scss';
 
 div.kloudless-meeting-scheduler-container {
   width: $content-width + $widget-padding;
+  margin: 0 auto;
   height: $content-height + $footer-height + $widget-padding;
   overflow: hidden;
   border: 0;

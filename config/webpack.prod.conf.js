@@ -1,25 +1,26 @@
 const path = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const generateConfig = require('./webpack.base.conf.js');
 
 const distPath = path.resolve(__dirname, '../dist/');
-const scriptPath = path.resolve(__dirname, '../src/MeetingScheduler.js');
+const scripts = {
+  loader: [path.resolve(__dirname, '../src/loader.js')],
+  embed: [path.resolve(__dirname, '../src/embed/index.js')],
+};
 
+const loaderOutputConfig = {
+  path: distPath,
+  filename: '[name].js',
+  publicPath: './',
+  library: ['Kloudless', 'scheduler'],
+  libraryTarget: 'umd',
+  libraryExport: 'default',
+};
 
-const prodConfig = {
+const prodBaseConfig = {
   mode: 'production',
-  entry: {
-    'meeting-scheduler': [scriptPath],
-  },
-  output: {
-    path: distPath,
-    filename: '[name].js',
-    publicPath: './',
-    library: ['Kloudless', 'scheduler'],
-    libraryTarget: 'umd',
-    libraryExport: 'default',
-  },
   plugins: [
     new MiniCssExtractPlugin({
       filename: '[name].css',
@@ -30,13 +31,69 @@ const prodConfig = {
   },
 };
 
-const minProdConfig = Object.assign({}, prodConfig, {
-  entry: {
-    'meeting-scheduler.min': [scriptPath],
-  },
+const prodConfig = generateConfig(prodBaseConfig);
+
+const minProdConfig = generateConfig(Object.assign({}, prodBaseConfig, {
   optimization: {
     minimize: true,
   },
-});
+}));
 
-module.exports = [generateConfig(prodConfig), generateConfig(minProdConfig)];
+const builds = [
+  // loader
+  {
+    ...prodConfig,
+    entry: {
+      'meeting-scheduler': scripts.loader,
+    },
+    output: loaderOutputConfig,
+  },
+  // loader, minimized
+  {
+    ...minProdConfig,
+    entry: {
+      'meeting-scheduler.min': scripts.loader,
+    },
+    plugins: minProdConfig.plugins.concat([
+      // output the test page to dist/test/ for `npm run dist-test` command
+      new HtmlWebpackPlugin({
+        filename: '../test/dist/index.html',
+        template: path.resolve(__dirname, '../dev-server/index.ejs'),
+        templateParameters: {
+          distTest: true,
+        },
+        // chunks need to be manually inserted in ejs template for dist-test
+        chunks: [],
+      }),
+    ]),
+    output: loaderOutputConfig,
+  },
+  // embed page, minimized
+  {
+    ...minProdConfig,
+    plugins: minProdConfig.plugins.concat([
+      new HtmlWebpackPlugin({
+        filename: 'index.html',
+        template: path.resolve(__dirname, '../src/embed/index.html'),
+        minify: {
+          collapseWhitespace: true,
+          removeComments: true,
+          removeRedundantAttributes: true,
+          removeScriptTypeAttributes: true,
+          removeStyleLinkTypeAttributes: true,
+          useShortDoctype: true,
+        },
+      }),
+    ]),
+    entry: {
+      index: scripts.embed,
+    },
+    output: {
+      path: path.resolve(distPath, './scheduler'),
+      filename: '[name].js',
+      publicPath: './',
+    },
+  },
+];
+
+module.exports = builds;

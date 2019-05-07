@@ -1,11 +1,21 @@
-/* global VERSION, SCHEDULER_PATH, MESSAGE_PREFIX */
+/* global VERSION, BASE_URL, SCHEDULER_PATH, MESSAGE_PREFIX */
 /**
  * loader script
  */
-/* eslint-disable no-new, no-console */
+/* eslint-disable no-console */
 import './loader.scss';
 
+const globalOptions = {
+  baseUrl: BASE_URL,
+  schedulerPath: SCHEDULER_PATH,
+};
+
 class MeetingScheduler {
+  constructor() {
+    this.doms = {};
+    this.launched = false;
+  }
+
   /**
    * Launch Meeting Scheduler
    * @param {Object} options - launch options
@@ -91,7 +101,7 @@ class MeetingScheduler {
       iframe.setAttribute(
         'class', 'kloudless-meeting-scheduler-iframe',
       );
-      iframe.setAttribute('src', SCHEDULER_PATH);
+      iframe.setAttribute('src', globalOptions.schedulerPath);
       container.append(iframe);
 
       this.doms.iframe = iframe;
@@ -105,7 +115,11 @@ class MeetingScheduler {
       if (!this.view) {
         this.view = new MeetingScheduler.ViewClass();
       }
-      this.view.launch(Object.assign({}, _options, { element: container }));
+      this.view.launch(Object.assign(
+        {},
+        _options,
+        { element: container, events: null, globalOptions },
+      ));
     }
     this.launched = true;
     return this;
@@ -122,7 +136,7 @@ class MeetingScheduler {
           {},
           this.options,
           // element will be set inside iframe
-          { element: null, events: null },
+          { element: null, events: null, globalOptions },
         );
         this.doms.iframe.contentWindow.postMessage({
           type: `${MESSAGE_PREFIX}launch`,
@@ -146,11 +160,26 @@ class MeetingScheduler {
       this.doms.parentElement.innerHTML = '';
     }
   }
-}
 
-MeetingScheduler.setViewClass = function setViewClass(ViewClass) {
-  this.ViewClass = ViewClass;
-};
+  static setOptions(options) {
+    if (typeof options === 'object') {
+      Object.keys(globalOptions).forEach((name) => {
+        if (typeof options[name] !== 'undefined' && options[name] !== null) {
+          globalOptions[name] = options[name];
+        }
+      });
+    }
+  }
+
+  static getOptions() {
+    // do not return original instance
+    return { ...globalOptions };
+  }
+
+  static setViewClass(ViewClass) {
+    this.ViewClass = ViewClass;
+  }
+}
 
 MeetingScheduler.version = VERSION;
 

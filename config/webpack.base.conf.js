@@ -1,10 +1,6 @@
 const path = require('path');
-const webpack = require('webpack');
 
 const loadersPath = path.resolve(__dirname, 'loaders');
-const cssMasterClassLoader = path.resolve(
-  loadersPath, 'css-master-class-loader',
-);
 const srcPath = path.resolve(__dirname, '../src/');
 const nodeModulePath = path.resolve(__dirname, '../node_modules/');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
@@ -17,8 +13,8 @@ const common = require('./common');
 function generateConfig(env = {}) {
   const devMode = env.mode === 'development';
 
-  const cssMinifier = (env.optimization && env.optimization.minimize)
-    ? [CssNano()] : [];
+  const minimize = (env.optimization && env.optimization.minimize);
+  const cssMinifier = minimize ? [CssNano()] : [];
 
   const styleLoaders = [
     devMode ? 'vue-style-loader' : MiniCssExtractPlugin.loader,
@@ -32,7 +28,6 @@ function generateConfig(env = {}) {
         ].concat(cssMinifier),
       },
     },
-    cssMasterClassLoader,
   ];
 
   return {
@@ -114,7 +109,7 @@ function generateConfig(env = {}) {
     plugins: [
       new VueLoaderPlugin(),
     ].concat(env.plugins),
-    devtool: '#source-map',
+    devtool: minimize ? undefined : '#source-map',
     optimization: Object.assign({
       noEmitOnErrors: true,
     }, env.optimization),
