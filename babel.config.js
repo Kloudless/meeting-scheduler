@@ -12,7 +12,7 @@ const buildEnvVarDefaults = {
   SCHEDULER_PATH:
     'https://static-cdn.kloudless.com/p/platform/scheduler/index.html',
   // for development only
-  KLOUDLESS_APP_ID: null,
+  KLOUDLESS_APP_ID: '',
 };
 
 const transformDefines = {

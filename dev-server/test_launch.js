@@ -37,12 +37,7 @@ window.setupTestLaunch = function setupTestLaunch(MeetingScheduler, appId) {
     setupOption.eventId = eventId;
   } else {
     setupOption.eventUrlFormat = `${window.location.origin}/?eventId=EVENT_ID`;
-    if (appId) {
-      // appId is supplied, this is loaded in a dev environment
-      setupOption.appId = appId;
-      // launch the view in the same page so that we could use Vue dev-tool
-      setupOption.iframe = false;
-    }
+    setupOption.appId = appId;
   }
   options.value = stringify(setupOption);
 };

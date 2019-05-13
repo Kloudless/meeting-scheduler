@@ -71,6 +71,15 @@ const builds = [
   // embed page, minimized
   {
     ...minProdConfig,
+    module: {
+      rules: [
+        ...minProdConfig.module.rules,
+        {
+          test: path.resolve(__dirname, '../node_modules/@vue/devtools'),
+          use: 'null-loader',
+        },
+      ],
+    },
     plugins: minProdConfig.plugins.concat([
       new HtmlWebpackPlugin({
         filename: 'index.html',

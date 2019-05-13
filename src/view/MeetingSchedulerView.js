@@ -1,5 +1,4 @@
 import './vue-setup';
-
 import Vue from 'vue';
 import router from 'view/router';
 import store from 'view/store';

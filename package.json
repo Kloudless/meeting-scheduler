@@ -5,6 +5,7 @@
   "description": "The Kloudless Meeting Scheduler allows organizers to schedule a time that works for all participants in a meeting or event.",
   "author": "Kloudless <hello@kloudless.com> (https://kloudless.com)",
   "scripts": {
+    "vue-devtools": "vue-devtools",
     "dev": "SCHEDULER_PATH='embed/index.html' webpack-dev-server --inline --progress --config config/webpack.dev.conf.js",
     "start": "npm run dev",
     "unit": "jest --config test/unit/jest.conf.js --coverage",
@@ -23,6 +24,7 @@
     "@babel/polyfill": "7.2.5",
     "@babel/preset-env": "7.2.3",
     "@kloudless/authenticator": "https://github.com/Kloudless/authenticator.js.git",
+    "@vue/devtools": "5.1.0",
     "@vue/test-utils": "1.0.0-beta.27",
     "autoprefixer": "9.4.3",
     "axios": "0.18.0",
@@ -56,6 +58,7 @@
     "moment": "2.22.2",
     "moment-timezone": "0.5.21",
     "node-sass": "4.11.0",
+    "null-loader": "1.0.0",
     "postcss-discard-font-face": "3.0.0",
     "postcss-loader": "3.0.0",
     "pug": "2.0.3",

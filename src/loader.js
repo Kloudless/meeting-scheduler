@@ -28,7 +28,6 @@ class MeetingScheduler {
 
     const _options = Object.assign({
       mode: 'modal',
-      iframe: true,
     }, options);
 
     if (!_options.appId && !_options.eventId) {
@@ -96,31 +95,16 @@ class MeetingScheduler {
 
     this.options = _options;
 
-    if (_options.iframe) {
-      const iframe = document.createElement('iframe');
-      iframe.setAttribute(
-        'class', 'kloudless-meeting-scheduler-iframe',
-      );
-      iframe.setAttribute('src', globalOptions.schedulerPath);
-      container.append(iframe);
+    const iframe = document.createElement('iframe');
+    iframe.setAttribute(
+      'class', 'kloudless-meeting-scheduler-iframe',
+    );
+    iframe.setAttribute('src', globalOptions.schedulerPath);
+    container.append(iframe);
 
-      this.doms.iframe = iframe;
-      this.messageEventHandler = this._onViewMessage.bind(this);
-      window.addEventListener('message', this.messageEventHandler);
-    } else {
-      if (!MeetingScheduler.ViewClass) {
-        console.error('Meeting Scheduler: does not provide view class');
-        return this;
-      }
-      if (!this.view) {
-        this.view = new MeetingScheduler.ViewClass();
-      }
-      this.view.launch(Object.assign(
-        {},
-        _options,
-        { element: container, events: null, globalOptions },
-      ));
-    }
+    this.doms.iframe = iframe;
+    this.messageEventHandler = this._onViewMessage.bind(this);
+    window.addEventListener('message', this.messageEventHandler);
     this.launched = true;
     return this;
   }
@@ -128,7 +112,8 @@ class MeetingScheduler {
   // TODO: better message interface
   _onViewMessage(event) {
     const { data } = event;
-    if (typeof data === 'object' && data.type.startsWith(MESSAGE_PREFIX)) {
+    if (typeof data === 'object' && data.type &&
+      data.type.startsWith(MESSAGE_PREFIX)) {
       // process event
       const eventType = data.type.replace(MESSAGE_PREFIX, '');
       if (eventType === 'loaded') {
@@ -148,13 +133,10 @@ class MeetingScheduler {
 
   destroy() {
     if (this.launched) {
-      // launch in iframe: elements will be removed after cleaning parentElement
+      // elements will be removed after cleaning parentElement
       // only need to unregister message event
-      if (this.options.iframe && this.messageEventHandler) {
+      if (this.messageEventHandler) {
         window.removeEventListener('message', this.messageEventHandler);
-      // launch directly: call view's destroy()
-      } else if (this.view) {
-        this.view.destroy();
       }
       // empty the parent element
       this.doms.parentElement.innerHTML = '';
@@ -174,10 +156,6 @@ class MeetingScheduler {
   static getOptions() {
     // do not return original instance
     return { ...globalOptions };
-  }
-
-  static setViewClass(ViewClass) {
-    this.ViewClass = ViewClass;
   }
 }
 
