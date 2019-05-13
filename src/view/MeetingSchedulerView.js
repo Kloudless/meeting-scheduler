@@ -25,9 +25,10 @@ import 'material-design-icons-iconfont/dist/material-design-icons.css';
 
 import Vue from 'vue';
 import router from 'view/router';
+import store from 'view/store';
+
 import App from 'view/components/App';
 
-import store from 'view/store';
 
 Vue.config.productionTip = false;
 Vue.use(Vuetify, {
@@ -59,9 +60,13 @@ class MeetingSchedulerView {
 
     const dom = options.element;
 
+    store.dispatch('initialize', {
+      launchOptions: options,
+    });
+
     this.vm = new Vue({
-      router,
       store,
+      router,
       components: { App },
       props: ['options'],
       propsData: {

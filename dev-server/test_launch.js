@@ -10,13 +10,14 @@ function stringify(obj) {
 
 window.setupTestLaunch = function setupTestLaunch(MeetingScheduler, appId) {
   const options = document.getElementById('options');
-  const scheduler = new MeetingScheduler();
-  window.scheduler = scheduler;
+  const schedulers = [new MeetingScheduler(), new MeetingScheduler()];
+  window.schedulers = schedulers;
 
-  window.launchMeetingScheduler = () => {
+  window.launchMeetingScheduler = (index) => {
     const launchOptions = JSON.parse(options.value);
     options.value = stringify(launchOptions);
-    scheduler.launch(launchOptions);
+    launchOptions.element = `#kloudless-meeting-scheduler${index}`;
+    schedulers[index].launch(launchOptions);
   };
 
   // set default launch options
@@ -29,8 +30,8 @@ window.setupTestLaunch = function setupTestLaunch(MeetingScheduler, appId) {
   );
 
   const setupOption = {
-    element: '#kloudless-meeting-scheduler',
     iframe: false,
+    mode: 'attach',
   };
 
   if (eventId) {

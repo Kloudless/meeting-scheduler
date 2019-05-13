@@ -7,19 +7,33 @@
   </head>
   <body>
     
-    <div id="kloudless-meeting-scheduler"></div>
+    <div id="kloudless-meeting-scheduler0"></div>
+    <div id="kloudless-meeting-scheduler1"></div>
     <h1> Test Meeting Scheduler</h1>
     <div>
-      <label>Launch options</label>
+      <p>
+        <label>
+          Launch options (
+          <span style="font-weight: bold">
+            element
+          </span>
+          option is omitted and automatically handled in this page)
+        </label>
+      </p>
       <textarea id="options"
           cols="100" rows="20" style="border: 1px solid black">{}</textarea>
     </div>
     <br/>
     <br/>
     <br/>
-    <button 
+    <button
      style="margin-left:20px;border: 1px solid black;padding: 10px;"
-     onclick="window.launchMeetingScheduler()">Launch</button>
+     onclick="window.launchMeetingScheduler(0)">Launch Scheduler</button>
+    <button
+     style="margin-left:20px;border: 1px solid black;padding: 10px;"
+     onclick="window.launchMeetingScheduler(1)">
+      Launch Another Scheduler
+    </button>
     <script type="text/javascript" src="index.js"></script>
   </body>
 </html>

@@ -33,26 +33,25 @@ function getJson(state) {
   return json;
 }
 
-const schema = {
-  id: null,
-  title: '',
-  duration: '',
-  organizer: '',
-  location: '',
-  description: '',
-  access: '',
-  timeZone: moment.tz.guess(),
-  weekday: '',
-  beginHour: '08:00:00',
-  endHour: '17:00:00',
-};
-
-export default {
+export default common.createModule({
   namespaced: true,
-  state: common.createState(schema),
+  initState() {
+    return {
+      id: null,
+      title: '',
+      duration: '',
+      organizer: '',
+      location: '',
+      description: '',
+      access: '',
+      timeZone: moment.tz.guess(),
+      weekday: '',
+      beginHour: '08:00:00',
+      endHour: '17:00:00',
+    };
+  },
   mutations: {
     update: common.mutations.update,
-    reset: common.mutations.createResetMutation(schema),
     setMeetingWindow(state, payload) {
       Object.assign(state, payload.meetingWindow);
     },
@@ -65,7 +64,8 @@ export default {
       return dispatch({
         type: 'api/request',
         options: {
-          uri: 'windows/',
+          uri: 'windows',
+          tokenType: 'account',
           method: 'post',
           data: json,
           loading: 'meetingWindow/submit',
@@ -74,4 +74,4 @@ export default {
       }, { root: true });
     },
   },
-};
+});

@@ -12,22 +12,21 @@ function getJson(state) {
   return json;
 }
 
-const schema = {
-  availableSlots: [],
-  selectedSlot: null,
-  name: '',
-  email: '',
-};
-
-export default {
+export default common.createModule({
   namespaced: true,
-  state: common.createState(schema),
+  initState() {
+    return {
+      availableSlots: [],
+      selectedSlot: null,
+      name: '',
+      email: '',
+    };
+  },
   mutations: {
     selectTimeSlot(state, payload) {
       state.selectedSlot = payload.selected ? payload.slot : null;
     },
     update: common.mutations.update,
-    reset: common.mutations.createResetMutation(schema),
     setTimeSlots(state, payload) {
       state.meetingWindowProps = Object.assign({}, payload.meetingWindow);
       state.availableSlots = payload.availableSlots || [];
@@ -36,11 +35,11 @@ export default {
   },
   actions: {
     getTimeSlots({ dispatch, commit }) {
-      // simulating service request for now
       const getMeetingWindowPromise = dispatch({
         type: 'api/request',
         options: {
           method: 'get',
+          tokenType: 'event',
           uri: 'windows/public',
           onSuccess: (responseData) => {
             commit({
@@ -57,6 +56,7 @@ export default {
           type: 'api/request',
           options: {
             method: 'get',
+            tokenType: 'event',
             uri: `windows/${meetingWindowId}/time-slots`,
             loading: 'timeSlots/timeSlots',
             onSuccess: (responseData) => {
@@ -78,6 +78,7 @@ export default {
         type: 'api/request',
         options: {
           method: 'post',
+          tokenType: 'event',
           data: json,
           uri: `windows/${meetingWindowId}/schedule`,
           loading: 'timeSlots/submit',
@@ -85,4 +86,4 @@ export default {
       }, { root: true });
     },
   },
-};
+});
