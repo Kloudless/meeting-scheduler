@@ -16,8 +16,6 @@ const htmlLangMap = {
 };
 
 function getElementData(tagName, lang, filePath) {
-  this.addDependency(filePath);
-
   let attrString = '';
   if (lang) {
     attrString += ` lang="${lang}"`;
@@ -25,19 +23,30 @@ function getElementData(tagName, lang, filePath) {
   if (tagName === 'style' && filePath.indexOf('.scoped.') > -1) {
     attrString += ' scoped';
   }
-
   const fileContents = fs.readFileSync(filePath, 'utf-8');
-
   return `\n<${tagName}${attrString}>\n${fileContents}\n</${tagName}>\n`;
 }
 
-module.exports = function vuizeLoader(source) {
+/**
+ * Combine vue template, styles, and script into one string and return
+ * @param {String} jsSource component script content
+ * @param {String} jsFilePath path to the component script file
+ *
+ * Return value: Object
+ * {
+ *   source: String, combined source code
+ *   resources: Array, a list of template or style file paths
+ *                     that are used to generate output source.
+ * }
+ */
+function combine(jsSource, jsFilePath) {
   // We need to use the source because it could have been transformed already.
   // e.g. For code coverage tracking.
-  let vueFileContents = `<script>\n${source}\n</script>\n`;
+  let vueFileContents = `<script>\n${jsSource}\n</script>\n`;
+  const includeResources = [];
 
   // Get other files
-  const resourcePath = path.resolve(__dirname, this.resourcePath);
+  const resourcePath = path.resolve(__dirname, jsFilePath);
   const dirPath = path.dirname(resourcePath);
 
   fs.readdirSync(dirPath).forEach((fname) => {
@@ -49,21 +58,18 @@ module.exports = function vuizeLoader(source) {
     const filePath = path.resolve(dirPath, fname);
     const ext = path.extname(filePath);
     if (cssLangMap[ext]) {
-      vueFileContents += getElementData.call(
-        this, 'style', cssLangMap[ext], filePath,
-      );
+      includeResources.push(filePath);
+      vueFileContents += getElementData('style', cssLangMap[ext], filePath);
     } else if (htmlLangMap[ext]) {
-      vueFileContents += getElementData.call(
-        this, 'template', htmlLangMap[ext], filePath,
-      );
+      includeResources.push(filePath);
+      vueFileContents += getElementData('template', htmlLangMap[ext], filePath);
     }
   });
 
-  // write the output to .vue file so that vue-loader could pick it up
-  // this also makes supporting source-map possible
-  this.resourcePath = this.resourcePath.replace('.js', '.vue');
-  fs.writeFileSync(this.resourcePath, vueFileContents, 'utf-8');
+  return {
+    source: vueFileContents,
+    resources: includeResources,
+  };
+}
 
-
-  return vueFileContents;
-};
+module.exports = combine;

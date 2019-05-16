@@ -1,6 +1,6 @@
 import Footer from 'view/components/Footer';
-import store from 'store';
-import router from 'router';
+import store from 'view/store';
+import router from 'view/router';
 import { getWrapper } from './helpers.js';
 
 describe('Test Footer', () => {

@@ -1,6 +1,5 @@
 const path = require('path');
 
-const loadersPath = path.resolve(__dirname, 'loaders');
 const srcPath = path.resolve(__dirname, '../src/');
 const nodeModulePath = path.resolve(__dirname, '../node_modules/');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
@@ -69,7 +68,7 @@ function generateConfig(env = {}) {
           include: [path.resolve(srcPath, 'view/components')],
           use: [
             'vue-loader',
-            path.resolve(loadersPath, 'vuize-loader.js'),
+            path.resolve(__dirname, 'vuize-loader.js'),
             'babel-loader',
           ],
         },
