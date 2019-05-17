@@ -12,6 +12,7 @@ const globalOptions = {
   baseUrl: BASE_URL,
   schedulerPath: SCHEDULER_PATH,
 };
+EventMessenger.setSchedulerOrigin(globalOptions.schedulerPath);
 
 class MeetingScheduler {
   constructor() {
@@ -181,7 +182,7 @@ class MeetingScheduler {
         if (typeof options[name] !== 'undefined' && options[name] !== null) {
           globalOptions[name] = options[name];
           if (name === 'schedulerPath') {
-            EventMessenger.setSchedulerOrigin(SCHEDULER_PATH);
+            EventMessenger.setSchedulerOrigin(globalOptions.schedulerPath);
           }
         }
       });

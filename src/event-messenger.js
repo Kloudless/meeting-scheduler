@@ -26,23 +26,13 @@ function throwError(errorMessage) {
   throw new Error(`Meeting Scheduler: ${errorMessage}`);
 }
 
-function processMessage(data, origin = null) {
+function processMessage(data) {
   if (typeof data === 'object' && typeof data.event === 'string' &&
     data.event.startsWith(MESSAGE_PREFIX)) {
     // process message data
     const { id, category, event } = data;
     if (!id) {
       throwError('Message should contain id');
-    }
-
-    // if origin is provided, the sender should be a window and we should
-    // verify if origin match (i.e. it comes from the sender)
-    if (origin) {
-      const sender = messengers[id][getOppositeCategory(category)];
-      if (!sender.location || sender.location.origin !== origin) {
-        throwError('Cannot trust this message');
-        return;
-      }
     }
 
     const messenger = messengers[id][category];
@@ -159,11 +149,6 @@ class EventMessenger {
 }
 
 window.addEventListener('message', (event) => {
-  // verify if origin exists
-  const { origin } = event;
-  if (!origin) {
-    return;
-  }
   processMessage(event.data, origin);
 });
 
