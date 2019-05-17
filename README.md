@@ -317,9 +317,16 @@ npm run dev
 npm start
 ```
 
+Then, run the Vue debug server to debug with the widget:
+```
+npm run vue-devtools
+```
+If you have problems on inspecting components, try click the refresh button on
+the right top. 
+
 When launching the dev server, the `eventUrlFormat` will be
-`http://localhost:8080/eventId=EVENT_ID` by default. You can use this URL to test
-the Schedule View locally.
+`http://localhost:8080/eventId=EVENT_ID` by default.
+You can use this URL to test the Schedule View locally.
 
 ### Building
 ```bash

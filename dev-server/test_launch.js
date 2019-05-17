@@ -30,7 +30,6 @@ window.setupTestLaunch = function setupTestLaunch(MeetingScheduler, appId) {
   );
 
   const setupOption = {
-    iframe: false,
     mode: 'attach',
   };
 
@@ -38,9 +37,7 @@ window.setupTestLaunch = function setupTestLaunch(MeetingScheduler, appId) {
     setupOption.eventId = eventId;
   } else {
     setupOption.eventUrlFormat = `${window.location.origin}/?eventId=EVENT_ID`;
-    if (appId) {
-      setupOption.appId = appId;
-    }
+    setupOption.appId = appId;
   }
   options.value = stringify(setupOption);
 };

@@ -1,12 +1,10 @@
-/* global BASE_URL VERSION */
+/* global VERSION */
 /**
  * Vuex sub module to handle Kloudless API request, record parameters for
  * API requests, and toggle flags for loading status
  */
 import axios from 'axios';
 import common from '../common.js';
-
-const baseUrl = BASE_URL;
 
 export default common.createModule({
   namespaced: true,
@@ -64,6 +62,8 @@ export default common.createModule({
           token = '';
       }
 
+      const { baseUrl } = rootState.launchOptions.globalOptions;
+
       const promise = axios({
         method: options.method,
         url: `${baseUrl}/${prefix}/${options.uri}`,
@@ -100,7 +100,7 @@ export default common.createModule({
             } else {
               message = response.statusText;
             }
-          } else if (this.request) {
+          } else if (error.request) {
             message = 'There is no response from service';
           } else {
             // The exception is thrown before making a request

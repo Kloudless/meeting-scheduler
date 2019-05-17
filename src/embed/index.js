@@ -1,5 +1,14 @@
 /* global MESSAGE_PREFIX */
+import devtools from '@vue/devtools';
 import MeetingSchedulerView from 'view/MeetingSchedulerView';
+
+/**
+ * @vue/devtools will be replace with an empty module by webpack null-loader for
+ * production build.
+ */
+if (devtools && devtools.connect) {
+  devtools.connect('localhost', 8098);
+}
 
 setTimeout(() => {
   document.getElementById('loading').remove();

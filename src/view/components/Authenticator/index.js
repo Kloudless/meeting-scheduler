@@ -21,9 +21,15 @@ export default {
     ),
     appId: state => state.launchOptions.appId,
     loading: state => state.api.loading.account,
+    baseUrl: state => state.launchOptions.globalOptions.baseUrl,
   }),
   methods: {
     onAddAccount(e) {
+      // TODO: migrate to authenticator global options
+      if (!window.Kloudless) {
+        window.Kloudless = {};
+      }
+      window.Kloudless.baseUrl = this.baseUrl;
       authenticator.stop(e.target);
       const auth = authenticator.authenticator(
         e.target,

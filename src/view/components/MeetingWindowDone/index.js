@@ -1,11 +1,9 @@
+/* global SCHEDULE_URL */
+
 import { mapState } from 'vuex';
 import Title from '../common/Title';
 import TextInput from '../common/TextInput';
 import Button from '../common/Button';
-
-// TODO: have an option to change it when building assets
-const defaultUrlFormat = 'https://kloudl.es/m/EVENT_ID';
-
 
 export default {
   name: 'MeetingWindowDone',
@@ -17,7 +15,7 @@ export default {
   data() {
     const { state } = this.$store;
     const { eventId } = this.$route.params;
-    const url = state.launchOptions.eventUrlFormat || defaultUrlFormat;
+    const url = state.launchOptions.eventUrlFormat || SCHEDULE_URL;
     return {
       shareUrl: url.replace('EVENT_ID', eventId),
     };
