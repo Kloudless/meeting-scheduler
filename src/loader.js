@@ -146,12 +146,12 @@ class MeetingScheduler {
       case 'iframe-loaded': {
         this.messenger.send({
           event: 'iframe-launch-view',
-          options: Object.assign(
-            {},
-            this.options,
+          options: {
+            ...this.options,
+            globalOptions,
             // element will be set inside iframe
-            { element: null },
-          ),
+            element: null,
+          },
         });
         return;
       }

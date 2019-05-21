@@ -35,6 +35,7 @@ class MeetingSchedulerView {
       },
       template: '<App :options="options"/>',
     });
+    this.store.dispatch('initialize', { launchOptions: options });
     this.vm.$mount();
     dom.appendChild(this.vm.$el);
     return this;
