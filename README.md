@@ -53,6 +53,7 @@ using our [zero-configuration embed script](#embed-the-widget), or
   - [destroy\(\)](#destroy)
   - [Kloudless.scheduler.setOptions\(options\)](#kloudlessschedulersetoptionsoptions)
   - [Kloudless.scheduler.getOptions\(\)](#kloudlessschedulergetoptions)
+  - [Kloudless.scheduler.version](#kloudlessschedulerversion)
 - [Contribute](#contribute)
   - [Development](#development)
   - [Building](#building)
@@ -342,6 +343,10 @@ this when hosting the embedded scheduler page. See
 ### Kloudless.scheduler.getOptions()
 
 Get the global options object.
+
+### Kloudless.scheduler.version
+
+Return version number string.
 
 ## Contribute
 
