@@ -1,4 +1,5 @@
 import MeetingWindow from 'view/components/MeetingWindow';
+import { EVENTS } from 'constants';
 import { getWrapper, createStore } from '../jest/vue-utils';
 
 describe('afterSubmit config tests', () => {
@@ -25,7 +26,7 @@ describe('afterSubmit config tests', () => {
       expect(wrapper.vm.$route.path).toBe('/meetingWindowDone/');
     } else {
       expect(store.messenger.send).toBeCalledWith({
-        event: 'close',
+        event: EVENTS.CLOSE,
       });
     }
   });

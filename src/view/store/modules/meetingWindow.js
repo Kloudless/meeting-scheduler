@@ -1,4 +1,5 @@
 import moment from 'moment-timezone';
+import { EVENTS } from 'constants';
 import common from '../common.js';
 
 function getJson(state) {
@@ -73,8 +74,12 @@ export default {
       const json = getJson(state);
       json.booking_calendar_id = rootState.account.calendarId;
 
-      return dispatch({
-        type: 'api/request',
+
+      dispatch('event', {
+        event: EVENTS.PRE_SUBMIT_MEETING_WINDOW,
+      }, { root: true });
+
+      return dispatch('api/request', {
         options: {
           uri: 'windows',
           tokenType: 'account',
@@ -89,6 +94,11 @@ export default {
         });
         commit({
           type: 'setScheduleUrl',
+        }, { root: true });
+        dispatch('event', {
+          event: EVENTS.SUBMIT_MEETING_WINDOW,
+          scheduleUrl: rootState.scheduleUrl,
+          meetingWindow: responseData,
         }, { root: true });
         // TODO: remove public_choice_token
         return responseData.public_choice_token || responseData.id;

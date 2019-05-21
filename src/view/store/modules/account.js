@@ -45,8 +45,7 @@ export default {
       } else {
         // if initialized via Meeting Scheduler param, query account detail
         // to get account name
-        setAccountPromise = dispatch({
-          type: 'api/request',
+        setAccountPromise = dispatch('api/request', {
           options: {
             baseApi: true,
             uri: '',
@@ -68,8 +67,7 @@ export default {
       }
 
       setAccountPromise.then(() => {
-        dispatch({
-          type: 'api/request',
+        dispatch('api/request', {
           options: {
             baseApi: true,
             uri: 'cal/calendars',

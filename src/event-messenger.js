@@ -10,7 +10,7 @@
  * Message data should always be a valid JSON
  */
 
-const CATEGORY = { LOADER: 'loader', VIEW: 'view' };
+import { ROLES } from 'constants';
 
 /**
  * EventMessenger / Window instances map
@@ -19,7 +19,8 @@ const CATEGORY = { LOADER: 'loader', VIEW: 'view' };
 const messengers = {};
 
 function getOppositeCategory(category) {
-  return category === CATEGORY.LOADER ? CATEGORY.VIEW : CATEGORY.LOADER;
+  return category === ROLES.LOADER
+    ? ROLES.VIEW : ROLES.LOADER;
 }
 
 function throwError(errorMessage) {
@@ -109,7 +110,7 @@ class EventMessenger {
     if (receiver && typeof receiver.postMessage === 'function') {
       // if receiver is a window, use postMessage
       let origin;
-      if (receiverCategory === CATEGORY.VIEW) {
+      if (receiverCategory === ROLES.VIEW) {
         origin = schedulerPathOrigin;
       } else {
         /** Posting to parent frame (where loader locates),
@@ -149,7 +150,7 @@ class EventMessenger {
 }
 
 window.addEventListener('message', (event) => {
-  processMessage(event.data, origin);
+  processMessage(event.data);
 });
 
-export { CATEGORY, EventMessenger };
+export default EventMessenger;

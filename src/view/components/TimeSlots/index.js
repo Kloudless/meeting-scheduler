@@ -1,5 +1,6 @@
 /* global grecaptcha */
 import moment from 'moment-timezone';
+import { EVENTS } from 'constants';
 import { mapState } from 'vuex';
 import date from '../../utils/date';
 import TextInput from '../common/TextInput';
@@ -102,7 +103,7 @@ export default {
         this.$router.push('/timeSlotsDone/');
       } else {
         this.$store.dispatch('event', {
-          event: 'close',
+          event: EVENTS.CLOSE,
         });
       }
     },

@@ -1,4 +1,5 @@
 import { mapState } from 'vuex';
+import { EVENTS } from 'constants';
 import Footer from '../Footer';
 
 export default {
@@ -44,13 +45,13 @@ export default {
      */
     this.initViews = true;
     this.$store.dispatch('event', {
-      event: 'open',
+      event: EVENTS.OPEN,
     });
   },
   methods: {
     closeDialog() {
       this.$store.dispatch('event', {
-        event: 'close',
+        event: EVENTS.CLOSE,
       });
     },
   },

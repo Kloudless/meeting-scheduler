@@ -1,4 +1,5 @@
 import TimeSlots from 'view/components/TimeSlots';
+import { EVENTS } from 'constants';
 import { getWrapper, createStore } from '../jest/vue-utils';
 
 // disable making API requests when mounting TimeSlots view
@@ -28,7 +29,7 @@ describe('afterSchedule config tests', () => {
       expect(wrapper.vm.$route.path).toBe('/timeSlotsDone/');
     } else {
       expect(store.messenger.send).toBeCalledWith({
-        event: 'close',
+        event: EVENTS.CLOSE,
       });
     }
   });

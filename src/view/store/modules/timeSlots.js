@@ -1,3 +1,4 @@
+import { EVENTS } from 'constants';
 import common from '../common.js';
 
 function getJson(state, recaptchaToken) {
@@ -36,8 +37,7 @@ export default {
   },
   actions: {
     getTimeSlots({ dispatch, commit }) {
-      const getMeetingWindowPromise = dispatch({
-        type: 'api/request',
+      const getMeetingWindowPromise = dispatch('api/request', {
         options: {
           method: 'get',
           tokenType: 'meetingWindow',
@@ -53,8 +53,7 @@ export default {
       }, { root: true });
 
       return getMeetingWindowPromise.then(meetingWindowId => (
-        dispatch({
-          type: 'api/request',
+        dispatch('api/request', {
           options: {
             method: 'get',
             tokenType: 'meetingWindow',
@@ -82,8 +81,10 @@ export default {
     submit({ dispatch, state, rootState }, payload) {
       const json = getJson(state, payload.recaptchaToken);
       const meetingWindowId = rootState.meetingWindow.id;
+      dispatch('event', {
+        event: EVENTS.PRE_CONFIRM_SCHEDULE,
+      }, { root: true });
 
-      // simulating service request for now
       return dispatch({
         type: 'api/request',
         options: {
@@ -93,7 +94,13 @@ export default {
           uri: `windows/${meetingWindowId}/schedule`,
           loading: 'timeSlots/submit',
         },
-      }, { root: true });
+      }, { root: true }).then((responseData) => {
+        dispatch('event', {
+          event: EVENTS.CONFIRM_SCHEDULE,
+          schedule: responseData,
+        }, { root: true });
+        return responseData;
+      });
     },
   },
 };
