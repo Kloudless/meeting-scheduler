@@ -6,7 +6,6 @@
 const bundledModules = [
   '@kloudless/authenticator',
   'vuetify',
-  'compact-timezone-list',
 ];
 
 module.exports = {
@@ -19,7 +18,6 @@ module.exports = {
    * 2. 'transformIgnorePatterns' option in jest.conf.js
    */
   ignorePaths: [
-    // ignore everything in node_modules except dependencies used in bundle:
     new RegExp(`node_modules/(?!(${bundledModules.join('|')}))`),
   ],
   /**

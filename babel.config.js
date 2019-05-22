@@ -41,9 +41,6 @@ module.exports = {
     [
       'module-resolver', {
         root: common.resolvePaths,
-        alias: {
-          vue: 'vue/dist/vue.esm.js',
-        },
       },
     ],
     [
@@ -52,4 +49,18 @@ module.exports = {
     ],
   ],
   ignore: common.ignorePaths,
+  env: {
+    development: {
+      plugins: [
+        [
+          'module-resolver', {
+            root: common.resolvePaths,
+            alias: {
+              vue: 'vue/dist/vue.esm.js',
+            },
+          },
+        ],
+      ],
+    },
+  },
 };
