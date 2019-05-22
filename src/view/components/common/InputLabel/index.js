@@ -1,7 +1,10 @@
 
 export default {
   name: 'InputLabel',
-  props: [
-    'label',
-  ],
+  props: {
+    tooltip: {
+      type: String,
+      default: '',
+    },
+  },
 };

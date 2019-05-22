@@ -1,4 +1,15 @@
+@import "../../_variables.scss";
+
+.tooltip-container {
+  right: 40px;
+}
+
 div.input-label {
   font-size: 12px;
   text-transform: uppercase;
+  white-space: nowrap;
+
+  .v-btn.v-btn--icon {
+    color: $success;
+  }
 }

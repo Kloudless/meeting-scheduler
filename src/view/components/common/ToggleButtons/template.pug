@@ -1,9 +1,6 @@
-InputField(:label="label")
+InputField(:label="label", :tooltip="tooltip").toggle-buttons
   v-btn-toggle(v-model="selected", mandatory).my-1
     template(v-for="option in options")
-      v-btn(depressed, outline, :value="option.value", color="primary",
-            @click="onClick($event.currentTarget.value)").toggle-buttons-button
-        div.btn-content
-          div.font-weight-bold.text {{ option.text }}
-          div.font-weight-bold.caption
-            | {{ option.caption }}
+      ToggleButton(
+        :value="option.value", :text="option.text", :caption="option.caption",
+        @click="onClick($event.currentTarget.value)")

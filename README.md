@@ -688,6 +688,11 @@ for scheduling events with the Kloudless Calendar.
 | description | string | The event description. | Yes | No |
 | availability | string | A list of Availability objects. See [Availability](#availability) for details. | Yes | Yes | 
 | time_zone | string | The event IANA time_zone. ex: America/Los_Angeles | Yes | Yes | 
+| availability_range | integer | Indicate the number of days from the current point of time to show time slots. Defaults to 30. | Yes | No | 
+| time_slot_interval | integer | Indicate the number of minutes of time between each time slots. Defaults to 30. | Yes | No | 
+| time_buffer_before | integer | Indicate the number of minutes of time buffer before each schedule event. Defaults to 0. | Yes | No | 
+| time_buffer_after | integer | Indicate the number of minutes of time buffer after each schedule event. Defaults to 0. | Yes | No | 
+
 
 
 #### Availability 
@@ -697,12 +702,14 @@ It is located within the [Meeting Window](#meeting-window-object) object.
 
 | Property | Type | Description | Writable | Required |
 | --- | --- | --- | --- | --- |
-| start | string | The ISO 8601 timestamp with offset indicating the time window's start time. | Yes | Yes |
-| end | string | The ISO 8601 timestamp with offset indicating the time window's end time. | Yes | Yes |
-| recurring | object | The recurring constraint for the available time. | Yes | No |
-| recurring.weekday | string | The weekdays for recurring available time. Accept 3 characters abbreviations. Comma as delimiter. ex: "MON, TUE" (available on every Monday and Tuesday) | Yes | Yes |
-| recurring.month | string | Currently not support. | No | No |
-| recurring.day | string | Currently not support. | No | No |
+| end_repeat | string | A ISO 8601 date or `'NEVER'`. The available_time rules will be applied until this date. Defaults to `'NEVER'`, means the rules are applied forever. | Yes | No |
+| available_times | array | A list of available rules. | Yes | Yes |
+| available_times[].start | string | The ISO 8601 timestamp with offset indicating the time window's start time. | Yes | Yes |
+| available_times[].end | string | The ISO 8601 timestamp with offset indicating the time window's end time. | Yes | Yes |
+| available_times[].recurring | object | The recurring constraint for the available time. | Yes | No |
+| available_times[].recurring.weekday | string | The weekdays for recurring available time. Accept 3 characters abbreviations. Comma as delimiter. ex: "MON, TUE" (available on every Monday and Tuesday) | Yes | Yes |
+| available_times[].recurring.month | string | Currently not support. | No | No |
+| available_times[].recurring.day | string | Currently not support. | No | No |
 
 ### Authentication
 
@@ -753,6 +760,10 @@ List the user's Meeting Windows. The user is identified by the bearer token.
                 }
             ], 
             "time_zone": "America/Los_Angeles",
+            "availability_range": 60,
+            "time_slot_interval": 30,
+            "time_buffer_before": 0,
+            "time_buffer_after": 0,
             "api": "meeting_scheduler"
         }
     ],
@@ -791,6 +802,10 @@ Retrieve the meeting window via meeting window ID.
         }
     ], 
     "time_zone": "America/Los_Angeles",
+    "availability_range": 60,
+    "time_slot_interval": 30,
+    "time_buffer_before": 0,
+    "time_buffer_after": 0,
     "api": "meeting_scheduler"
 }
 ```
@@ -820,7 +835,11 @@ Create a Meeting Window.
             }
         }
     ], 
-    "time_zone": "America/Los_Angeles"
+    "time_zone": "America/Los_Angeles",
+    "availability_range": 60,
+    "time_slot_interval": 30,
+    "time_buffer_before": 0,
+    "time_buffer_after": 0
 }
 ```
 
@@ -848,6 +867,10 @@ Create a Meeting Window.
         }
     ], 
     "time_zone": "America/Los_Angeles",
+    "availability_range": 60,
+    "time_slot_interval": 30,
+    "time_buffer_before": 0,
+    "time_buffer_after": 0,
     "api": "meeting_scheduler"
 }
 ```
@@ -877,7 +900,11 @@ Update the meeting window.
             }
         }
     ], 
-    "time_zone": "America/Los_Angeles"
+    "time_zone": "America/Los_Angeles",
+    "availability_range": 60,
+    "time_slot_interval": 30,
+    "time_buffer_before": 0,
+    "time_buffer_after": 0
 }
 ```
 
@@ -904,6 +931,10 @@ Update the meeting window.
         }
     ], 
     "time_zone": "America/Los_Angeles",
+    "availability_range": 60,
+    "time_slot_interval": 30,
+    "time_buffer_before": 0,
+    "time_buffer_after": 0,
     "api": "meeting_scheduler"
 }
 ```

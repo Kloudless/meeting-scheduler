@@ -1,0 +1,13 @@
+InputField(:label="label").weekday-picker
+  v-autocomplete(v-model="selectedWeekdays", placeholder="Select Weekdays",
+           multiple, chips, :rules="[validator]", :items="weekdays",
+           @input="input")
+    template(v-slot:prepend-item="")
+      template(v-for="preset in presets")
+        v-list-tile(ripple, @click='togglePreset(preset)')
+          v-list-tile-action
+            v-icon(:color="selectedPreset === preset.value ? 'primary' : ''")
+              | {{ selectedPreset === preset.value ? 'check_box' : 'check_box_outline_blank'}}
+          v-list-tile-content
+            v-list-tile-title {{ preset.text }}
+      v-divider.mt-2

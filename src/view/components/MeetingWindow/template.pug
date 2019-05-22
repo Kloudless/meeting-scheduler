@@ -15,16 +15,14 @@ div
           @update="updateInput")
         TextInput(name="description" label="Description", @update="updateInput",
           :value="meetingWindow.description", placeholder=" ")
-        ToggleButtons(
+        DurationField(
           label="Event Duration *" name="duration",
-          :options="options.durations", :value="meetingWindow.duration",
-          @click="updateInput")
+          :durations="options.durations", :value="meetingWindow.duration",
+          @change="updateInput")
 
       Accordion(title="2. Add Event Availability")
-        ToggleButtons(
-          label="Available Days *" name="weekday",
-          :options="options.availabilities", :value="meetingWindow.weekday",
-          @click="updateInput")
+        WeekdayPicker(label='Available Days *', name="weekday",
+                      @change="updateInput")
         InputLabel Available Hours *
         v-container(grid-list-xs)
           v-layout(row, wrap, align-center)
@@ -38,6 +36,40 @@ div
               Dropdown(label="", :options="endHourOptions",
                 name="endHour", :value="meetingWindow.endHour",
                 @update="updateInput")
+
+        Accordion(title="Advanced Settings" :expanded="false", small)
+          v-layout(row, wrap)
+            v-flex(xs-12)
+              ToggleButtons(
+                label="Time Slot Increments *" name="timeSlotInterval",
+                tooltip="Show Time Slots every 15, 30, 45, or 60 minutes.",
+                :options="options.timeSlotIntervals",
+                :value="meetingWindow.timeSlotInterval",
+                @click="updateInput")
+          v-layout(row)
+            v-flex(xs5)
+              NumberField(
+                name="availabilityRange" label="Availability Range *",
+                tooltip="Time Slots are shown up to the next 1–90 days.",
+                placeholder="30",
+                :value="meetingWindow.availabilityRange", :min=1, :max=90,
+                suffix="days", @change="updateInput")
+          v-layout(row, wrap)
+            v-flex(xs5)
+              NumberField(
+                name="timeBufferBefore" label="Buffer Before *",
+                tooltip="Preserve 0-99 minutes buffer before each scheduled event.",
+                placeholder="0",
+                :value="meetingWindow.timeBufferBefore", :min=0, :max=99,
+                suffix="mins", @change="updateInput")
+            v-flex(xs1)
+            v-flex(xs5)
+              NumberField(
+                name="timeBufferAfter" label="Buffer After *",
+                tooltip="Preserve 0-99 minutes buffer after each scheduled event."
+                placeholder="0",
+                :value="meetingWindow.timeBufferAfter", :min=0, :max=99,
+                suffix="mins", @change="updateInput")
 
       Accordion(:title="calendarSectionTitle")
         Authenticator(:isUpdating="isUpdating")
@@ -54,3 +86,4 @@ div
         Button.action-delete(
             v-if="isUpdating" @click="deleteWindow", color="error")
           | Delete Event
+

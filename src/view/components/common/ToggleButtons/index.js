@@ -1,10 +1,12 @@
 
 import InputField from '../InputField';
+import ToggleButton from '../ToggleButton';
 
 export default {
   name: 'ToggleButtons',
   components: {
     InputField,
+    ToggleButton,
   },
   data() {
     let value;
@@ -23,9 +25,28 @@ export default {
       selected: value,
     };
   },
-  props: [
-    'name', 'value', 'options', 'label', 'click',
-  ],
+  props: {
+    name: {
+      type: String,
+      required: true,
+    },
+    value: {
+      type: String,
+      required: true,
+    },
+    options: {
+      type: Array,
+      required: true,
+    },
+    label: {
+      type: String,
+      required: true,
+    },
+    tooltip: {
+      type: String,
+      default: '',
+    },
+  },
   methods: {
     onClick(value) {
       this.$emit('click', { name: this.name, value });

@@ -8,6 +8,9 @@ import ToggleButtons from '../common/ToggleButtons';
 import Dropdown from '../common/Dropdown';
 import InputLabel from '../common/InputLabel';
 import Button from '../common/Button';
+import DurationField from '../common/DurationField';
+import NumberField from '../common/NumberField';
+import WeekdayPicker from '../common/WeekdayPicker';
 import { options } from '../../utils/fixtures.js';
 
 export default {
@@ -21,6 +24,9 @@ export default {
     Accordion,
     InputLabel,
     Button,
+    DurationField,
+    NumberField,
+    WeekdayPicker,
   },
   data() {
     return {

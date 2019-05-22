@@ -29,6 +29,13 @@ import Vuetify, {
   VFlex,
   VAutocomplete,
   VProgressCircular,
+  VInput,
+  VDivider,
+  VListTile,
+  VListTileTitle,
+  VListTileAction,
+  VListTileContent,
+  VTooltip,
 } from 'vuetify/lib';
 import Vue from 'vue';
 
@@ -53,6 +60,13 @@ Vue.use(Vuetify, {
     VFlex,
     VAutocomplete,
     VProgressCircular,
+    VInput,
+    VDivider,
+    VListTile,
+    VListTileTitle,
+    VListTileAction,
+    VListTileContent,
+    VTooltip,
   },
   /**
    * Disable Vuetify's theme options because we need to customize

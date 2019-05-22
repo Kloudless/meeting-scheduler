@@ -14,5 +14,9 @@ export default {
       type: Boolean,
       default: true,
     },
+    small: {
+      type: Boolean,
+      default: false,
+    },
   },
 };
