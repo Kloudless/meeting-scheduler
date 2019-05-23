@@ -6,14 +6,15 @@
   "author": "Kloudless <hello@kloudless.com> (https://kloudless.com)",
   "scripts": {
     "vue-devtools": "vue-devtools",
-    "dev": "SCHEDULER_PATH='embed/index.html' webpack-dev-server --inline --progress --config config/webpack.dev.conf.js",
+    "dev": "npm run vuize && SCHEDULER_PATH='http://localhost:8081/embed/index.html' node ./dev-server/dev-server.js",
     "start": "npm run dev",
     "unit": "jest --config test/unit/jest/jest.conf.js --coverage",
-    "test": "npm run unit",
+    "test": "npm run vuize && npm run unit",
     "test-clean": "jest --clearCache",
     "lint": "eslint --ext .js,.vue src test/unit/specs",
-    "build": "rm -rf dist && webpack --color --progress --config ./config/webpack.prod.conf.js",
-    "dist-test": "http-server --cors"
+    "build": "rm -rf dist && npm run vuize && webpack --color --progress --config ./config/webpack.prod.conf.js",
+    "dist-test": "node ./test/dist-test-server.js",
+    "vuize": "node ./config/vuize"
   },
   "dependencies": {},
   "devDependencies": {
@@ -24,7 +25,7 @@
     "@vue/devtools": "5.1.0",
     "@vue/test-utils": "1.0.0-beta.27",
     "autoprefixer": "9.4.3",
-    "axios": "0.18.0",
+    "axios": "0.19.0",
     "babel-core": "7.0.0-bridge.0",
     "babel-eslint": "10.0.1",
     "babel-jest": "24.7.1",
@@ -43,10 +44,9 @@
     "eslint-plugin-node": "8.0.0",
     "eslint-plugin-promise": "4.0.1",
     "eslint-plugin-standard": "4.0.0",
+    "express": "4.17.0",
     "file-loader": "3.0.1",
-    "friendly-errors-webpack-plugin": "1.6.1",
     "html-webpack-plugin": "3.2.0",
-    "http-server": "0.11.1",
     "jest": "24.7.1",
     "jest-serializer-vue": "2.0.2",
     "jest-vue-preprocessor": "1.5.0",
@@ -56,6 +56,7 @@
     "moment": "2.22.2",
     "moment-timezone": "0.5.21",
     "node-sass": "4.11.0",
+    "node-watch": "0.6.2",
     "null-loader": "1.0.0",
     "postcss-discard-font-face": "3.0.0",
     "postcss-loader": "3.0.0",
@@ -76,7 +77,8 @@
     "webpack": "4.28.2",
     "webpack-bundle-analyzer": "3.3.2",
     "webpack-cli": "3.1.2",
-    "webpack-dev-server": "3.1.14"
+    "webpack-dev-middleware": "3.7.0",
+    "webpack-hot-middleware": "2.25.0"
   },
   "engines": {
     "node": ">= 10.0.0",

@@ -4,9 +4,8 @@
  * API requests, and toggle flags for loading status
  */
 import axios from 'axios';
-import common from '../common.js';
 
-export default common.createModule({
+export default {
   namespaced: true,
   initState() {
     return {
@@ -127,4 +126,4 @@ export default common.createModule({
         });
     },
   },
-});
+};

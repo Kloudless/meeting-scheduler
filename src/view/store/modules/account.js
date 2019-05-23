@@ -1,7 +1,4 @@
-import common from '../common';
-
-
-export default common.createModule({
+export default {
   namespaced: true,
   initState() {
     return {
@@ -99,4 +96,4 @@ export default common.createModule({
       });
     },
   },
-});
+};

@@ -2,7 +2,7 @@ import './vue-setup';
 import Vue from 'vue';
 import router from 'view/router';
 import App from 'view/components/App';
-import initStore from 'view/store';
+import { initStore } from 'view/store';
 import { CATEGORY, EventMessenger } from 'event-messenger';
 
 class MeetingSchedulerView {

@@ -33,7 +33,7 @@ function getJson(state) {
   return json;
 }
 
-export default common.createModule({
+export default {
   namespaced: true,
   initState() {
     return {
@@ -79,4 +79,4 @@ export default common.createModule({
       }, { root: true });
     },
   },
-});
+};

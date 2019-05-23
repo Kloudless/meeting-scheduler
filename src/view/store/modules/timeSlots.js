@@ -13,7 +13,7 @@ function getJson(state, recaptchaToken) {
   return json;
 }
 
-export default common.createModule({
+export default {
   namespaced: true,
   initState() {
     return {
@@ -96,4 +96,4 @@ export default common.createModule({
       }, { root: true });
     },
   },
-});
+};

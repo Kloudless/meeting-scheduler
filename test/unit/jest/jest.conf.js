@@ -4,17 +4,17 @@ const common = require('../../../config/common');
 module.exports = {
   rootDir: path.resolve(__dirname, '../../../'),
   moduleFileExtensions: [
-    'js',
     'vue',
+    'js',
   ],
   transform: {
-    'components/.*index\\.js$':
-      '<rootDir>/test/unit/jest/vue-separate-jest-transform',
+    '.*\\.(vue)$': 'jest-vue-preprocessor',
+    '.*\\.(css|scss)$': '<rootDir>/test/unit/jest/null-transformer',
     '.*\\.(js)$': 'babel-jest',
   },
   transformIgnorePatterns: common.ignorePaths.map(regExp => regExp.source),
   snapshotSerializers: ['<rootDir>/node_modules/jest-serializer-vue'],
-  setupFiles: ['<rootDir>/test/unit/setup'],
+  setupFiles: ['<rootDir>/test/unit/jest/setup'],
   coverageDirectory: '<rootDir>/test/unit/coverage',
   collectCoverageFrom: [
     'src/**/*.{js,vue}',

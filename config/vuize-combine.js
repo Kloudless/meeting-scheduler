@@ -32,18 +32,10 @@ function getElementData(tagName, lang, filePath) {
  * @param {String} jsSource component script content
  * @param {String} jsFilePath path to the component script file
  *
- * Return value: Object
- * {
- *   source: String, combined source code
- *   resources: Array, a list of template or style file paths
- *                     that are used to generate output source.
- * }
+ * Return value: combined source code
  */
 function combine(jsSource, jsFilePath) {
-  // We need to use the source because it could have been transformed already.
-  // e.g. For code coverage tracking.
   let vueFileContents = `<script>\n${jsSource}\n</script>\n`;
-  const includeResources = [];
 
   // Get other files
   const resourcePath = path.resolve(__dirname, jsFilePath);
@@ -58,18 +50,13 @@ function combine(jsSource, jsFilePath) {
     const filePath = path.resolve(dirPath, fname);
     const ext = path.extname(filePath);
     if (cssLangMap[ext]) {
-      includeResources.push(filePath);
       vueFileContents += getElementData('style', cssLangMap[ext], filePath);
     } else if (htmlLangMap[ext]) {
-      includeResources.push(filePath);
       vueFileContents += getElementData('template', htmlLangMap[ext], filePath);
     }
   });
 
-  return {
-    source: vueFileContents,
-    resources: includeResources,
-  };
+  return vueFileContents;
 }
 
 module.exports = combine;
