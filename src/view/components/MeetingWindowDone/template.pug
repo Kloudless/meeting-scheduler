@@ -4,7 +4,11 @@ div
     | You have successfully created the event 
     span.success--text {{ meetingWindow.title }}
   div.mt-5.mb-3.subheading.text-xs-left.accent--text.opacity-4 SHARE YOUR EVENT
-  TextInput(label=" ", readonly, :value="shareUrl").mb-5
-  Button(color="primary", @click="createMeetingWindow").mt-5
-    | Create Another Event
+  TextInput(label=" ", readonly, :value="scheduleUrl").mb-5
+  div.mt-5
+    template(v-for="action in launchOptions.afterSubmit.actions")
+      Button(
+        v-if="actionButtonText[action]",
+        @click="buttonAction(action)")
+        | {{ actionButtonText[action] }}
   

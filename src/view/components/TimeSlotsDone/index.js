@@ -14,18 +14,30 @@ export default {
   data() {
     return {
       timeZone: moment.tz.guess(),
+      actionButtonText: {
+        close: 'Finish',
+      },
     };
   },
   computed: mapState({
     meetingWindow: state => state.meetingWindow,
     timeSlots: state => state.timeSlots,
     isModal: state => state.launchOptions.mode === 'modal',
+    launchOptions: state => state.launchOptions.schedule,
   }),
   props: [
   ],
   methods: {
     formatDate(format, dateStr) {
       return date(format, dateStr, this.timeZone);
+    },
+    close() {
+      this.$store.dispatch('event', {
+        event: 'close',
+      });
+    },
+    buttonAction(action) {
+      this[action]();
     },
   },
 };

@@ -21,23 +21,25 @@ window.setupTestLaunch = function setupTestLaunch(MeetingScheduler, appId) {
   };
 
   // set default launch options
-  let eventId = null;
-  window.location.href.replace(
-    /[?&]eventId=([a-zA-Z0-9]+)/,
-    (match, p1) => {
-      eventId = p1;
-    },
-  );
+  const params = MeetingScheduler.getQueryParams();
 
-  const setupOption = {
+  const optionsInput = {
     mode: 'attach',
   };
 
-  if (eventId) {
-    setupOption.eventId = eventId;
-  } else {
-    setupOption.eventUrlFormat = `${window.location.origin}/?eventId=EVENT_ID`;
-    setupOption.appId = appId;
+  if (appId) {
+    optionsInput.appId = appId;
   }
-  options.value = stringify(setupOption);
+
+  if (params.meetingWindowId) {
+    optionsInput.schedule = {
+      meetingWindowId: params.meetingWindowId,
+    };
+  } else {
+    optionsInput.setup = {
+      scheduleUrl:
+        `${window.location.origin}/?meetingWindowId=MEETING_WINDOW_ID`,
+    };
+  }
+  options.value = stringify(optionsInput);
 };

@@ -54,8 +54,8 @@ export default {
         case 'account':
           ({ token } = account);
           break;
-        case 'event':
-          token = rootState.launchOptions.eventId;
+        case 'meetingWindow':
+          token = rootState.launchOptions.schedule.meetingWindowId;
           break;
         default:
           token = '';

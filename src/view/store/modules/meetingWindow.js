@@ -49,6 +49,8 @@ export default {
       beginHour: '08:00:00',
       endHour: '17:00:00',
       recaptchaSiteKey: null,
+      // TODO: remove public_choice_token
+      public_choice_token: '',
     };
   },
   mutations: {
@@ -62,7 +64,12 @@ export default {
     },
   },
   actions: {
-    submit({ state, rootState, dispatch }) {
+    submit({
+      state,
+      rootState,
+      commit,
+      dispatch,
+    }) {
       const json = getJson(state);
       json.booking_calendar_id = rootState.account.calendarId;
 
@@ -74,9 +81,18 @@ export default {
           method: 'post',
           data: json,
           loading: 'meetingWindow/submit',
-          onSuccess: responseData => responseData.public_choice_token,
         },
-      }, { root: true });
+      }, { root: true }).then((responseData) => {
+        commit({
+          type: 'setMeetingWindow',
+          meetingWindow: responseData,
+        });
+        commit({
+          type: 'setScheduleUrl',
+        }, { root: true });
+        // TODO: remove public_choice_token
+        return responseData.public_choice_token || responseData.id;
+      });
     },
   },
 };

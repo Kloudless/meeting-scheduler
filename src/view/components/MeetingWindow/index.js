@@ -35,6 +35,7 @@ export default {
     meetingWindow: state => state.meetingWindow,
     hasCalendar: state => Boolean(state.account.calendarId),
     loading: state => state.api.loading.meetingWindow,
+    launchOptions: state => state.launchOptions.setup,
   }),
   props: [
   ],
@@ -49,14 +50,22 @@ export default {
         this.updateHourOptions();
       }
     },
+    afterSubmit() {
+      const { afterSubmit } = this.launchOptions;
+      if (afterSubmit.showResult) {
+        this.$router.push('/meetingWindowDone/');
+      } else {
+        this.$store.dispatch('event', {
+          event: 'close',
+        });
+      }
+    },
     submit() {
       if (!this.$refs.form.validate()) {
         return;
       }
       const promise = this.$store.dispatch('meetingWindow/submit');
-      promise.then((eventId) => {
-        this.$router.push(`/meetingWindowDone/${eventId}`);
-      });
+      promise.then(this.afterSubmit);
     },
     updateHourOptions() {
       const hourOptions = this.options.hours;

@@ -12,6 +12,7 @@ Vue.use(Vuex);
 export const schema = {
   state: {
     launchOptions: {},
+    scheduleUrl: '',
   },
   modules: {
     account,
@@ -22,6 +23,12 @@ export const schema = {
   mutations: {
     setLaunchOptions(state, payload) {
       state.launchOptions = Object.assign({}, payload.launchOptions);
+    },
+    setScheduleUrl(state) {
+      const meetingWindowId = state.meetingWindow.id;
+      state.scheduleUrl = state.launchOptions.setup.scheduleUrl.replace(
+        'MEETING_WINDOW_ID', meetingWindowId,
+      );
     },
   },
   actions: {

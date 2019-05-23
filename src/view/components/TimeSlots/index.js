@@ -32,6 +32,7 @@ export default {
     meetingWindow: state => state.meetingWindow,
     timeSlots: state => state.timeSlots,
     loading: state => state.api.loading.timeSlots,
+    launchOptions: state => state.launchOptions.schedule,
     slotGroups(state) {
       const availableSlots = state.timeSlots.availableSlots || [];
 
@@ -54,7 +55,6 @@ export default {
     if (!this.meetingWindow.id) {
       this.$store.dispatch({
         type: 'timeSlots/getTimeSlots',
-        eventId: this.$route.params.eventId,
       }).then(() => {
         if (this.meetingWindow.recaptchaSiteKey) {
           this.loadRecaptchaScript().then(() => {
@@ -96,13 +96,21 @@ export default {
         value: event.value,
       });
     },
+    afterSubmit() {
+      const { afterSchedule } = this.launchOptions;
+      if (afterSchedule.showResult) {
+        this.$router.push('/timeSlotsDone/');
+      } else {
+        this.$store.dispatch('event', {
+          event: 'close',
+        });
+      }
+    },
     submit(recaptchaToken) {
       const promise = this.$store.dispatch('timeSlots/submit', {
         recaptchaToken,
       });
-      promise.then(() => {
-        this.$router.push('/timeSlotsDone/');
-      });
+      promise.then(() => this.afterSubmit());
     },
     /**
      * Load reCaptcha script

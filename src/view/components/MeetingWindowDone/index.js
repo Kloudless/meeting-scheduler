@@ -1,5 +1,3 @@
-/* global SCHEDULE_URL */
-
 import { mapState } from 'vuex';
 import Title from '../common/Title';
 import TextInput from '../common/TextInput';
@@ -14,23 +12,34 @@ export default {
   },
   data() {
     const { state } = this.$store;
-    const { eventId } = this.$route.params;
-    const url = state.launchOptions.eventUrlFormat || SCHEDULE_URL;
     return {
-      shareUrl: url.replace('EVENT_ID', eventId),
+      scheduleUrl: state.scheduleUrl,
+      actionButtonText: {
+        close: 'Finish',
+        restart: 'Create Another Event',
+      },
     };
   },
   computed: mapState({
     meetingWindow: state => state.meetingWindow,
+    launchOptions: state => state.launchOptions.setup,
   }),
   props: [
   ],
   methods: {
-    createMeetingWindow() {
+    restart() {
       this.$store.commit({
         type: 'meetingWindow/reset',
       });
       this.$router.push('/meetingWindow/');
+    },
+    close() {
+      this.$store.dispatch('event', {
+        event: 'close',
+      });
+    },
+    buttonAction(action) {
+      this[action]();
     },
   },
 };

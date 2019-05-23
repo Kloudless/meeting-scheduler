@@ -29,11 +29,7 @@ class MeetingSchedulerView {
       router,
       store: this.store,
       components: { App },
-      props: ['options'],
-      propsData: {
-        options,
-      },
-      template: '<App :options="options"/>',
+      template: '<App/>',
     });
     this.store.dispatch('initialize', { launchOptions: options });
     this.vm.$mount();

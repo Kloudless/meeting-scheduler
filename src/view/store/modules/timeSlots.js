@@ -40,7 +40,7 @@ export default {
         type: 'api/request',
         options: {
           method: 'get',
-          tokenType: 'event',
+          tokenType: 'meetingWindow',
           uri: 'windows/public',
           onSuccess: (responseData) => {
             commit({
@@ -57,7 +57,7 @@ export default {
           type: 'api/request',
           options: {
             method: 'get',
-            tokenType: 'event',
+            tokenType: 'meetingWindow',
             uri: `windows/${meetingWindowId}/time-slots`,
             loading: 'timeSlots/timeSlots',
             onSuccess: (responseData) => {
@@ -88,7 +88,7 @@ export default {
         type: 'api/request',
         options: {
           method: 'post',
-          tokenType: 'event',
+          tokenType: 'meetingWindow',
           data: json,
           uri: `windows/${meetingWindowId}/schedule`,
           loading: 'timeSlots/submit',
