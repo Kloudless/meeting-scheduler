@@ -14,12 +14,12 @@ import { ROLES } from 'constants';
 
 /**
  * EventMessenger / Window instances map
- * id: {[category]: [instance]}
+ * id: {[role]: [instance]}
  */
 const messengers = {};
 
-function getOppositeCategory(category) {
-  return category === ROLES.LOADER
+function getOppositeRole(role) {
+  return role === ROLES.LOADER
     ? ROLES.VIEW : ROLES.LOADER;
 }
 
@@ -27,68 +27,77 @@ function throwError(errorMessage) {
   throw new Error(`Meeting Scheduler: ${errorMessage}`);
 }
 
-function processMessage(data) {
-  if (typeof data === 'object' && typeof data.event === 'string' &&
-    data.event.startsWith(MESSAGE_PREFIX)) {
+// export for unit test
+export function processMessage(data) {
+  if (
+    typeof data === 'object' && data !== null && typeof data.event === 'string'
+    && data.event.startsWith(MESSAGE_PREFIX)) {
     // process message data
-    const { id, category, event } = data;
+    const { id, role, event } = data;
     if (!id) {
       throwError('Message should contain id');
     }
 
-    const messenger = messengers[id][category];
+    if (!role) {
+      throwError('Message should contain object role');
+    }
 
-    if (messenger.onMessage) {
+    const messenger = messengers[id] ? messengers[id][role] : undefined;
+
+    if (messenger && messenger.onMessage) {
       // Construct message sent to onMessage.
       // Extract event name and delete fields only used by EventMessenger
       const message = Object.assign({}, data);
       message.event = event.replace(MESSAGE_PREFIX, '');
-      delete message.category;
+      delete message.role;
       delete message.id;
       messenger.onMessage(message);
     } else {
-      throwError(`Cannot find messenger for ${category} id ${id}`);
+      throwError(`Cannot find messenger for ${role} id ${id}`);
     }
   }
 }
 
-// record the host of the scheduler view page for postMessage origin argument.
-let schedulerPathOrigin;
+const origins = {};
 
-class EventMessenger {
-  static setSchedulerOrigin(schedulerPath) {
+export class EventMessenger {
+  /**
+   * @param {enum} targetRole ROLES.LOADER or ROLES.VIEW
+   * @param {string} targetPath target window's path
+   */
+  static setTargetOrigin(targetRole, targetPath) {
     try {
-      schedulerPathOrigin = new URL(schedulerPath).origin;
+      origins[targetRole] = new URL(targetPath).origin;
     } catch (exception) {
       /**
-       * If schedulerPath cannot be parsed into a URL object, assume
+       * If targetPath cannot be parsed into a URL object, assume
        * it is a relative path or malformed.
        * We don't need to set origin in these cases
        */
-      schedulerPathOrigin = undefined;
+      origins[targetRole] = undefined;
     }
   }
 
   /**
    *
    * id: scheduler id
-   * category: object category that this messenger is bound to, should be
-   *   a value from category enum
+   * role: object role that this messenger is bound to, should be
+   *   a value from role enum
    * onMessage: message handler function when a message is received
    * iframe: optional iframe object, if specified, it will be save
-   *  as a messenger of the opposite category.
+   *  as a messenger of the opposite role.
    *  e.x. if objCategory=LOADER, this iframe will be saved as a VIEW messenger
    */
   constructor(options) {
     const {
       id,
-      category,
+      role,
       onMessage,
     } = options;
     if (typeof messengers[id] === 'undefined') {
       messengers[id] = {};
     }
-    this.category = category;
+    this.role = role;
     this.onMessage = onMessage;
     this.id = id;
   }
@@ -97,31 +106,22 @@ class EventMessenger {
    * Send message to receiver
    * @param {Object} data
    *   should contain `event` key
+   * @param {string} targetOrigin
+   *   override targetOrigin, used by view to send initial event
    */
-  send(data) {
+  send(data, targetOrigin = undefined) {
     const { id } = this;
-    const receiverCategory = getOppositeCategory(this.category);
-    const message = { ...data, id, category: receiverCategory };
+    const receiverRole = getOppositeRole(this.role);
+    const message = { ...data, id, role: receiverRole };
     // attach message prefix;
     message.event = `${MESSAGE_PREFIX}${message.event}`;
-    const receiver = messengers[id][receiverCategory];
+    const receiver = messengers[id][receiverRole];
 
     // receiver instanceof Window does not work in chrome
     if (receiver && typeof receiver.postMessage === 'function') {
-      // if receiver is a window, use postMessage
-      let origin;
-      if (receiverCategory === ROLES.VIEW) {
-        origin = schedulerPathOrigin;
-      } else {
-        /** Posting to parent frame (where loader locates),
-         * assume parent is trusted since the view can only be
-         * launched by a loader
-         */
-        origin = '*';
-      }
-      receiver.postMessage(message, origin);
+      receiver.postMessage(message, targetOrigin || origins[receiverRole]);
     } else {
-      throwError(`Cannot find EventMessenger for ${receiverCategory} id ${id}`);
+      throwError(`Cannot find EventMessenger for ${receiverRole} id ${id}`);
     }
   }
 
@@ -130,10 +130,10 @@ class EventMessenger {
    * @param {Window} receiver
    */
   connect(receiver) {
-    const { id, category } = this;
+    const { id, role } = this;
     messengers[id] = {
-      [category]: this,
-      [getOppositeCategory(category)]: receiver,
+      [role]: this,
+      [getOppositeRole(role)]: receiver,
     };
   }
 

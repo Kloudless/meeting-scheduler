@@ -50,4 +50,43 @@ describe('meetingWindow module events tests', () => {
       );
     }
   });
+
+  test.each([
+    ['submit event should contain account token', true],
+    ['submit event should not contain account token if loader is not in'
+     + 'trusted domain', false],
+  ])('%s', async (_, loaderTrusted) => {
+    const { store } = createStore({
+      state: {
+        launchOptions: {
+          setup: {
+            scheduleUrl: 'http://localhost:8080/MEETING_WINDOW_ID',
+          },
+        },
+        scheduleUrl: '',
+        loaderTrusted,
+      },
+      modules: {
+        account: {
+          initState() {
+            return { account: {}, token: 'token' };
+          },
+        },
+        api: {
+          actions: {
+            request: () => Promise.resolve(meetingWindowResponse),
+          },
+        },
+      },
+    });
+    await store.dispatch('meetingWindow/submit');
+
+    const submitEventData = {
+      event: EVENTS.SUBMIT_MEETING_WINDOW,
+      meetingWindow: meetingWindowResponse,
+      scheduleUrl: `http://localhost:8080/${meetingWindowResponse.id}`,
+      accountToken: loaderTrusted ? 'token' : undefined,
+    };
+    expect(store.messenger.send).toHaveBeenNthCalledWith(2, submitEventData);
+  });
 });

@@ -56,7 +56,9 @@ export default {
         this.$store.dispatch('event', {
           event: EVENTS.CONNECT_ACCOUNT,
           account: result.account,
-          token: result.access_token,
+          confidentialData: {
+            accountToken: result.access_token,
+          },
         });
       }
     },

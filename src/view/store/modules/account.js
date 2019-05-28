@@ -47,7 +47,7 @@ export default {
         // to get account name
         setAccountPromise = dispatch('api/request', {
           options: {
-            baseApi: true,
+            api: 'account',
             uri: '',
             loading: 'account/account',
             tokenType: 'account',
@@ -69,7 +69,7 @@ export default {
       setAccountPromise.then(() => {
         dispatch('api/request', {
           options: {
-            baseApi: true,
+            api: 'account',
             uri: 'cal/calendars',
             loading: 'account/calendar',
             tokenType: 'account',

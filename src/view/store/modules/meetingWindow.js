@@ -99,6 +99,9 @@ export default {
           event: EVENTS.SUBMIT_MEETING_WINDOW,
           scheduleUrl: rootState.scheduleUrl,
           meetingWindow: responseData,
+          confidentialData: {
+            accountToken: rootState.account.token,
+          },
         }, { root: true });
         // TODO: remove public_choice_token
         return responseData.public_choice_token || responseData.id;

@@ -33,7 +33,7 @@ export function deepMerge(...objs) {
 export function createMessenger() {
   const messenger = new EventMessenger({
     id: 0,
-    category: ROLES.VIEW,
+    role: ROLES.VIEW,
     onMessage: jest.fn(),
   });
   // by default do not send messages

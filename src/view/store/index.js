@@ -13,6 +13,7 @@ export const schema = {
   state: {
     launchOptions: {},
     scheduleUrl: '',
+    loaderTrusted: false,
   },
   modules: {
     account,
@@ -30,6 +31,9 @@ export const schema = {
         'MEETING_WINDOW_ID', meetingWindowId,
       );
     },
+    setLoaderTrusted(state, payload) {
+      state.loaderTrusted = payload.trusted;
+    },
   },
   actions: {
     initialize({ commit }, payload) {
@@ -45,9 +49,51 @@ export const schema = {
      * This action acts as a helper to forward event message
      * from components to EventMessenger and does not modify any state
      */
-    event(state, payload) {
+    event({ state }, payload) {
+      const { confidentialData, ...eventData } = payload;
+      if (confidentialData && state.loaderTrusted) {
+        // this part is only attached to message if loader is in trusted domain
+        Object.assign(eventData, confidentialData);
+      }
       // this.messenger is set in MeetingSchedulerView constructor
-      this.messenger.send(payload);
+      this.messenger.send(eventData);
+    },
+    async checkLoaderTrusted({ dispatch, commit, state }) {
+      const { launchOptions } = state;
+      if (!launchOptions.appId) {
+        commit({
+          type: 'setLoaderTrusted',
+          trusted: false,
+        });
+        return;
+      }
+
+      try {
+        const responseData = await dispatch('api/request', {
+          options: {
+            api: null,
+            uri: 'file-explorer/config',
+            params: {
+              app_id: launchOptions.appId,
+              origin: launchOptions.targetPath,
+            },
+          },
+        });
+        const trusted =
+            typeof responseData === 'object' &&
+            typeof responseData.user_data === 'object' &&
+            responseData.user_data.trusted === true;
+
+        commit({
+          type: 'setLoaderTrusted',
+          trusted,
+        });
+      } catch {
+        commit({
+          type: 'setLoaderTrusted',
+          trusted: false,
+        });
+      }
     },
   },
 };
