@@ -1,5 +1,5 @@
 import { mapState } from 'vuex';
-import { EVENTS } from 'constants';
+import { SUBMIT_STATUS, EVENTS } from 'constants';
 import Authenticator from '../Authenticator';
 import Accordion from '../common/Accordion';
 import Title from '../common/Title';
@@ -25,15 +25,29 @@ export default {
   data() {
     return {
       isFormValid: true,
+      canRenderView: false,
       options,
     };
   },
   beforeMount() {
     this.updateHourOptions();
+    if (this.isUpdating && !this.meetingWindow.id) {
+      this.$store.dispatch({
+        type: 'meetingWindow/getMeetingWindow',
+        meetingWindowId: this.launchOptions.meetingWindowId,
+      }).then(() => {
+        // only render inputs after meetingWindow is set, to properly
+        // load initial values on inputs
+        this.canRenderView = true;
+      });
+    } else {
+      this.canRenderView = true;
+    }
   },
   computed: mapState({
     meetingWindow: state => state.meetingWindow,
     hasCalendar: state => Boolean(state.account.calendarId),
+    isUpdating: state => Boolean(state.launchOptions.setup.meetingWindowId),
     loading: state => state.api.loading.meetingWindow,
     launchOptions: state => state.launchOptions.setup,
   }),
@@ -53,7 +67,11 @@ export default {
     afterSubmit() {
       const { afterSubmit } = this.launchOptions;
       if (afterSubmit.showResult) {
-        this.$router.push('/meetingWindowDone/');
+        this.$router.push(
+          `/meetingWindowCompletion/${
+            this.isUpdating ? SUBMIT_STATUS.UPDATED : SUBMIT_STATUS.CREATED
+          }`,
+        );
       } else {
         this.$store.dispatch('event', {
           event: EVENTS.CLOSE,
@@ -64,8 +82,13 @@ export default {
       if (!this.$refs.form.validate()) {
         return;
       }
-      const promise = this.$store.dispatch('meetingWindow/submit');
+      const promise = this.$store.dispatch('meetingWindow/submit', {
+        method: this.isUpdating ? 'patch' : 'post',
+      });
       promise.then(this.afterSubmit);
+    },
+    deleteWindow() {
+      this.$router.push('/meetingWindowDeletion/');
     },
     updateHourOptions() {
       const hourOptions = this.options.hours;

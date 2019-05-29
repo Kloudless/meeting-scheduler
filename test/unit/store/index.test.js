@@ -91,18 +91,23 @@ describe('Others', () => {
         },
       },
     });
-    const testWindowId = 'testWindowId';
+
     store.commit({
       type: 'meetingWindow/setMeetingWindow',
       meetingWindow: {
-        id: testWindowId,
+        id: 'meetingWindowId',
+        name: 'test window',
+        availability: [{
+          start: '',
+          end: '',
+          recurring: {},
+        }],
       },
     });
     store.commit({
       type: 'setScheduleUrl',
     });
-    expect(states.meetingWindow.id).toBe(testWindowId);
     expect(states.root.scheduleUrl)
-      .toBe(`http://localhost:8080/${testWindowId}/`);
+      .toBe('http://localhost:8080/meetingWindowId/');
   });
 });

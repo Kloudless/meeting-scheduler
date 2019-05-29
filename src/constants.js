@@ -13,6 +13,7 @@ export const EVENTS = {
   REMOVE_ACCOUNT: 'removeAccount',
   PRE_SUBMIT_MEETING_WINDOW: 'preSubmitMeetingWindow',
   SUBMIT_MEETING_WINDOW: 'submitMeetingWindow',
+  DELETE_MEETING_WINDOW: 'deleteMeetingWindow',
   PRE_CONFIRM_SCHEDULE: 'preConfirmSchedule',
   CONFIRM_SCHEDULE: 'confirmSchedule',
   RESTART: 'restart',
@@ -25,6 +26,12 @@ export const INTERNAL_EVENTS = {
 };
 
 export const EVENTS_LIST = Object.values(EVENTS);
+
+export const SUBMIT_STATUS = {
+  CREATED: 'CREATED',
+  UPDATED: 'UPDATED',
+  DELETED: 'DELETED',
+};
 
 export default {
   EVENTS,

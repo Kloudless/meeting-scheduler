@@ -1,4 +1,4 @@
-import TimeSlotsDone from 'view/components/TimeSlotsDone';
+import TimeSlotsCompletion from 'view/components/TimeSlotsCompletion';
 import Button from 'view/components/common/Button';
 import { getWrapper, createStore } from '../jest/vue-utils';
 
@@ -39,7 +39,7 @@ describe('Action buttons test', () => {
         },
       },
     });
-    const wrapper = getWrapper(TimeSlotsDone, {
+    const wrapper = getWrapper(TimeSlotsCompletion, {
       store,
     });
     const buttons = wrapper.findAll(Button);

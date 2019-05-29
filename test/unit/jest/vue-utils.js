@@ -8,7 +8,7 @@ import router from 'view/router';
 import { deepMerge, createMessenger } from './utils';
 
 
-export function getWrapper(component, options) {
+export function getWrapper(component, options, defaultRoute) {
   const localVue = createLocalVue();
   localVue.use(VueRouter);
   localVue.use(Vuex);
@@ -16,6 +16,13 @@ export function getWrapper(component, options) {
     localVue,
     router,
   }, options);
+
+  if (defaultRoute) {
+    router.replace(defaultRoute);
+  } else {
+    router.replace('');
+  }
+
   const wrapper = shallowMount(component, compOptions);
   return wrapper;
 }

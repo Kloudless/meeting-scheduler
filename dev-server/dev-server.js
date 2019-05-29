@@ -28,6 +28,7 @@ console.log('Starting Dev server...');
   // listen to 8081 for view page, this way loader and view will be on
   // different domain.
   app.listen(8081);
+
   app.listen(8080, () => {
     console.log('Dev server running on http://localhost:8080');
     console.log('Webpack bundles are compiling...');

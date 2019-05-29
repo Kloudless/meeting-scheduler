@@ -100,7 +100,7 @@ export default {
     afterSubmit() {
       const { afterSchedule } = this.launchOptions;
       if (afterSchedule.showResult) {
-        this.$router.push('/timeSlotsDone/');
+        this.$router.push('/timeSlotsCompletion/');
       } else {
         this.$store.dispatch('event', {
           event: EVENTS.CLOSE,

@@ -14,6 +14,7 @@ export default {
       loading: {
         meetingWindow: {
           submit: false,
+          meetingWindow: false,
         },
         timeSlots: {
           timeSlots: true,
@@ -75,11 +76,9 @@ export default {
 
       let token;
       switch (options.tokenType) {
+        // TODO: support target token
         case 'account':
           ({ token } = account);
-          break;
-        case 'meetingWindow':
-          token = rootState.launchOptions.schedule.meetingWindowId;
           break;
         default:
           token = '';
@@ -87,17 +86,22 @@ export default {
 
       const { baseUrl } = rootState.launchOptions.globalOptions;
 
-      const promise = axios({
+      const requestOptions = {
         method: options.method,
         url: `${baseUrl}/${prefix}${options.uri}`,
         headers: {
-          Authorization: `Bearer ${token}`,
           Accept: 'application/json',
           'X-Kloudless-Source': `meeting-scheduler/${VERSION}`,
         },
         params: options.params,
         data: options.data,
-      });
+      };
+
+      if (token) {
+        requestOptions.headers.Authorization = `Bearer ${token}`;
+      }
+
+      const promise = axios(requestOptions);
 
       if (options.loading) {
         commit({
@@ -144,7 +148,6 @@ export default {
               loading: false,
             });
           }
-          (options.onFinish || Object)();
         });
     },
   },
