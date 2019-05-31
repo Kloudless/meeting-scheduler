@@ -48,12 +48,17 @@ export default common.createModule({
       weekday: '',
       beginHour: '08:00:00',
       endHour: '17:00:00',
+      recaptchaSiteKey: null,
     };
   },
   mutations: {
     update: common.mutations.update,
     setMeetingWindow(state, payload) {
-      Object.assign(state, payload.meetingWindow);
+      // eslint-disable-next-line
+      const { recaptcha_site_key, ...rest } = payload.meetingWindow;
+      Object.assign(state, rest, {
+        recaptchaSiteKey: recaptcha_site_key,
+      });
     },
   },
   actions: {

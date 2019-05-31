@@ -87,5 +87,6 @@ div
         v-flex(xs6).text-xs-left
           Button(@click="moveStep(-1)").mx-0 Back
         v-flex(xs6).text-xs-right
-          Button(@click="submit", :loading="loading.submit").mx-0
+          Button(@click="executeRecaptcha" :loading="loading.submit").mx-0
             | Schedule Meeting
+  div#recaptcha
