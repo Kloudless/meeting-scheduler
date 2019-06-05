@@ -4,6 +4,8 @@
  * Bind the function to window so that it can be used in build test page.
  * Used in dev test page and build test pages
  */
+import { EVENTS_LIST } from 'constants';
+
 function stringify(obj) {
   return JSON.stringify(obj, null, 2);
 }
@@ -11,6 +13,19 @@ function stringify(obj) {
 window.setupTestLaunch = function setupTestLaunch(MeetingScheduler, appId) {
   const options = document.getElementById('options');
   const schedulers = [new MeetingScheduler(), new MeetingScheduler()];
+  schedulers.forEach((scheduler) => {
+    EVENTS_LIST.forEach((event) => {
+      scheduler.on(event, (eventData) => {
+        /* eslint-disable no-console */
+        console.log(
+          'Scheduler', scheduler, 'received event', event,
+          'with data', eventData,
+        );
+        /* eslint-enable */
+      });
+    });
+  });
+
   window.schedulers = schedulers;
 
   window.launchMeetingScheduler = (index) => {
@@ -21,23 +36,25 @@ window.setupTestLaunch = function setupTestLaunch(MeetingScheduler, appId) {
   };
 
   // set default launch options
-  let eventId = null;
-  window.location.href.replace(
-    /[?&]eventId=([a-zA-Z0-9]+)/,
-    (match, p1) => {
-      eventId = p1;
-    },
-  );
+  const params = MeetingScheduler.getQueryParams();
 
-  const setupOption = {
+  const optionsInput = {
     mode: 'attach',
   };
 
-  if (eventId) {
-    setupOption.eventId = eventId;
-  } else {
-    setupOption.eventUrlFormat = `${window.location.origin}/?eventId=EVENT_ID`;
-    setupOption.appId = appId;
+  if (appId) {
+    optionsInput.appId = appId;
   }
-  options.value = stringify(setupOption);
+
+  if (params.meetingWindowId) {
+    optionsInput.schedule = {
+      meetingWindowId: params.meetingWindowId,
+    };
+  } else {
+    optionsInput.setup = {
+      scheduleUrl:
+        `${window.location.origin}/?meetingWindowId=MEETING_WINDOW_ID`,
+    };
+  }
+  options.value = stringify(optionsInput);
 };

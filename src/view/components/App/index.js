@@ -1,9 +1,9 @@
 import { mapState } from 'vuex';
+import { EVENTS } from 'constants';
 import Footer from '../Footer';
 
 export default {
   name: 'App',
-  props: ['options'],
   components: {
     Footer,
   },
@@ -13,19 +13,22 @@ export default {
     };
   },
   computed: mapState({
+    launchOptions: state => state.launchOptions,
     requestErrorMsg: state => state.api.errorMessage,
   }),
   created() {
     let defaultRoute = '/meetingWindow/';
-    if (this.options.eventId) {
+    if (this.launchOptions.schedule) {
       // Launch Schedule View if eventId is supplied
       defaultRoute = '/timeSlots/';
-    } else if (this.options.accountToken) {
+    } else if (this.launchOptions.setup) {
       // In Setup view, get account detail if account info is passed in
-      const { accountToken } = this.options;
-      this.$store.dispatch('account/setAccount', {
-        token: accountToken,
-      });
+      const { accountToken } = this.launchOptions;
+      if (accountToken) {
+        this.$store.dispatch('account/setAccount', {
+          token: accountToken,
+        });
+      }
     }
     // in vue-router abstract mode, we need to set the initial route.
     this.$router.push(defaultRoute);
@@ -42,13 +45,13 @@ export default {
      */
     this.initViews = true;
     this.$store.dispatch('event', {
-      event: 'open',
+      event: EVENTS.OPEN,
     });
   },
   methods: {
     closeDialog() {
       this.$store.dispatch('event', {
-        event: 'close',
+        event: EVENTS.CLOSE,
       });
     },
   },

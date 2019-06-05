@@ -4,6 +4,7 @@
  * API requests, and toggle flags for loading status
  */
 import axios from 'axios';
+import { EVENTS } from '../../../constants';
 
 export default {
   namespaced: true,
@@ -28,6 +29,8 @@ export default {
   },
   mutations: {
     setErrorMessage(state, payload) {
+      // DO NOT call this mutation directly
+      // use actions.setErrorMessage instead
       state.errorMessage = payload.message;
     },
     loading(state, payload) {
@@ -36,7 +39,19 @@ export default {
     },
   },
   actions: {
-    request({ rootState, commit }, payload) {
+    setErrorMessage({ dispatch, commit }, payload) {
+      if (payload.message) {
+        dispatch('event', {
+          event: EVENTS.ERROR,
+          message: payload.message,
+        }, { root: true });
+      }
+      commit({
+        ...payload,
+        type: 'setErrorMessage',
+      });
+    },
+    request({ rootState, commit, dispatch }, payload) {
       /** payload.options
        * uri, method, data, params, baseApi, onSuccess, onError, loading
        */
@@ -54,8 +69,8 @@ export default {
         case 'account':
           ({ token } = account);
           break;
-        case 'event':
-          token = rootState.launchOptions.eventId;
+        case 'meetingWindow':
+          token = rootState.launchOptions.schedule.meetingWindowId;
           break;
         default:
           token = '';
@@ -85,8 +100,7 @@ export default {
 
       return promise
         .then((response) => {
-          commit({
-            type: 'setErrorMessage',
+          dispatch('setErrorMessage', {
             message: null,
           });
           return (options.onSuccess || Object)(response.data);
@@ -107,8 +121,7 @@ export default {
             ({ message } = error);
           }
           const errorMessage = `Error: ${message}. Please contact Support.`;
-          commit({
-            type: 'setErrorMessage',
+          dispatch('setErrorMessage', {
             message: errorMessage,
           });
           (options.onError || Object)(error);

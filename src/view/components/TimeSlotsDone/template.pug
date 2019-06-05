@@ -16,6 +16,10 @@ div
         | ({{timeZone}} time)
       div.subheading.accent--text.opacity-9
         | {{ formatDate('date', timeSlots.selectedSlot.start) }}
-  Button(v-if="isModal", @click="$emit('close')").mt-5
-    | Finish
+  div.mt-5
+    template(v-for="action in launchOptions.afterSchedule.actions")
+      Button(
+        v-if="actionButtonText[action]",
+        @click="buttonAction(action)")
+        | {{ actionButtonText[action] }}
   
