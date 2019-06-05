@@ -33,7 +33,7 @@ function generateConfig(env = {}) {
     mode: env.mode,
     entry: env.entry,
     resolve: {
-      extensions: ['.js'],
+      extensions: ['.vue', '.js'],
       modules: common.resolvePaths,
     },
     output: env.output,
@@ -62,15 +62,6 @@ function generateConfig(env = {}) {
         {
           test: /\.vue$/,
           loader: 'vue-loader',
-        },
-        {
-          test: /index\.js$/,
-          include: [path.resolve(srcPath, 'view/components')],
-          use: [
-            'vue-loader',
-            path.resolve(__dirname, 'vuize-loader.js'),
-            'babel-loader',
-          ],
         },
         {
           test: /\.pug$/,

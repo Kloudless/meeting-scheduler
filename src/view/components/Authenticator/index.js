@@ -1,5 +1,6 @@
 import authenticator from '@kloudless/authenticator/src/auth-widget';
 import { mapState } from 'vuex';
+import { EVENTS } from 'constants';
 import Dropdown from '../common/Dropdown';
 import Button from '../common/Button';
 
@@ -43,10 +44,9 @@ export default {
     },
     handleAuthResult(result) {
       if (!result.account) {
-        this.$store.commit({
-          type: 'api/setErrorMessage',
+        this.$store.dispatch('api/setErrorMessage', {
           message: 'An error occurred connecting your account.',
-        }, { root: true });
+        });
       } else {
         this.$store.dispatch('account/setAccount', {
           id: result.account.id,
@@ -54,7 +54,7 @@ export default {
           token: result.access_token,
         });
         this.$store.dispatch('event', {
-          event: 'connectAccount',
+          event: EVENTS.CONNECT_ACCOUNT,
           account: result.account,
           token: result.access_token,
         });
@@ -65,7 +65,7 @@ export default {
         type: 'account/reset',
       });
       this.$store.dispatch('event', {
-        event: 'removeAccount',
+        event: EVENTS.REMOVE_ACCOUNT,
       });
     },
     setCalendarId(event) {

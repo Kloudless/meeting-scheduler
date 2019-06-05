@@ -4,10 +4,7 @@
 
 export default {
   /**
-   * Return a module creation function that can create a new module
-   * instance every time it is called. Actions and mutations will reuse
-   * the same reference from input schema, but state object is a new instance
-   * so that the state is independent from other stores.
+   * Return a module created from moduleSchema and attach 'reset' mutation.
    * @param {Object} moduleSchema
    *   module schema object. Schema is the same as Vuex module.
    *   It should not contain state, but a 'initState' function
@@ -21,13 +18,13 @@ export default {
       ...rest,
     };
 
-    // attach a "reset" mutation which calls state create function again
+    // attach a "reset" mutation which calls initState
     if (!moduleIns.mutations) {
       moduleIns.mutations = {};
     }
     /* eslint-disable no-shadow */
     moduleIns.mutations.reset = function reset(state) {
-      Object.assign(state, moduleSchema.initState());
+      Object.assign(state, initState());
     };
     /* eslint-enable */
     return moduleIns;

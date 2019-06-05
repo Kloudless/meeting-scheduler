@@ -15,7 +15,7 @@ export default new Router({
       component: MeetingWindow,
     },
     {
-      path: '/meetingWindowDone/:eventId',
+      path: '/meetingWindowDone/',
       component: MeetingWindowDone,
     },
     {

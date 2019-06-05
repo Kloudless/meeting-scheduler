@@ -2,7 +2,7 @@ div.kloudless-meeting-scheduler
   v-app(id="")
     div(data-app="true")
     template(v-if="initViews")
-      template(v-if="options.mode === 'attach'")
+      template(v-if="launchOptions.mode === 'attach'")
         div.app-padding
           div.service-error-message.error(
             :class="{'has-error': requestErrorMsg}")
@@ -25,6 +25,6 @@ div.kloudless-meeting-scheduler
             div.app-scroll-content(:class="{'has-error': requestErrorMsg}")
               v-content
                 v-container.text-xs-center
-                  router-view(@close='closeDialog')
-            Footer
+                  router-view
+            Footer 
        

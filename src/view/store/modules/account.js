@@ -1,7 +1,4 @@
-import common from '../common';
-
-
-export default common.createModule({
+export default {
   namespaced: true,
   initState() {
     return {
@@ -48,8 +45,7 @@ export default common.createModule({
       } else {
         // if initialized via Meeting Scheduler param, query account detail
         // to get account name
-        setAccountPromise = dispatch({
-          type: 'api/request',
+        setAccountPromise = dispatch('api/request', {
           options: {
             baseApi: true,
             uri: '',
@@ -71,8 +67,7 @@ export default common.createModule({
       }
 
       setAccountPromise.then(() => {
-        dispatch({
-          type: 'api/request',
+        dispatch('api/request', {
           options: {
             baseApi: true,
             uri: 'cal/calendars',
@@ -99,4 +94,4 @@ export default common.createModule({
       });
     },
   },
-});
+};

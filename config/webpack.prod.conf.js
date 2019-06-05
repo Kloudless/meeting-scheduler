@@ -103,6 +103,18 @@ const builds = [
       publicPath: './',
     },
   },
+  // test_launch.js for dist-test
+  {
+    ...minProdConfig,
+    entry: {
+      test_launch: path.resolve(__dirname, '../dev-server/test_launch.js'),
+    },
+    output: {
+      path: path.resolve(distPath, '../test/dist/'),
+      filename: '[name].js',
+      publicPath: './',
+    },
+  },
 ];
 
 module.exports = builds;

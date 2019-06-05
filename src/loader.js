@@ -1,10 +1,16 @@
-/* global VERSION, BASE_URL, SCHEDULER_PATH */
+/* global VERSION, BASE_URL, SCHEDULE_URL, SCHEDULER_PATH */
 /**
  * loader script
  */
-/* eslint-disable no-console */
+/* eslint-disable no-console, class-methods-use-this */
 import './loader.scss';
-import { CATEGORY, EventMessenger } from './event-messenger';
+import EventMessenger from './event-messenger';
+import {
+  ROLES,
+  EVENTS,
+  EVENTS_LIST,
+  INTERNAL_EVENTS,
+} from './constants';
 
 let schedulerId = 0;
 
@@ -24,9 +30,148 @@ class MeetingScheduler {
     this.launched = false;
     this.messenger = new EventMessenger({
       id: this.id,
-      category: CATEGORY.LOADER,
+      category: ROLES.LOADER,
       onMessage: this.onMessage.bind(this),
     });
+    this.events = {};
+  }
+
+  log(message, level = 'error') {
+    console[level](`Meeting Scheduler: ${message}`);
+  }
+
+  _applyDefaultOptions(options) {
+    const _options = Object.assign({
+      mode: 'modal',
+    }, options);
+
+    if (_options.mode !== 'modal' && _options.mode !== 'attach') {
+      _options.mode = 'modal';
+    }
+
+    if (_options.mode === 'attach') {
+      if (!(_options.element instanceof HTMLElement)) {
+        _options.element = document.querySelector(_options.element);
+      }
+    } else {
+      // for modal mode, ignore element option
+      let parentElement
+        = document.getElementById('kloudless-meeting-scheduler');
+      if (!parentElement) {
+        // create and append an empty div at the end of body
+        // if the element does not exist yet
+        parentElement = document.createElement('div');
+        parentElement.setAttribute('id', 'kloudless-meeting-scheduler');
+        document.body.appendChild(parentElement);
+      }
+      _options.element = parentElement;
+    }
+
+    if (_options.setup && !_options.setup.scheduleUrl) {
+      _options.setup.scheduleUrl = SCHEDULE_URL;
+    }
+
+    if (_options.setup) {
+      _options.setup.afterSubmit = {
+        showResult: true,
+        actions: ['close'],
+        ..._options.setup.afterSubmit,
+      };
+    } else if (_options.schedule) {
+      _options.schedule.afterSchedule = {
+        showResult: true,
+        actions: ['close'],
+        ..._options.schedule.afterSchedule,
+      };
+    }
+
+    return _options;
+  }
+
+  // convert v1.1 option format to current one
+  _convertOptions(options) {
+    if (options.eventUrlFormat && !options.setup) {
+      options.setup = {
+        scheduleUrl: (options.eventUrlFormat || '').replace(
+          'EVENT_ID', 'MEETING_WINDOW_ID',
+        ),
+      };
+      delete options.eventUrlFormat;
+    }
+    if (options.eventId && !options.schedule) {
+      options.schedule = {
+        meetingWindowId: options.eventId,
+      };
+      delete options.eventId;
+    }
+  }
+
+
+  /**
+   * Verify if the launch options are valid
+   * @param {Object} options - launch options
+   * Return value:
+   *   {
+   *     valid: true if options are valid, false otherwise
+   *     errors: a list of error, only provided when the input is not valid
+   *     warns: a list of warnings in the config
+   *   }
+   */
+  _verifyOptions(options) {
+    const errors = [];
+    const warns = [];
+    const { appId, setup, schedule } = options;
+
+    // TODO: enhance options check for any new feature
+    if (!setup && !schedule) {
+      errors.push(
+        'One of the following keys is required: setup or schedule.',
+      );
+    } else if (setup && schedule) {
+      errors.push(
+        'Cannot use both setup and schedule within the same config.',
+      );
+    }
+    if (setup && !appId) {
+      errors.push('appId is required for the setup view.');
+    } else if (!appId) {
+      warns.push(
+        'appId is not provided. No callbacks will receive sensitive'
+        + ' data because the widget could not verify if the current domain'
+        + ' is trusted',
+      );
+    }
+    if (schedule && !schedule.meetingWindowId) {
+      errors.push('meetingWindowId is required for schedule view.');
+    }
+    if (!(options.element instanceof HTMLElement)) {
+      errors.push(
+        'element option is missing or does not match any HTML element',
+      );
+    }
+    const result = {
+      valid: errors.length === 0,
+      errors,
+      warns,
+    };
+    return result;
+  }
+
+  config(options) {
+    if (this.launched) {
+      this.log('You cannot change options after widget is launched');
+      return false;
+    }
+    const _options = this._applyDefaultOptions(options);
+    this._convertOptions(_options);
+    const result = this._verifyOptions(_options);
+    result.warns.forEach((warn) => { this.log(warn, 'warn'); });
+    if (result.valid) {
+      this.options = _options;
+      return true;
+    }
+    result.errors.forEach((error) => { this.log(error, 'error'); });
+    return false;
   }
 
   /**
@@ -35,49 +180,25 @@ class MeetingScheduler {
    * see README for available options
    */
   launch(options) {
-    this.destroy();
+    if (this.launched) {
+      this.destroy();
+    }
 
-    this.doms = {};
-
-    const _options = Object.assign({
-      mode: 'modal',
-    }, options);
-
-    if (!_options.appId && !_options.eventId) {
-      console.error('Meeting Scheduler: appId or eventId is required.');
+    if (!this.options) {
+      this.log('options were not specified or pre-configured.');
       return this;
     }
 
-    if (_options.mode !== 'modal' && _options.mode !== 'attach') {
-      _options.mode = 'modal';
-    }
-
-
-    let parentElement;
-    if (_options.mode === 'attach') {
-      if (_options.element instanceof Element) {
-        parentElement = _options.element;
-      } else {
-        parentElement = document.querySelector(_options.element);
-      }
-      // cannot launch attach mode
-      // if options.element does not match any DOM Element
-      if (!parentElement) {
-        console.error('Meeting Scheduler: element option is missing or it ' +
-          'does not match any DOM element');
+    if (options) {
+      if (!this.config(options)) {
         return this;
       }
-    } else {
-      // for modal mode, ignore element option
-      parentElement = document.getElementById('kloudless-meeting-scheduler');
-      if (!parentElement) {
-        // create and append an empty div at the end of body
-        // if the element does not exist yet
-        parentElement = document.createElement('div');
-        parentElement.setAttribute('id', 'kloudless-meeting-scheduler');
-        document.body.appendChild(parentElement);
-      }
     }
+
+    this.doms = {};
+
+    const _options = this.options;
+    const parentElement = _options.element;
 
     // empty the parent
     parentElement.innerHTML = '';
@@ -143,9 +264,9 @@ class MeetingScheduler {
     } = message;
     /* eslint-enable */
     switch (event) {
-      case 'iframe-loaded': {
+      case INTERNAL_EVENTS.VIEW_LOAD: {
         this.messenger.send({
-          event: 'iframe-launch-view',
+          event: INTERNAL_EVENTS.VIEW_LAUNCH,
           options: {
             ...this.options,
             globalOptions,
@@ -155,14 +276,16 @@ class MeetingScheduler {
         });
         return;
       }
-      case 'close': {
+      case EVENTS.CLOSE: {
         this.destroy();
         break;
       }
       default:
         break;
     }
-    // TODO: invoke event callbacks
+    (this.events[event] || []).forEach((callback) => {
+      callback({ scheduler: this, ...eventData });
+    });
   }
 
   destroy() {
@@ -174,6 +297,40 @@ class MeetingScheduler {
       this.onMessage({ event: 'destroy' });
       this.messenger.disconnect();
     }
+  }
+
+  on(eventName, callback) {
+    if (!EVENTS_LIST.includes(eventName)) {
+      return;
+    }
+    if (typeof callback === 'function') {
+      if (!this.events[eventName]) {
+        this.events[eventName] = [];
+      }
+      this.events[eventName].push(callback);
+    }
+  }
+
+  off(eventName, callback) {
+    if (typeof callback === 'undefined') {
+      delete this.events[eventName];
+    } else {
+      this.events[eventName] = this.events[eventName].filter(
+        c => c !== callback,
+      );
+    }
+  }
+
+  /**
+   * A utility to parse query params into an object map
+   */
+  static getQueryParams() {
+    const url = window.location.href;
+    const params = {};
+    url.replace(/[?&]([^?&=]+)=([^?&=]+)/g, (match, p1, p2) => {
+      params[p1] = p2;
+    });
+    return params;
   }
 
   static setOptions(options) {
