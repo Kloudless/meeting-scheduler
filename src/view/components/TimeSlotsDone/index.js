@@ -1,4 +1,5 @@
 import { mapState } from 'vuex';
+import { EVENTS } from 'constants';
 import moment from 'moment-timezone';
 import Title from '../common/Title';
 import Button from '../common/Button';
@@ -33,7 +34,7 @@ export default {
     },
     close() {
       this.$store.dispatch('event', {
-        event: 'close',
+        event: EVENTS.CLOSE,
       });
     },
     buttonAction(action) {

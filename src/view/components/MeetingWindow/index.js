@@ -1,4 +1,5 @@
 import { mapState } from 'vuex';
+import { EVENTS } from 'constants';
 import Authenticator from '../Authenticator';
 import Accordion from '../common/Accordion';
 import Title from '../common/Title';
@@ -8,7 +9,6 @@ import Dropdown from '../common/Dropdown';
 import InputLabel from '../common/InputLabel';
 import Button from '../common/Button';
 import { options } from '../../utils/fixtures.js';
-
 
 export default {
   name: 'MeetingWindow',
@@ -56,7 +56,7 @@ export default {
         this.$router.push('/meetingWindowDone/');
       } else {
         this.$store.dispatch('event', {
-          event: 'close',
+          event: EVENTS.CLOSE,
         });
       }
     },

@@ -1,7 +1,9 @@
 import { mapState } from 'vuex';
+import { EVENTS } from 'constants';
 import Title from '../common/Title';
 import TextInput from '../common/TextInput';
 import Button from '../common/Button';
+
 
 export default {
   name: 'MeetingWindowDone',
@@ -28,6 +30,7 @@ export default {
   ],
   methods: {
     restart() {
+      this.$store.dispatch('event', { event: EVENTS.RESTART });
       this.$store.commit({
         type: 'meetingWindow/reset',
       });
@@ -35,7 +38,7 @@ export default {
     },
     close() {
       this.$store.dispatch('event', {
-        event: 'close',
+        event: EVENTS.CLOSE,
       });
     },
     buttonAction(action) {

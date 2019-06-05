@@ -1,5 +1,6 @@
 import devtools from '@vue/devtools';
 import MeetingSchedulerView from 'view/MeetingSchedulerView';
+import { INTERNAL_EVENTS } from 'constants';
 
 /**
  * @vue/devtools will be replace with an empty module by webpack null-loader for
@@ -19,7 +20,7 @@ if (window.parent !== window) {
 
     scheduler.messenger.connect(window.parent);
     scheduler.messenger.send({
-      event: 'iframe-loaded',
+      event: INTERNAL_EVENTS.VIEW_LOAD,
     });
   }, 0);
 }

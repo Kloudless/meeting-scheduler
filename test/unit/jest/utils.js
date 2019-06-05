@@ -1,4 +1,5 @@
-import { CATEGORY, EventMessenger } from 'event-messenger';
+import EventMessenger from 'event-messenger';
+import { ROLES } from 'constants';
 
 /**
  * Modified from deepMerge() in axios/lib/utils.js, but also handle Arrays.
@@ -32,7 +33,7 @@ export function deepMerge(...objs) {
 export function createMessenger() {
   const messenger = new EventMessenger({
     id: 0,
-    category: CATEGORY.VIEW,
+    category: ROLES.VIEW,
     onMessage: jest.fn(),
   });
   // by default do not send messages

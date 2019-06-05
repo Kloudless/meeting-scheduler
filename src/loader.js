@@ -4,7 +4,13 @@
  */
 /* eslint-disable no-console, class-methods-use-this */
 import './loader.scss';
-import { CATEGORY, EventMessenger } from './event-messenger';
+import EventMessenger from './event-messenger';
+import {
+  ROLES,
+  EVENTS,
+  EVENTS_LIST,
+  INTERNAL_EVENTS,
+} from './constants';
 
 let schedulerId = 0;
 
@@ -24,9 +30,10 @@ class MeetingScheduler {
     this.launched = false;
     this.messenger = new EventMessenger({
       id: this.id,
-      category: CATEGORY.LOADER,
+      category: ROLES.LOADER,
       onMessage: this.onMessage.bind(this),
     });
+    this.events = {};
   }
 
   log(message, level = 'error') {
@@ -257,9 +264,9 @@ class MeetingScheduler {
     } = message;
     /* eslint-enable */
     switch (event) {
-      case 'iframe-loaded': {
+      case INTERNAL_EVENTS.VIEW_LOAD: {
         this.messenger.send({
-          event: 'iframe-launch-view',
+          event: INTERNAL_EVENTS.VIEW_LAUNCH,
           options: {
             ...this.options,
             globalOptions,
@@ -269,14 +276,16 @@ class MeetingScheduler {
         });
         return;
       }
-      case 'close': {
+      case EVENTS.CLOSE: {
         this.destroy();
         break;
       }
       default:
         break;
     }
-    // TODO: invoke event callbacks
+    (this.events[event] || []).forEach((callback) => {
+      callback({ scheduler: this, ...eventData });
+    });
   }
 
   destroy() {
@@ -287,6 +296,28 @@ class MeetingScheduler {
       this.launched = false;
       this.onMessage({ event: 'destroy' });
       this.messenger.disconnect();
+    }
+  }
+
+  on(eventName, callback) {
+    if (!EVENTS_LIST.includes(eventName)) {
+      return;
+    }
+    if (typeof callback === 'function') {
+      if (!this.events[eventName]) {
+        this.events[eventName] = [];
+      }
+      this.events[eventName].push(callback);
+    }
+  }
+
+  off(eventName, callback) {
+    if (typeof callback === 'undefined') {
+      delete this.events[eventName];
+    } else {
+      this.events[eventName] = this.events[eventName].filter(
+        c => c !== callback,
+      );
     }
   }
 
