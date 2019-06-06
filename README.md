@@ -80,6 +80,12 @@ using our [zero-configuration embed script](#embed-the-widget), or
     - [schedule](#schedule)
     - [restart](#restart)
     - [error](#error)
+- [Meeting Window API](#meeting-window-api)
+  - [Object Definition](#object-definition)
+    - [Meeting Window](#meeting-window-object)
+    - [Availability](#availability)
+  - [Authentication](#authentication)
+  - [Endpoints](#endpoints)
 - [Migration Guide](#migration-guide)
   - [from v1.0, v1.1 to v1.2 and above](#from-v10-v11-to-v12-and-above)
 - [Contribute](#contribute)
@@ -235,7 +241,7 @@ App ID by visiting the
 [App Details page](https://developers.kloudless.com/applications/*/details)
 of the Kloudless developer portal.
 
-To launch the Setup view, set `setup` property as an empty object to apply
+To launch the Setup view, set the `setup` property as an empty object to apply
 default settings:
 
 ```javascript
@@ -282,13 +288,13 @@ scheduler.launch({
 ```
 
 ### Customize the Schedule URL
-By default, after creating a [Meeting Window](#meetingwindow) in the Setup View,
-a url in format of `https://kloudl.es/m/MEETING_WINDOW_ID` is generated.
+By default, after creating a [Meeting Window](#meeting-window) in the Setup View,
+a URL link with the format `https://kloudl.es/m/MEETING_WINDOW_ID` is generated.
 Kloudless hosts this URL by default so your users can use this URL to launch
 the Schedule View and schedule events.
 
-However, if you'd like to host your own page that launches the Schedule View, or
-if you'd like to customize the view in any way, you would need to
+However, if you'd like to host your own page that launches the Schedule View, 
+or if you'd like to customize the view in any way, you would need to
 configure the schedule URL by using the `scheduleUrl` option.
 
 The `scheduleUrl` option is a template string that contains the text
@@ -359,12 +365,13 @@ scheduler.on('open', (eventData) => {
 });
 ```
 
-Refer to [Event List](#event-list) for available events and data provided for
-each event.
+Refer to the [Event List](#event-list) for available events and data provided 
+for each event.
 
 ### Save the Connected Account's Access Token
 
-Make sure you have [setup trusted domains for your app](#setup-trusted-domains-for-your-kloudless-app),
+Make sure you have 
+[setup trusted domains for your app](#setup-trusted-domains-for-your-kloudless-app),
 otherwise your app won't receive access tokens.
 
 To receive the connected account's access token from your app, add an event
@@ -378,14 +385,13 @@ scheduler.on('connectAccount', (eventData) => {
 });
 ```
 
-
-This is useful to make additional requests to the Kloudless API for you app with
-the connected calendar account.
+This can be useful for making additional requests to the Kloudless API 
+with your app (connected to the calendar account).
 
 
 ### Edit Meeting Window
 
-To edit a meeting window, you need to provide both the accountToken and
+To edit a Meeting Window, you need to provide both the accountToken and
 meetingWindowId, which are all returned from the `submitMeetingWindow` event
 when a user creates a Meeting Window from the Setup View.
 
@@ -401,7 +407,7 @@ scheduler.launch({
 });
 ```
 
-To launch the Edit Mode, pass these two values back to scheduler:
+To launch Edit Mode, pass these two values back to scheduler:
 ```js
 scheduler.launch({
   appId: '<yout_app_id>',
@@ -417,7 +423,7 @@ scheduler.launch({
 
 If you'd like to provide your own result screen instead of the default one,
 use the `afterSubmit.showResult` option to destroy the view, instead of showing
-the result after submit. You will need to add an event listener to the
+the result after the submit event. You will need to add an event listener to the
 `submitMeetingWindow` event so that your app is notified when user finishes
 creating / editing a Meeting Window:
 
@@ -460,12 +466,12 @@ scheduler.on('schedule', (eventData) => {
 ```
 
 
-Refer to [submitMeetingWindow](#submitmeetingwindow) and
-[schedule](#schedule) event for details of the event data.
+Refer to the [submitMeetingWindow](#submitmeetingwindow) and
+[schedule](#schedule) event for more details.
 
 
 ### And More...
-For more examples, please check [launch(options)](#launch(options)) for a full
+For more examples, please check the [launch(options)](#launch(options)) for a full
 list of available options and their usage.
 
 ## Methods
@@ -481,8 +487,8 @@ An object containing the following keys:
   If set to 'modal', a modal window is shown and the widget is displayed
     inside the modal.
   If set to 'attach', the widget will be attached to the element specified in
-  the `element` parameter. Failing to provide a valid `element` option will
-  cause the widget to fail to be launched.
+  the `element` parameter. The widget requires a valid `element` option to launch
+  correctly.
 - `element`: _Required only for `attach` mode_: String or Element  
   The DOM element that the widget will be attached to. All contents under
   the element will be removed before attaching the widget.
@@ -506,25 +512,25 @@ An object containing the following keys:
     actual meeting window ID.
     - Example: [Customize the event URL format](#customize-the-event-url-format)
   - `meetingWindowId`: _Optional (default: null)_: String  
-    If specified, the scheduler will launched in Edit mode to edit provided
+    If specified, the scheduler will launch in Edit mode to edit the provided
     Meeting Window. Users can also delete this Meeting Window from the view.  
     Note that `accountToken` is required for edit mode.
   - `afterSubmit`: _Optional (default: see below)_: String  
     - An object to specify the behavior after a Meeting Window is created/updated/deleted:
       - `showResult`: _Optional (default: true)_: Boolean  
         If true, a result page will be displayed. Otherwise, the scheduler is
-        destroyed, you will need to use the [submitMeetingWindow](#submitmeetingwindow)
+        destroyed, and you will need to use the [submitMeetingWindow](#submitmeetingwindow)
         or [deleteMeetingWindow](#deletemeetingwindow) event to catch the result.
       - `actions`: _Optional (default: ['close'])_: Array  
-        A list of available actions for users to choose, supported actions 
+        A list of available actions for users to choose from. Supported actions 
         include:
-        - `'close'`: Close and destroy the scheduler
+        - `'close'`: Close and destroy the scheduler.
         - `'restart'`: Go back and create another Meeting Window. Note that
           this is not supported in the Edit Mode.
 
 
 - `schedule`: _Required for the Schedule View_: Object  
-  Options to launch the Schedule View, available options:
+  Options to launch the Schedule View. Available options:
   - `meetingWindowId`: _Required_: String
     The Meeting Window ID .
     - Example: [Launch the Schedule View](#launch-the-schedule-view)
@@ -532,12 +538,13 @@ An object containing the following keys:
     - An object to specify the behavior after an event is scheduler, available
       options:
       - `showResult`: _Optional (default: true)_: Boolean  
-        If true, a result page would be displayed. Otherwise, the scheduler is
-        destroyed, you will need to use the [schedule](#confirmschedule)
+        If true, a result page will be displayed. Otherwise, the scheduler is
+        destroyed, you will need to use the [schedule](#schedule)
         event to catch the result.
       - `actions`: _Optional (default: ['close'])_: Array  
-        A list of available actions for users to choose, supported actions:
-        - `'close'`: Close and destroy the scheduler
+        A list of available actions for users to choose from. Supported actions
+        include:
+        - `'close'`: Close and destroy the scheduler.
 
 __Note__: You must specify either `setup` or `schedule` to launch the Meeting
 Scheduler.
@@ -580,9 +587,8 @@ Return version number string.
 ## Events
 
 Events are emitted asynchronously when conditions are met. To register an event,
-use `scheduler.on(eventName, callback)`. To unregister event, use
-`scheduler.off(eventName, callback)` or `scheduler.off(eventName)` to unregister
-all callbacks from a certain event.
+use `scheduler.on(eventName, callback)`. Use `scheduler.off(eventName, callback)`
+or `scheduler.off(eventName)` to unregister all callbacks from a certain event.
 
 The callback function will receive an object as the first argument with
 the following properties:
@@ -594,19 +600,19 @@ the following properties:
 
 #### open
 
-When the scheduler is launched
+The scheduler has launched
 
 #### close
 
-When the scheduler is closed
+The scheduler has closed
 
 #### destroyed
 
-When the scheduler window and placeholders are destroyed
+The scheduler window and placeholders has been destroyed
 
 #### connectAccount
 
-When a calendar account is connected
+A calendar account has been connected
 
 Event Data:
   - `account`: __Object__, Connected account
@@ -614,15 +620,15 @@ Event Data:
 
 #### removeAccount
 
-When a calendar account is removed
+A calendar account has been removed
 
 #### preSubmitMeetingWindow
 
-Before submitting a create or update Meeting Window request in the Setup View
+A Meeting Window is about to be created or updated.
 
 #### submitMeetingWindow
 
-When a Meeting Window is created or updated
+A Meeting Window has been created or updated.
 
 Event Data:
   - meetingWindow: Meeting Window object
@@ -630,7 +636,7 @@ Event Data:
 
 #### deleteMeetingWindow
 
-When a Meeting Window is deleted
+A Meeting Window has been deleted
 
 #### preSchedule
 
@@ -646,13 +652,14 @@ Event Data:
 
 #### restart
 
-When the view is restarted.
-Currently only emitted in the Setup View when a user has clicked
-'Create another event' button after an event is created
+A view has been restarted.
+
+This event is currently only emitted in the Setup View when a user has clicked
+'Create another event' button after an event has been created.
 
 #### error
 
-When an error response or no response is returned from an API request
+An error response or no response has been returned from an API request
 
 Event Data:
   - `message`: _String_, Error message
@@ -661,6 +668,251 @@ Event Data:
 <a name="event-note"></a>(\*1) This data is only sent when the scheduler is 
 launched from a trusted domain of your app.
 
+## Meeting Window API
+
+### Object Definition
+
+#### Meeting Window object
+
+The [Meeting Window](#meeting-window-object) object contains information used
+for scheduling events with the Kloudless Calendar.
+
+| Property | Type | Description | Writable | Required |
+| --- | --- | --- | --- | --- |
+| id | string | The meeting window's unique identifier. | No | No |
+| booking_calendar_id | string | The Kloudless calendar ID to store the scheduled event. | Yes | Yes |
+| duration | integer | The event duration in minutes.  | Yes | Yes |
+| title | string | The event title. | Yes | Yes |
+| organizer | string | The name of the event organizer. | Yes | Yes |
+| location | string | The event location. | Yes | No |
+| description | string | The event description. | Yes | No |
+| availability | string | A list of Availability objects. See [Availability](#availability) for details. | Yes | Yes | 
+| time_zone | string | The event IANA time_zone. ex: America/Los_Angeles | Yes | Yes | 
+
+
+#### Availability 
+
+The Availability object contains the rules to generate the available time slots.
+It is located within the [Meeting Window](#meeting-window-object) object.
+
+| Property | Type | Description | Writable | Required |
+| --- | --- | --- | --- | --- |
+| start | string | The ISO 8601 timestamp with offset indicating the time window's start time. | Yes | Yes |
+| end | string | The ISO 8601 timestamp with offset indicating the time window's end time. | Yes | Yes |
+| recurring | object | The recurring constraint for the available time. | Yes | No |
+| recurring.weekday | string | The weekdays for recurring available time. Accept 3 characters abbreviations. Comma as delimiter. ex: "MON, TUE" (available on every Monday and Tuesday) | Yes | Yes |
+| recurring.month | string | Currently not support. | No | No |
+| recurring.day | string | Currently not support. | No | No |
+
+### Authentication
+
+To use the Meeting Window API, the Bearer authentication with a Kloudless 
+bearer token is needed.
+See [Obtaining an Access Token](https://developers.kloudless.com/docs/v1/authentication#oauth-2.0-obtaining-an-access-token)
+for more details.
+
+### Endpoints
+
+Refer to [Meeting Window](#meeting-window-object) for Meeting Window properties.
+
+#### GET `https://api.kloudless.com/v1/meetings/windows/`
+
+List the user's Meeting Windows. The user is identified by the bearer token.
+
+- Query parameters
+  - `page` Page identifier
+  - `page_size` Number of objects in each page.
+
+- Response `200`
+  - `response body` Array of Meeting Windows. See [Meeting Window](#meeting-window-object)
+    for Meeting Window's properties.
+
+```json
+{
+    "count": 1,
+    "total": 88,
+    "page": 1,
+    "objects": [
+        {
+            "id": "ihfvxYPnUSwpQqc4jx3P",
+            "booking_calendar_id": "faG9uZ2NoZW4uZGV2QGdtYWlsLmNvbQ==",
+            "duration": 15,
+            "title": "Wine Tasting Tour",
+            "organizer": "Peter",
+            "location": "Napa",
+            "description": "Wonderful wine tasting.",
+            "availability": [
+                {
+                    "start": "2018-11-29T00:00:00-08:00",
+                    "end": "2018-11-29T24:00:00-08:00",
+                    "recurring": {
+                        "month": "*",
+                        "weekday": "MON, TUE, WED, THU, FRI, SAT, SUN",
+                        "day": "*"
+                    }
+                }
+            ], 
+            "time_zone": "America/Los_Angeles",
+            "api": "meeting_scheduler"
+        }
+    ],
+    "type": "object_list",
+    "api": "meeting_scheduler"
+}
+```
+
+
+#### GET `https://api.kloudless.com/v1/meetings/windows/{id}/`
+
+Retrieve the meeting window via meeting window ID.
+
+- Response `200`
+  - `response body` See [meeting window](#meeting-window-object) for meeting
+    window's properties.
+
+```json
+{
+    "id": "ihfvxYPnUSwpQqc4jx3P",
+    "booking_calendar_id": "faG9uZ2NoZW4uZGV2QGdtYWlsLmNvbQ==",
+    "duration": 15,
+    "title": "Wine Tasting Tour",
+    "organizer": "Peter",
+    "location": "Napa",
+    "description": "Wonderful wine tasting.",
+    "availability": [
+        {
+            "start": "2018-11-29T00:00:00-08:00",
+            "end": "2018-11-29T24:00:00-08:00",
+            "recurring": {
+                "month": "*",
+                "weekday": "MON, TUE, WED, THU, FRI, SAT, SUN",
+                "day": "*"
+            }
+        }
+    ], 
+    "time_zone": "America/Los_Angeles",
+    "api": "meeting_scheduler"
+}
+```
+
+#### POST `https://api.kloudless.com/v1/meetings/windows/`
+
+Create a Meeting Window. 
+
+- Request body
+  - See [Meeting Window](#meeting-window-object) for writable and required 
+    properties.
+
+```json
+{
+    "booking_calendar_id": "faG9uZ2NoZW4uZGV2QGdtYWlsLmNvbQ==",
+    "duration": 15,
+    "title": "Wine Tasting Tour",
+    "organizer": "Peter",
+    "location": "Napa",
+    "description": "Wonderful wine tasting.",
+    "availability": [
+        {
+            "start": "2018-11-29T00:00:00-08:00",
+            "end": "2018-11-29T24:00:00-08:00",
+            "recurring": {
+                "weekday": "MON, TUE, WED, THU, FRI, SAT, SUN",
+            }
+        }
+    ], 
+    "time_zone": "America/Los_Angeles"
+}
+```
+
+
+- Response `201`
+  - `response body` See [Meeting Window](#meeting-window-object) for Meeting
+     Window properties.
+
+```json
+{
+    "id": "ihfvxYPnUSwpQqc4jx3P",
+    "booking_calendar_id": "faG9uZ2NoZW4uZGV2QGdtYWlsLmNvbQ==",
+    "duration": 15,
+    "title": "Wine Tasting Tour",
+    "organizer": "Peter",
+    "location": "Napa",
+    "description": "Wonderful wine tasting.",
+    "availability": [
+        {
+            "start": "2018-11-29T00:00:00-08:00",
+            "end": "2018-11-29T24:00:00-08:00",
+            "recurring": {
+                "weekday": "MON, TUE, WED, THU, FRI, SAT, SUN",
+            }
+        }
+    ], 
+    "time_zone": "America/Los_Angeles",
+    "api": "meeting_scheduler"
+}
+```
+
+
+#### PATCH `https://api.kloudless.com/v1/meetings/windows/{id}/`
+
+Update the meeting window.
+
+- Request body
+  - See [meeting window](#meeting-window-object) for the writable properties.
+
+```json
+{
+    "booking_calendar_id": "faG9uZ2NoZW4uZGV2QGdtYWlsLmNvbQ==",
+    "duration": 15,
+    "title": "Wine Tasting Tour",
+    "organizer": "Peter",
+    "location": "Napa",
+    "description": "Wonderful wine tasting.",
+   "availability": [
+        {
+            "start": "2018-11-29T00:00:00-08:00",
+            "end": "2018-11-29T24:00:00-08:00",
+            "recurring": {
+                "weekday": "MON, TUE, WED, THU, FRI, SAT, SUN",
+            }
+        }
+    ], 
+    "time_zone": "America/Los_Angeles"
+}
+```
+
+- Response `200`
+  - `response body` See [meeting window](#meeting-window-object) for Meeting
+     Window properties.
+     
+```json
+{
+    "id": "ihfvxYPnUSwpQqc4jx3P",
+    "booking_calendar_id": "faG9uZ2NoZW4uZGV2QGdtYWlsLmNvbQ==",
+    "duration": 15,
+    "title": "Wine Tasting Tour",
+    "organizer": "Peter",
+    "location": "Napa",
+    "description": "Wonderful wine tasting.",
+    "availability": [
+        {
+            "start": "2018-11-29T00:00:00-08:00",
+            "end": "2018-11-29T24:00:00-08:00",
+            "recurring": {
+                "weekday": "MON, TUE, WED, THU, FRI, SAT, SUN",
+            }
+        }
+    ], 
+    "time_zone": "America/Los_Angeles",
+    "api": "meeting_scheduler"
+}
+```
+
+#### DELETE `https://api.kloudless.com/v1/meetings/windows/{id}/`
+
+Delete the Meeting Window.
+
+- Response `204`
 
 ## Migration Guide
 
@@ -704,7 +956,7 @@ Then, run the Vue debug server to debug with the widget:
 ```
 npm run vue-devtools
 ```
-If you encounter issues when inspecting components, try to click the refresh
+If you encounter issues while inspecting components, try clicking the refresh
 button on the top right.
 
 When launching the dev server, the `setup.scheduleUrl` will be
@@ -770,14 +1022,14 @@ Feel free to contact us at support@kloudless.com with any feedback or questions.
 - 1.2.1
   - Fixed: Missing fields when editing Meeting Window
 - 1.2.0
-  - Add new launch options to control the result page
-  - Add event support
-  - Ability to edit and delete existing Meeting Window objects
+  - Added new launch options to control the result page
+  - Added event support
+  - Added ability to edit and delete existing Meeting Window objects
 - 1.1.0
-  - Update README
+  - Updated README
   - Fixed: Available times were off due to daylight saving timezone
   - Render the widget inside iframe to preserve layout
-  - Add new build options
-  - Add setOptions to configure global options in runtime
+  - Added new build options
+  - Added setOptions to configure global options in runtime
 - 1.0.0
   - Initial release
