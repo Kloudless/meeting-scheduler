@@ -39,22 +39,22 @@ using our [zero-configuration embed script](#embed-the-widget), or
   - [Meeting Window](#meeting-window)
 - [Getting Started](#getting-started)
   - [Create a Kloudless App](#create-a-kloudless-app)
-  - [Embed the widget](#embed-the-widget)
-  - [Configuration of the Embedded Widget](#configuration-of-the-embedded-widget)
-    - [Setup Trusted Domains for your Kloudless app](#setup-trusted-domains-for-your-kloudless-app)
+  - [Embed the Widget](#embed-the-widget)
+  - [Embedded Widget Configuration](#embedded-widget-configuration)
+    - [Setup Trusted Domains for Your Kloudless App](#setup-trusted-domains-for-your-kloudless-app)
     - [Import the Stylesheet and Script](#import-the-stylesheet-and-script)
 - [Configuration Examples](#configuration-examples)
   - [Launch the Setup View](#launch-the-setup-view)
   - [Launch with Attach Mode](#launch-with-attach-mode)
   - [Launch the Setup View with a Connected Calendar Account](#launch-the-setup-view-with-a-connected-calendar-account)
-  - [Customize the schedule URL](#customize-the-schedule-url)
+  - [Customize the Schedule URL](#customize-the-schedule-url)
   - [Launch the Schedule View](#launch-the-schedule-view)
-  - [Configure the scheduler beforehand](#configure-the-scheduler-beforehand)
+  - [Configure the Scheduler Beforehand](#configure-the-scheduler-beforehand)
 - [Advanced Usage](#advanced-usage)
   - [Handling Events](#handling-events)
-  - [Save connected account's access token](#save-connected-accounts-access-token)
+  - [Save the Connected Account's Access Token](#save-the-connected-accounts-access-token)
   - [Edit Meeting Window](#edit-meeting-window)
-  - [Display your own result screen](#display-your-own-result-screen)
+  - [Display Your Own Result Screen](#display-your-own-result-screen)
   - [And More...](#and-more)
 - [Methods](#methods)
   - [config(options)](#configoptions)
@@ -85,9 +85,9 @@ using our [zero-configuration embed script](#embed-the-widget), or
 - [Contribute](#contribute)
   - [Development](#development)
   - [Building](#building)
-    - [Host the scheduler page](#host-the-scheduler-page)
-    - [Build options](#build-options)
-  - [Test the build](#test-the-build)
+    - [Host the Scheduler Page](#host-the-scheduler-page)
+    - [Build Options](#build-options)
+  - [Test the Build](#test-the-build)
 - [Support](#support)
 - [Changelog](#changelog)
 
@@ -122,7 +122,7 @@ There are 2 modes available for the Kloudless Meeting Scheduler widget.
 
 ### Meeting Window
 
-A Meeting Window is the object containing detailed information for a event, such
+A Meeting Window contains detailed information for a event, such
 as the event title, location, host's calendar and host's availability.
 This object is created when user clicks "Create Event" from the Setup View.
 
@@ -136,7 +136,7 @@ Schedule View.
 A [Kloudless App](https://developers.kloudless.com/applications/*) is required
 to use the Kloudless Meeting Scheduler widget.
 
-### Embed the widget
+### Embed the Widget
 
 Add the following iframe to your web page to launch the Setup View without
 any additional code:
@@ -154,12 +154,12 @@ The events created by the widget use URLs hosted by Kloudless,
 so you don't need to do anything else.
 (See [this example](#customize-the-event-url-format) for detailed explanation).
 
-### Configuration of the Embedded Widget
+### Embedded Widget Configuration
 
 To launch the widget with additional options, follow the steps below to integrate
 the widget into your app:
 
-#### Setup Trusted Domains for your Kloudless app
+#### Setup Trusted Domains for your Kloudless App
 
 You need to add your website's domain to your Kloudless app's list of
 `Trusted Domains` on the [App Detail Page](https://developers.kloudless.com/applications/*/details/).
@@ -281,7 +281,7 @@ scheduler.launch({
 })
 ```
 
-### Customize the schedule URL
+### Customize the Schedule URL
 By default, after creating a [Meeting Window](#meetingwindow) in the Setup View,
 a url in format of `https://kloudl.es/m/MEETING_WINDOW_ID` is generated.
 Kloudless hosts this URL by default so your users can use this URL to launch
@@ -316,7 +316,7 @@ automatically. See how to
 [customize the schedule URL](#customize-the-schedule-url) for more
 information.
 
-If you have set the `scheduleUrl` option and put meeting window id as a
+If you have the `scheduleUrl` option set and put meeting window id as a
 query param, you can use `getQueryParams` helper method to retrieve it:
 
 ```javascript
@@ -330,7 +330,7 @@ scheduler.launch({
 });
 ```
 
-### Configure the scheduler beforehand
+### Configure the Scheduler Beforehand
 The above examples use `launch(options)` to configure and launch the scheduler.
 If you would like to configure and verify the options, but not launch the view
 immediately, you can use `config(options)` instead:
@@ -362,9 +362,9 @@ scheduler.on('open', (eventData) => {
 Refer to [Event List](#event-list) for available events and data provided for
 each event.
 
-### Save connected account's access token
+### Save the Connected Account's Access Token
 
-Make sure you have [configured Trusted Domain for your app](#setup-trusted-domains-for-your-kloudless-app),
+Make sure you have [setup trusted domains for your app](#setup-trusted-domains-for-your-kloudless-app),
 otherwise your app won't receive access tokens.
 
 To receive the connected account's access token from your app, add an event
@@ -413,7 +413,7 @@ scheduler.launch({
 ```
 
 
-### Display your own result screen
+### Display Your Own Result Screen
 
 If you'd like to provide your own result screen instead of the default one,
 use the `afterSubmit.showResult` option to destroy the view, instead of showing
@@ -460,13 +460,13 @@ scheduler.on('confirmSchedule', (eventData) => {
 ```
 
 
-Refer [submitMeetingWindow](#submitmeetingwindow) and
+Refer to [submitMeetingWindow](#submitmeetingwindow) and
 [confirmSchedule](#confirmschedule) event for details of the event data.
 
 
 ### And More...
-For more examples, check [launch(options)](#launch(options)) for a full list
-of available options and their usage.
+For more examples, please check [launch(options)](#launch(options)) for a full
+list of available options and their usage.
 
 ## Methods
 
@@ -483,7 +483,7 @@ An object containing the following keys:
   If set to 'attach', the widget will be attached to the element specified in
   the `element` parameter. Failing to provide a valid `element` option will
   cause the widget to fail to be launched.
-- `element`: _Required only for `attach` mode_: String or Element
+- `element`: _Required only for `attach` mode_: String or Element  
   The DOM element that the widget will be attached to. All contents under
   the element will be removed before attaching the widget.
   If a String is provided, it will be used to retrieve the DOM element by using
@@ -516,10 +516,12 @@ An object containing the following keys:
         destroyed, you will need to use the [submitMeetingWindow](#submitmeetingwindow)
         or [deleteMeetingWindow](#deletemeetingwindow) event to catch the result.
       - `actions`: _Optional (default: ['close'])_: Array  
-        A list of available actions for users to choose, supported actions:
+        A list of available actions for users to choose, supported actions 
+        include:
         - `'close'`: Close and destroy the scheduler
         - `'restart'`: Go back and create another Meeting Window. Note that
           this is not supported in the Edit Mode.
+
 
 - `schedule`: _Required for the Schedule View_: Object  
   Options to launch the Schedule View, available options:
@@ -608,7 +610,7 @@ When a calendar account is connected
 
 Event Data:
   - `account`: __Object__, Connected account
-  - `accountToken`([*1](#event-note)): _String_, Bearer Token of this account
+  - `accountToken`([\*1](#event-note)): _String_, Bearer Token of this account
 
 #### removeAccount
 
@@ -624,7 +626,7 @@ When a Meeting Window is created or updated
 
 Event Data:
   - meetingWindow: Meeting Window object
-  - `accountToken`([*1](#event-note)): _String_, Bearer Token of this account
+  - `accountToken`([\*1](#event-note)): _String_, Bearer Token of this account
 
 #### deleteMeetingWindow
 
@@ -655,8 +657,8 @@ Event Data:
   - `message`: _String_, Error message
 
 
-<a name="event-note"></a>(*1) This data is only sent when the scheduler is launched from a trusted
-domain of your app.
+<a name="event-note"></a>(\*1) This data is only sent when the scheduler is 
+launched from a trusted domain of your app.
 
 
 ## Migration Guide
@@ -673,7 +675,7 @@ Pass the connected account's token for the Setup View | accountToken | setup.acc
 URL template for users to schedule the event (*1) | eventUrlFormat | setup.scheduleUrl
 Launch the Schedule View | eventId | schedule.meetingWindowId
 
-  - *1: `EVENT_ID` in the URL template has to be changed to
+  - \*1: `EVENT_ID` in the URL template has to be changed to
         `MEETING_WINDOW_ID` in order to generate schedule URL properly.
 
 2. `appId` is now required for both the Setup and Schedule View.
@@ -719,7 +721,7 @@ npm run build
 ```
 
 
-#### Host the scheduler page
+#### Host the Scheduler Page
 
 The build contains a `scheduler` folder which renders the actual HTML and
 functionalities of the widget; by default, this is hosted by Kloudless. If
@@ -733,7 +735,7 @@ You will need to add your website domain to your Kloudless app's list of
 
 This allows the hosted scheduler to receive access tokens to the Kloudless API.
 
-#### Build options
+#### Build Options
 
 You can use environment variables to configure the build, for example:
 ```
@@ -744,12 +746,12 @@ BASE_URL=<your_kloudless_api_server_url> npm run build
 
 Variable Name | Purpose | Default
 ----|---|---
-BASE_URL | URL to Klodless API Server | https://api.kloudless.com
+BASE_URL | URL to Kloudless API Server | https://api.kloudless.com
 SCHEDULER_PATH | URL for the scheduler page | https://static-cdn.kloudless.com/p/platform/scheduler/index.html
 SCHEDULE_URL | Default event URL format | https://kloudl.es/m/s/SCHEDULE_URL
 
 
-### Test the build
+### Test the Build
 ```bash
 npm run dist-test
 
