@@ -14,7 +14,7 @@ div.mb-4
               v-icon(color="error" @click="removeAccount") cancel
     v-layout(v-if="!isUpdating", row, wrap, align-center).mt-4
       v-flex(xs12)
-        Dropdown(label="Calendar *", name="calendarId",
+        Dropdown(required, label="Calendar *", name="calendarId",
                  :loading="loading.account || loading.calendar",
                  :value="account.calendarId", :options="calendars"
                  @update="setCalendarId")

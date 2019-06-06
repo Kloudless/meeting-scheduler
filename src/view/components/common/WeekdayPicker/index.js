@@ -1,6 +1,7 @@
 
 import InputField from '../InputField';
-import { options } from '../../../utils/fixtures.js';
+import { isRequired } from '../../../utils/form_validator';
+import { WEEKDAY_PRESETS, WEEKDAYS } from '../../../utils/fixtures.js';
 
 export default {
   name: 'WeekdayPicker',
@@ -9,10 +10,10 @@ export default {
   },
   data() {
     return {
-      weekdays: options.weekdays,
+      weekdays: WEEKDAYS,
       selectedWeekdays: [],
       selectedPreset: '',
-      presets: options.weekdayPresets,
+      presets: WEEKDAY_PRESETS,
     };
   },
   props: {
@@ -24,16 +25,21 @@ export default {
       type: String,
       required: true,
     },
+    required: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  computed: {
+    rules() {
+      const { required } = this.$props;
+      return required ? [isRequired] : [];
+    },
   },
   methods: {
     input() {
+      // when user click on any single weekday, clear the selected preset.
       this.selectedPreset = '';
-    },
-    validator(weekdays) {
-      if (weekdays.length === 0) {
-        return 'This field is required.';
-      }
-      return true;
     },
     togglePreset(preset) {
       const { selectedPreset } = this;

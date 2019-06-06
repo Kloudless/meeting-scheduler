@@ -7,8 +7,8 @@ div
     v-form(ref="form", v-model="isFormValid", lazy-validation)
       Accordion(title="1. Fill In Event Details")
         TextInput(name="title" label="Event Name *",
-          :value="meetingWindow.title", :rules="['required']",
-          placeholder="e.g. Sonoma Wine Tour", @update="updateInput")
+                  :value="meetingWindow.title", required,
+                  placeholder="e.g. Sonoma Wine Tour", @update="updateInput")
         TextInput(name="location" label="Location",
           :value="meetingWindow.location",
           placeholder="e.g. 3124 Sonoma Way, Napa, CA 94558",
@@ -16,24 +16,26 @@ div
         TextInput(name="description" label="Description", @update="updateInput",
           :value="meetingWindow.description", placeholder=" ")
         DurationField(
-          label="Event Duration *" name="duration",
+          required, label="Event Duration *" name="duration",
           :durations="options.durations", :value="meetingWindow.duration",
           @change="updateInput")
 
       Accordion(title="2. Add Event Availability")
-        WeekdayPicker(label='Available Days *', name="weekday",
+        WeekdayPicker(label='Available Days *', name="weekday", required,
                       @change="updateInput")
         InputLabel Available Hours *
         v-container(grid-list-xs)
           v-layout(row, wrap, align-center)
             v-flex(xs5)
-              Dropdown(label="", :options="beginHourOptions",
+              Dropdown(
+                required, label="", :options="beginHourOptions",
                 name="beginHour", :value="meetingWindow.beginHour",
                 @update="updateInput")
             v-flex(xs2)
               div.hour-to to
             v-flex(xs5)
-              Dropdown(label="", :options="endHourOptions",
+              Dropdown(
+                required, label="", :options="endHourOptions",
                 name="endHour", :value="meetingWindow.endHour",
                 @update="updateInput")
 
@@ -41,7 +43,7 @@ div
           v-layout(row, wrap)
             v-flex(xs-12)
               ToggleButtons(
-                label="Time Slot Increments *" name="timeSlotInterval",
+                required, label="Time Slot Increments *" name="timeSlotInterval",
                 tooltip="Show Time Slots every 15, 30, 45, or 60 minutes.",
                 :options="options.timeSlotIntervals",
                 :value="meetingWindow.timeSlotInterval",
@@ -49,7 +51,7 @@ div
           v-layout(row)
             v-flex(xs5)
               NumberField(
-                name="availabilityRange" label="Availability Range *",
+                required, name="availabilityRange" label="Availability Range *",
                 tooltip="Time Slots are shown up to the next 1–90 days.",
                 placeholder="30",
                 :value="meetingWindow.availabilityRange", :min=1, :max=90,
@@ -57,7 +59,7 @@ div
           v-layout(row, wrap)
             v-flex(xs5)
               NumberField(
-                name="timeBufferBefore" label="Buffer Before *",
+                required, name="timeBufferBefore" label="Buffer Before *",
                 tooltip="Preserve 0-99 minutes buffer before each scheduled event.",
                 placeholder="0",
                 :value="meetingWindow.timeBufferBefore", :min=0, :max=99,
@@ -65,7 +67,7 @@ div
             v-flex(xs1)
             v-flex(xs5)
               NumberField(
-                name="timeBufferAfter" label="Buffer After *",
+                required, name="timeBufferAfter" label="Buffer After *",
                 tooltip="Preserve 0-99 minutes buffer after each scheduled event."
                 placeholder="0",
                 :value="meetingWindow.timeBufferAfter", :min=0, :max=99,
@@ -73,11 +75,11 @@ div
 
       Accordion(:title="calendarSectionTitle")
         Authenticator(:isUpdating="isUpdating")
-        TextInput(name="organizer" label="Organizer *", :rules="['required']",
-          :value="meetingWindow.organizer",
-          placeholder="Johnny Appleseed", @update="updateInput")
+        TextInput(name="organizer" label="Organizer *", required,
+                  :value="meetingWindow.organizer",
+                  placeholder="Johnny Appleseed", @update="updateInput")
         Dropdown(
-          label="Time Zone *", name="timeZone", :value="meetingWindow.timeZone",
+          required, label="Time Zone *", name="timeZone", :value="meetingWindow.timeZone",
           :options="options.timeZones", @update="updateInput")
       div.mt-5
         Button.action-submit(@click="submit", :loading="loading.submit"

@@ -9,20 +9,10 @@ export default {
     ToggleButton,
   },
   data() {
-    let value;
-    const options = this.$props.options || [];
-    if (options.length === 0) {
-      value = '';
-    }
-    let selected =
-      options.findIndex(option => option.value === this.$props.value);
-    if (selected === -1) {
-      selected = 0;
-      this.onClick(options[selected].value);
-    }
-    ({ value } = options[selected]);
+    const { value } = this.$props;
     return {
       selected: value,
+      type: typeof value,
     };
   },
   props: {
@@ -31,7 +21,7 @@ export default {
       required: true,
     },
     value: {
-      type: String,
+      type: [String, Number],
       required: true,
     },
     options: {
@@ -46,10 +36,21 @@ export default {
       type: String,
       default: '',
     },
+    required: {
+      type: Boolean,
+      default: false,
+    },
   },
   methods: {
     onClick(value) {
-      this.$emit('click', { name: this.name, value });
+      const { type } = this;
+      this.$emit(
+        'click',
+        {
+          name: this.name,
+          value: type === 'number' ? Number.parseInt(value, 10) : value,
+        },
+      );
     },
   },
 };

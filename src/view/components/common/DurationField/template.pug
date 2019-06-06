@@ -1,6 +1,6 @@
 //- toggle-buttons is defined in ToggleButtons/style.scss
 InputField(:label="label").duration-field
-  v-input(:value="finalValue", :rules="formRules")
+  v-input(:value="finalValue", :rules="rules")
     v-layout.justify-space-between
       v-btn-toggle(v-model="selectedValue", :mandatory="!custom").my-1
         template(v-for="duration in durations")

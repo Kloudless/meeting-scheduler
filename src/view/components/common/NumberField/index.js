@@ -1,4 +1,5 @@
 import InputField from '../InputField';
+import { inRangeOf, isRequired } from '../../../utils/form_validator';
 
 export default {
   name: 'NumberField',
@@ -9,6 +10,17 @@ export default {
     return {
       selected: this.$props.value,
     };
+  },
+  computed: {
+    rules() {
+      const { required } = this.$props;
+      const { min, max } = this;
+      const rules = [inRangeOf(min, max)];
+      if (required) {
+        rules.push(isRequired);
+      }
+      return rules;
+    },
   },
   props: {
     name: {
@@ -36,22 +48,17 @@ export default {
       type: String,
       default: '',
     },
-    tooltip: String,
-    placeholder: {
+    tooltip: {
       type: String,
       default: '',
     },
-  },
-  methods: {
-    // It's not a general method because it needs to access component props.
-    // So we put it here instead of form_validator.js
-    validator(value) {
-      const { max, min } = this.$props;
-      const pattern = /[\d]+/;
-      if (!pattern.test(value) || value > max || value < min) {
-        return `This field should be in ${min} – ${max}`;
-      }
-      return true;
+    required: {
+      type: Boolean,
+      required: false,
+    },
+    placeholder: {
+      type: String,
+      default: '',
     },
   },
   watch: {

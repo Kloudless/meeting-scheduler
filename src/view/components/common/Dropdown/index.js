@@ -1,5 +1,5 @@
 import InputField from '../InputField';
-import getValidators from '../../../utils/form_validator';
+import { isRequired } from '../../../utils/form_validator';
 
 export default {
   name: 'Dropdown',
@@ -9,7 +9,6 @@ export default {
   data() {
     return {
       selected: this.getSelected(this.options),
-      formRules: getValidators(['required']),
     };
   },
   watch: {
@@ -17,10 +16,46 @@ export default {
       this.selected = this.getSelected(newOptions);
     },
   },
-  props: [
-    'options', 'name', 'value', 'label', 'placeholder', 'update',
-    'loading',
-  ],
+  computed: {
+    rules() {
+      const { required } = this.$props;
+      return required ? [isRequired] : [];
+    },
+  },
+  props: {
+    options: {
+      type: Array,
+      required: true,
+    },
+    name: {
+      type: String,
+      required: true,
+    },
+    value: {
+      required: true,
+      // Value could be undefined if user clear the field.
+      // Value could also be null before connecting to a calendar service.
+      validator: prop => (
+        typeof prop === 'string' || prop === null || prop === undefined
+      ),
+    },
+    label: {
+      type: String,
+      required: true,
+    },
+    placeholder: {
+      type: String,
+      default: '',
+    },
+    loading: {
+      type: Boolean,
+      default: false,
+    },
+    required: {
+      type: Boolean,
+      default: false,
+    },
+  },
   methods: {
     getSelected(options) {
       if (options.length === 0) {

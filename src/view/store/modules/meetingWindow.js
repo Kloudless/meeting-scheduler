@@ -47,11 +47,10 @@ export default {
     return {
       id: null,
       title: '',
-      duration: '15',
+      duration: 15,
       organizer: '',
       location: '',
       description: '',
-      access: '',
       timeZone: moment.tz.guess(),
       weekday: [],
       beginHour: '08:00:00',
@@ -60,7 +59,7 @@ export default {
       timeBufferBefore: 0,
       timeBufferAfter: 0,
       availabilityRange: 30,
-      timeSlotInterval: '30',
+      timeSlotInterval: 30,
     };
   },
   mutations: {

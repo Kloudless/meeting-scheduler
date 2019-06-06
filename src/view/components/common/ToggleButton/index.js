@@ -2,7 +2,7 @@ export default {
   name: 'ToggleButton',
   props: {
     value: {
-      type: String,
+      type: [String, Number],
       required: true,
     },
     text: {
