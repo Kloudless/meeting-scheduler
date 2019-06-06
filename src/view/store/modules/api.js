@@ -11,10 +11,10 @@ export default {
   initState() {
     return {
       errorMessage: null,
-      appId: null,
       loading: {
         meetingWindow: {
           submit: false,
+          meetingWindow: false,
         },
         timeSlots: {
           timeSlots: true,
@@ -53,24 +53,32 @@ export default {
     },
     request({ rootState, commit, dispatch }, payload) {
       /** payload.options
-       * uri, method, data, params, baseApi, onSuccess, onError, loading
+       * uri, method, data, params, api, onSuccess, onError, loading
        */
       const { account } = rootState;
       const options = Object.assign({
         method: 'GET',
-        baseApi: false,
+        api: 'meetings',
       }, payload.options);
 
-      const prefix = options.baseApi ?
-        'v1/accounts/me' : 'v1/meetings';
+      let prefix;
+      switch (options.api) {
+        case 'meetings':
+          prefix = 'v1/meetings/';
+          break;
+        case 'account':
+          prefix = 'v1/accounts/me/';
+          break;
+        default:
+          prefix = '';
+          break;
+      }
 
       let token;
       switch (options.tokenType) {
+        // TODO: support target token
         case 'account':
           ({ token } = account);
-          break;
-        case 'meetingWindow':
-          token = rootState.launchOptions.schedule.meetingWindowId;
           break;
         default:
           token = '';
@@ -78,17 +86,22 @@ export default {
 
       const { baseUrl } = rootState.launchOptions.globalOptions;
 
-      const promise = axios({
+      const requestOptions = {
         method: options.method,
-        url: `${baseUrl}/${prefix}/${options.uri}`,
+        url: `${baseUrl}/${prefix}${options.uri}`,
         headers: {
-          Authorization: `Bearer ${token}`,
           Accept: 'application/json',
           'X-Kloudless-Source': `meeting-scheduler/${VERSION}`,
         },
         params: options.params,
         data: options.data,
-      });
+      };
+
+      if (token) {
+        requestOptions.headers.Authorization = `Bearer ${token}`;
+      }
+
+      const promise = axios(requestOptions);
 
       if (options.loading) {
         commit({
@@ -135,7 +148,6 @@ export default {
               loading: false,
             });
           }
-          (options.onFinish || Object)();
         });
     },
   },

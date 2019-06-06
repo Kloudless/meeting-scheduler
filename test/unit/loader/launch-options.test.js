@@ -112,6 +112,20 @@ describe('loader._verifyOptions tests', () => {
       options: { appId: 'appId', setup: {} },
       valid: true,
     }],
+    ['accountToken is required for edit window', {
+      options: { appId: 'appId', setup: { meetingWindowId: '1' } },
+      valid: false,
+    }],
+    ['accountToken and meetingWindowId are presented for edit window', {
+      options: {
+        appId: 'appId',
+        setup: {
+          meetingWindowId: '1',
+          accountToken: 'token',
+        },
+      },
+      valid: true,
+    }],
     ['element option is not valid', {
       options: { appId: 'appId', setup: {}, element: '#test' },
       valid: false,

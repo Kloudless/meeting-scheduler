@@ -26,19 +26,34 @@ describe('Test events', () => {
     expect(Object.keys(eventData)).toContain('message');
   });
 
-  test('should send connectAccount event when account is connected', () => {
-    const account = {
-      id: 10000,
-      account: 'test@test.com',
-    };
-    wrapper.vm.handleAuthResult({
-      account,
-      token: 'token',
+  test.each([
+    ['Should send connectAccount event when account is connected', true],
+    ['Should not send token if loader is not in trusted domain', false],
+  ])('%s', (_, loaderTrusted) => {
+    store.commit({
+      type: 'setLoaderTrusted',
+      trusted: loaderTrusted,
     });
-    expect(store.messenger.send).toHaveBeenLastCalledWith({
-      event: EVENTS.CONNECT_ACCOUNT,
-      account,
-    });
+    try {
+      const account = {
+        id: 10000,
+        account: 'test@test.com',
+      };
+      wrapper.vm.handleAuthResult({
+        account,
+        access_token: 'token',
+      });
+      expect(store.messenger.send).toHaveBeenLastCalledWith({
+        event: EVENTS.CONNECT_ACCOUNT,
+        account,
+        accountToken: loaderTrusted ? 'token' : undefined,
+      });
+    } finally {
+      store.commit({
+        type: 'setLoaderTrusted',
+        trusted: false,
+      });
+    }
   });
 
   test('should send removeAccount event on removeAccount', () => {

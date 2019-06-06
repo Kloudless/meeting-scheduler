@@ -1,0 +1,13 @@
+div
+  Title Delete Event
+  div.mt-5.headline
+    | Are you sure you want to delete 
+    span.success--text {{ meetingWindow.title }}
+    | ?
+  div.mt-5
+    p
+      Button(@click="cancel")
+        | No, go back to editing this event
+    p
+      Button(@click="submit", :loading="loading.submit", color="error")
+        | Yes, delete this event!

@@ -18,5 +18,9 @@ export default {
       default: true,
     },
     click: Function,
+    color: {
+      type: String,
+      default: 'primary',
+    },
   },
 };

@@ -4,7 +4,7 @@
  */
 /* eslint-disable no-console, class-methods-use-this */
 import './loader.scss';
-import EventMessenger from './event-messenger';
+import EventMessenger from 'event-messenger';
 import {
   ROLES,
   EVENTS,
@@ -18,7 +18,7 @@ const globalOptions = {
   baseUrl: BASE_URL,
   schedulerPath: SCHEDULER_PATH,
 };
-EventMessenger.setSchedulerOrigin(globalOptions.schedulerPath);
+EventMessenger.setTargetOrigin(ROLES.VIEW, globalOptions.schedulerPath);
 
 class MeetingScheduler {
   constructor() {
@@ -30,7 +30,7 @@ class MeetingScheduler {
     this.launched = false;
     this.messenger = new EventMessenger({
       id: this.id,
-      category: ROLES.LOADER,
+      role: ROLES.LOADER,
       onMessage: this.onMessage.bind(this),
     });
     this.events = {};
@@ -140,6 +140,9 @@ class MeetingScheduler {
         + ' data because the widget could not verify if the current domain'
         + ' is trusted',
       );
+    }
+    if (setup && setup.meetingWindowId && !setup.accountToken) {
+      errors.push('accountToken is required to edit meeting window');
     }
     if (schedule && !schedule.meetingWindowId) {
       errors.push('meetingWindowId is required for schedule view.');
@@ -270,8 +273,9 @@ class MeetingScheduler {
           options: {
             ...this.options,
             globalOptions,
-            // element will be set inside iframe
+            // element will be set inside the view
             element: null,
+            targetPath: window.location.href,
           },
         });
         return;
@@ -339,7 +343,10 @@ class MeetingScheduler {
         if (typeof options[name] !== 'undefined' && options[name] !== null) {
           globalOptions[name] = options[name];
           if (name === 'schedulerPath') {
-            EventMessenger.setSchedulerOrigin(globalOptions.schedulerPath);
+            EventMessenger.setTargetOrigin(
+              ROLES.VIEW,
+              globalOptions.schedulerPath,
+            );
           }
         }
       });

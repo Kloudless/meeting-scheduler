@@ -1,12 +1,12 @@
 import { mapState } from 'vuex';
-import { EVENTS } from 'constants';
+import { SUBMIT_STATUS, EVENTS } from 'constants';
 import Title from '../common/Title';
 import TextInput from '../common/TextInput';
 import Button from '../common/Button';
 
 
 export default {
-  name: 'MeetingWindowDone',
+  name: 'MeetingWindowCompletion',
   components: {
     Title,
     TextInput,
@@ -14,12 +14,36 @@ export default {
   },
   data() {
     const { state } = this.$store;
+    const { params } = this.$route;
+    const { submitStatus } = params;
+
+    const actionButtonText = {
+      close: 'Finish',
+    };
+
+    if (submitStatus === SUBMIT_STATUS.CREATED) {
+      actionButtonText.restart = 'Create Another Event';
+    }
+
+    let action = '';
+    switch (submitStatus) {
+      case SUBMIT_STATUS.CREATED:
+        action = 'created';
+        break;
+      case SUBMIT_STATUS.UPDATED:
+        action = 'updated';
+        break;
+      case SUBMIT_STATUS.DELETED:
+        action = 'deleted';
+        break;
+      default:
+    }
+
     return {
       scheduleUrl: state.scheduleUrl,
-      actionButtonText: {
-        close: 'Finish',
-        restart: 'Create Another Event',
-      },
+      action,
+      isDeleted: submitStatus === SUBMIT_STATUS.DELETED,
+      actionButtonText,
     };
   },
   computed: mapState({

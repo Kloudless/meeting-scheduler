@@ -1,10 +1,12 @@
 div
-  Title Event Created
+  Title.capitalize Event {{ action }}
   div.headline.mb-3.text-xs-left
-    | You have successfully created the event 
+    | You have successfully {{ action }} the event 
     span.success--text {{ meetingWindow.title }}
-  div.mt-5.mb-3.subheading.text-xs-left.accent--text.opacity-4 SHARE YOUR EVENT
-  TextInput(label=" ", readonly, :value="scheduleUrl").mb-5
+  template(v-if="!isDeleted")
+    div.mt-5.mb-3.subheading.text-xs-left.accent--text.opacity-4
+      | SHARE YOUR EVENT
+    TextInput(label=" ", readonly, :value="scheduleUrl").mb-5
   div.mt-5
     template(v-for="action in launchOptions.afterSubmit.actions")
       Button(

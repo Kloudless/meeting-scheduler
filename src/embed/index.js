@@ -21,6 +21,6 @@ if (window.parent !== window) {
     scheduler.messenger.connect(window.parent);
     scheduler.messenger.send({
       event: INTERNAL_EVENTS.VIEW_LOAD,
-    });
+    }, '*');
   }, 0);
 }
