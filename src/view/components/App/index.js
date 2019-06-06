@@ -23,7 +23,7 @@ export default {
       defaultRoute = '/timeSlots/';
     } else if (this.launchOptions.setup) {
       // In Setup view, get account detail if account info is passed in
-      const { accountToken } = this.launchOptions;
+      const { accountToken } = this.launchOptions.setup;
       if (accountToken) {
         this.$store.dispatch('account/setAccount', {
           token: accountToken,

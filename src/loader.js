@@ -141,6 +141,9 @@ class MeetingScheduler {
         + ' is trusted',
       );
     }
+    if (setup && setup.meetingWindowId && !setup.accountToken) {
+      errors.push('accountToken is required to edit meeting window');
+    }
     if (schedule && !schedule.meetingWindowId) {
       errors.push('meetingWindowId is required for schedule view.');
     }

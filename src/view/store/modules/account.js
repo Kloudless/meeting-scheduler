@@ -29,9 +29,11 @@ export default {
     },
   },
   actions: {
-    setAccount({ dispatch, commit }, payload) {
+    setAccount({ dispatch, commit, rootState }, payload) {
       const { id, account, token } = payload;
       let setAccountPromise;
+
+      const isEditWindow = rootState.launchOptions.setup.meetingWindowId;
 
       commit({
         type: 'setAccount',
@@ -40,7 +42,7 @@ export default {
         token,
       });
       // account is included in authenticatorjs response
-      if (account) {
+      if (account || isEditWindow) {
         setAccountPromise = Promise.resolve();
       } else {
         // if initialized via Meeting Scheduler param, query account detail
@@ -66,32 +68,34 @@ export default {
         }, { root: true });
       }
 
-      setAccountPromise.then(() => {
-        dispatch('api/request', {
-          options: {
-            api: 'account',
-            uri: 'cal/calendars',
-            loading: 'account/calendar',
-            tokenType: 'account',
-            onSuccess: (data) => {
-              const calendars = data.objects || [];
-              commit({
-                type: 'setCalendars',
-                calendars: calendars.map(obj => ({
-                  id: obj.id,
-                  name: obj.name,
-                })),
-              });
+      if (!isEditWindow) {
+        setAccountPromise.then(() => {
+          dispatch('api/request', {
+            options: {
+              api: 'account',
+              uri: 'cal/calendars',
+              loading: 'account/calendar',
+              tokenType: 'account',
+              onSuccess: (data) => {
+                const calendars = data.objects || [];
+                commit({
+                  type: 'setCalendars',
+                  calendars: calendars.map(obj => ({
+                    id: obj.id,
+                    name: obj.name,
+                  })),
+                });
+              },
+              onError: () => {
+                commit({
+                  type: 'setCalendars',
+                  calendars: [],
+                });
+              },
             },
-            onError: () => {
-              commit({
-                type: 'setCalendars',
-                calendars: [],
-              });
-            },
-          },
-        }, { root: true });
-      });
+          }, { root: true });
+        });
+      }
     },
   },
 };

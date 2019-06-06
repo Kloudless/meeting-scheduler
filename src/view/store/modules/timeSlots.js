@@ -36,38 +36,23 @@ export default {
     },
   },
   actions: {
-    getTimeSlots({ dispatch, commit }) {
-      const getMeetingWindowPromise = dispatch('api/request', {
+    async getTimeSlots({ dispatch, commit, rootState }) {
+      const meetingWindow = await dispatch(
+        'meetingWindow/getMeetingWindow', {
+          meetingWindowId: rootState.launchOptions.schedule.meetingWindowId,
+        }, { root: true },
+      );
+      const timeSlots = await dispatch('api/request', {
         options: {
           method: 'get',
-          tokenType: 'meetingWindow',
-          uri: 'windows/public',
-          onSuccess: (responseData) => {
-            commit({
-              type: 'meetingWindow/setMeetingWindow',
-              meetingWindow: responseData,
-            }, { root: true });
-            return responseData.id;
-          },
+          uri: `windows/${meetingWindow.id}/time-slots`,
+          loading: 'timeSlots/timeSlots',
         },
       }, { root: true });
-
-      return getMeetingWindowPromise.then(meetingWindowId => (
-        dispatch('api/request', {
-          options: {
-            method: 'get',
-            tokenType: 'meetingWindow',
-            uri: `windows/${meetingWindowId}/time-slots`,
-            loading: 'timeSlots/timeSlots',
-            onSuccess: (responseData) => {
-              commit({
-                type: 'setTimeSlots',
-                availableSlots: responseData.time_slots,
-              });
-            },
-          },
-        }, { root: true })
-      ));
+      commit({
+        type: 'setTimeSlots',
+        availableSlots: timeSlots.time_slots,
+      });
     },
     /**
      * Schedule the selected time slot.
@@ -89,7 +74,6 @@ export default {
         type: 'api/request',
         options: {
           method: 'post',
-          tokenType: 'meetingWindow',
           data: json,
           uri: `windows/${meetingWindowId}/schedule`,
           loading: 'timeSlots/submit',

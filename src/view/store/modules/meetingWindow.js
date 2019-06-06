@@ -40,72 +40,116 @@ export default {
     return {
       id: null,
       title: '',
-      duration: '',
+      duration: 15,
       organizer: '',
       location: '',
       description: '',
       access: '',
       timeZone: moment.tz.guess(),
-      weekday: '',
+      weekday: '*',
       beginHour: '08:00:00',
       endHour: '17:00:00',
       recaptchaSiteKey: null,
-      // TODO: remove public_choice_token
-      public_choice_token: '',
     };
   },
   mutations: {
     update: common.mutations.update,
     setMeetingWindow(state, payload) {
-      // eslint-disable-next-line
-      const { recaptcha_site_key, ...rest } = payload.meetingWindow;
-      Object.assign(state, rest, {
-        recaptchaSiteKey: recaptcha_site_key,
-      });
+      const { meetingWindow } = payload;
+      const data = {
+        id: meetingWindow.id,
+        title: meetingWindow.title,
+        duration: meetingWindow.duration,
+        organizer: meetingWindow.organizer,
+        location: meetingWindow.location,
+        description: meetingWindow.description,
+        timeZone: meetingWindow.time_zone,
+        recaptchaSiteKey: meetingWindow.recaptcha_site_key,
+      };
+      // parse availability from the first object in the list
+      if (meetingWindow.availability && meetingWindow.availability[0]) {
+        const availability = meetingWindow.availability[0];
+        data.weekday = availability.recurring.weekday;
+        data.beginHour = availability.start.substr(11, 8);
+        data.endHour = availability.end.substr(11, 8);
+      }
+      Object.assign(state, data);
     },
   },
   actions: {
-    submit({
+    async getMeetingWindow({ dispatch, commit }, payload) {
+      const meetingWindow = await dispatch({
+        type: 'api/request',
+        options: {
+          method: 'get',
+          uri: `windows/${payload.meetingWindowId}`,
+          loading: 'meetingWindow/meetingWindow',
+        },
+      }, { root: true });
+      commit({
+        type: 'setMeetingWindow',
+        meetingWindow,
+      });
+      return meetingWindow;
+    },
+    async submit({
       state,
       rootState,
       commit,
       dispatch,
-    }) {
-      const json = getJson(state);
-      json.booking_calendar_id = rootState.account.calendarId;
+    }, payload) {
+      const method = (payload.method || 'post').toLowerCase();
 
+      const json = getJson(state);
+      if (method === 'post') {
+        json.booking_calendar_id = rootState.account.calendarId;
+      }
 
       dispatch('event', {
         event: EVENTS.PRE_SUBMIT_MEETING_WINDOW,
       }, { root: true });
 
-      return dispatch('api/request', {
+      const uri = method === 'post' ? 'windows' : `windows/${state.id}`;
+
+      const responseData = await dispatch('api/request', {
         options: {
-          uri: 'windows',
+          uri,
           tokenType: 'account',
-          method: 'post',
+          method,
           data: json,
           loading: 'meetingWindow/submit',
         },
-      }, { root: true }).then((responseData) => {
-        commit({
-          type: 'setMeetingWindow',
-          meetingWindow: responseData,
-        });
-        commit({
-          type: 'setScheduleUrl',
-        }, { root: true });
-        dispatch('event', {
-          event: EVENTS.SUBMIT_MEETING_WINDOW,
-          scheduleUrl: rootState.scheduleUrl,
-          meetingWindow: responseData,
-          confidentialData: {
-            accountToken: rootState.account.token,
-          },
-        }, { root: true });
-        // TODO: remove public_choice_token
-        return responseData.public_choice_token || responseData.id;
+      }, { root: true });
+      commit({
+        type: 'setMeetingWindow',
+        meetingWindow: responseData,
       });
+      commit({
+        type: 'setScheduleUrl',
+      }, { root: true });
+      /* eslint-enable */
+      dispatch('event', {
+        event: EVENTS.SUBMIT_MEETING_WINDOW,
+        scheduleUrl: rootState.scheduleUrl,
+        meetingWindow: responseData,
+        confidentialData: {
+          accountToken: rootState.account.token,
+        },
+      }, { root: true });
+      return responseData.id;
+    },
+    async delete({ dispatch, state }) {
+      await dispatch('api/request', {
+        options: {
+          uri: `windows/${state.id}`,
+          tokenType: 'account',
+          method: 'delete',
+          loading: 'meetingWindow/submit',
+        },
+      }, { root: true });
+      dispatch('event', {
+        event: EVENTS.DELETE_MEETING_WINDOW,
+      }, { root: true });
     },
   },
 };

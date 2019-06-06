@@ -3,8 +3,11 @@ import { createStore } from '../jest/vue-utils';
 
 describe('meetingWindow module events tests', () => {
   const meetingWindowResponse = {
-    id: 'testId', name: 'test window',
+    id: 'meetingWindowId',
+    name: 'test window',
   };
+
+
   test.each([
     ['submit action should send preSubmit and submit event', true],
     ['submit action should only send preSubmit if request failed', false],
@@ -30,7 +33,7 @@ describe('meetingWindow module events tests', () => {
       },
     });
     try {
-      await store.dispatch('meetingWindow/submit');
+      await store.dispatch('meetingWindow/submit', { method: 'post' });
     } catch (e) { /* silent Promise.reject threw by api/request */ }
     expect(store.messenger.send).toHaveBeenNthCalledWith(1, {
       event: EVENTS.PRE_SUBMIT_MEETING_WINDOW,
@@ -48,6 +51,35 @@ describe('meetingWindow module events tests', () => {
       expect(store.messenger.send).not.toHaveBeenNthCalledWith(
         2, submitEventData,
       );
+    }
+  });
+
+  test.each([
+    ['delete action should send event', true],
+    ['delete action should not send event if request failed', false],
+  ])('%s', async (_, success) => {
+    const { store } = createStore({
+      modules: {
+        api: {
+          actions: {
+            request:
+              () => (success ?
+                Promise.resolve(meetingWindowResponse)
+                : Promise.reject(new Error(''))),
+          },
+        },
+      },
+    });
+    try {
+      await store.dispatch('meetingWindow/delete');
+    } catch (e) { /* silent Promise.reject threw by api/request */ }
+
+    if (success) {
+      expect(store.messenger.send).toHaveBeenNthCalledWith(1, {
+        event: EVENTS.DELETE_MEETING_WINDOW,
+      });
+    } else {
+      expect(store.messenger.send).not.toHaveBeenCalled();
     }
   });
 
@@ -79,7 +111,7 @@ describe('meetingWindow module events tests', () => {
         },
       },
     });
-    await store.dispatch('meetingWindow/submit');
+    await store.dispatch('meetingWindow/submit', { method: 'post' });
 
     const submitEventData = {
       event: EVENTS.SUBMIT_MEETING_WINDOW,
