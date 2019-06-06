@@ -748,7 +748,7 @@ Variable Name | Purpose | Default
 ----|---|---
 BASE_URL | URL to Kloudless API Server | https://api.kloudless.com
 SCHEDULER_PATH | URL for the scheduler page | https://static-cdn.kloudless.com/p/platform/scheduler/index.html
-SCHEDULE_URL | Default event URL format | https://kloudl.es/m/s/SCHEDULE_URL
+SCHEDULE_URL | Default schedule URL | https://kloudl.es/m/s/MEETING_WINDOW_ID
 
 
 ### Test the Build

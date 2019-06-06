@@ -8,7 +8,7 @@ const packages = require('./package.json');
  */
 const buildEnvVarDefaults = {
   BASE_URL: 'https://api.kloudless.com',
-  SCHEDULE_URL: 'https://kloudl.es/m/s/EVENT_ID',
+  SCHEDULE_URL: 'https://kloudl.es/m/s/MEETING_WINDOW_ID',
   SCHEDULER_PATH:
     'https://static-cdn.kloudless.com/p/platform/scheduler/index.html',
   // for development only
