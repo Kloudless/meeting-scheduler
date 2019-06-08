@@ -12,7 +12,7 @@ import DurationField from '../common/DurationField';
 import NumberField from '../common/NumberField';
 import WeekdayPicker from '../common/WeekdayPicker';
 import {
-  HOURS, TIME_SLOT_INTERVALS, DURATIONS, TIME_ZONES,
+  HOURS, TIME_SLOT_INTERVALS, DURATIONS, TIME_ZONES, WEEKDAYS, WEEKDAY_PRESETS,
 } from '../../utils/fixtures.js';
 
 export default {
@@ -39,11 +39,12 @@ export default {
         durations: DURATIONS,
         timeZones: TIME_ZONES,
         hours: HOURS,
+        weekdays: WEEKDAYS,
+        weekdayPresets: WEEKDAY_PRESETS,
       },
     };
   },
   beforeMount() {
-    this.updateHourOptions();
     if (this.isUpdating && !this.meetingWindow.id) {
       this.$store.dispatch({
         type: 'meetingWindow/getMeetingWindow',
@@ -68,14 +69,14 @@ export default {
         state.launchOptions.setup.meetingWindowId ?
           '3. Your Calendar' : '3. Connect Your Calendar'),
     }),
-    beginHourOptions() {
+    startHourOptions() {
       const { meetingWindow: { endHour }, options: { hours } } = this;
       const index = hours.findIndex(h => h.value === endHour);
       return hours.slice(0, index);
     },
     endHourOptions() {
-      const { meetingWindow: { beginHour }, options: { hours } } = this;
-      const index = hours.findIndex(h => h.value === beginHour);
+      const { meetingWindow: { startHour }, options: { hours } } = this;
+      const index = hours.findIndex(h => h.value === startHour);
       return hours.slice(index + 1);
     },
   },

@@ -11,6 +11,10 @@ import {
   EVENTS_LIST,
   INTERNAL_EVENTS,
 } from './constants';
+import { inRangeOf } from './view/utils/form_validator';
+import {
+  DURATIONS, TIME_ZONES, TIME_SLOT_INTERVALS, HOURS, WEEKDAYS,
+} from './view/utils/fixtures';
 
 let schedulerId = 0;
 
@@ -38,6 +42,81 @@ class MeetingScheduler {
 
   log(message, level = 'error') {
     console[level](`Meeting Scheduler: ${message}`);
+  }
+
+  _hasDefault(formOptions) {
+    return field => (
+      formOptions[field] && formOptions[field].default !== undefined
+      && formOptions[field].default !== null
+    );
+  }
+
+  _verifyFormOptions(formOptions) {
+    const errors = [];
+    // check text field
+    ['title', 'location', 'description', 'organizer']
+      .filter(this._hasDefault(formOptions))
+      .forEach((field) => {
+        const { [field]: { default: value } } = formOptions;
+        if (typeof value !== 'string') {
+          errors.push(`setup.formOptions.${field}: should be string.`);
+        }
+      });
+    // check options: [<field>, <options>]
+    [
+      ['duration', DURATIONS],
+      ['timeSlotInterval', TIME_SLOT_INTERVALS],
+      ['timeZone', TIME_ZONES],
+      // startHour cannot be the last one.
+      ['startHour', HOURS.slice(0, HOURS.length - 1)],
+      // endHour cannot be the first one.
+      ['endHour', HOURS.slice(1)],
+    ].filter(([field]) => this._hasDefault(formOptions)(field))
+      .forEach(([field, options]) => {
+        const { [field]: { default: value } } = formOptions;
+        if (!options.some(o => o.value === value)) {
+          errors.push(`setup.formOptions.${field}: invalid value.`);
+        }
+      });
+
+    // check startHour and endHour
+    if (this._hasDefault(formOptions)('startHour')
+        && this._hasDefault(formOptions)('endHour')) {
+      const startHour = formOptions.startHour.default;
+      const endHour = formOptions.endHour.default;
+      const startHourIndex = HOURS.findIndex(h => h.value === startHour);
+      const endHourIndex = HOURS.findIndex(h => h.value === endHour);
+      if (startHourIndex >= endHourIndex) {
+        errors.push(
+          'setup.formOptions.startHour should before setup.formOptions.endHour',
+        );
+      }
+    }
+
+    // check number field: [<field>, <min>, <max>]
+    [
+      ['timeBufferBefore', 0, 99],
+      ['timeBufferAfter', 0, 99],
+      ['availabilityRange', 1, 90],
+    ].filter(([field]) => this._hasDefault(formOptions)(field))
+      .forEach(([field, min, max]) => {
+        const { [field]: { default: value } } = formOptions;
+        if (!Number.isInteger(value) || inRangeOf(min, max)(value) !== true) {
+          errors.push(
+            `setup.formOptions.${field}: should be number. (${min}–${max})`,
+          );
+        }
+      });
+
+    // check weekday
+    if (this._hasDefault(formOptions)('weekday')) {
+      const { weekday: { default: values } } = formOptions;
+      if (!Array.isArray(values)
+          || !values.every(v => WEEKDAYS.some(o => o.value === v))) {
+        errors.push('setup.formOptions.weekday: should be array.');
+      }
+    }
+    return errors;
   }
 
   _applyDefaultOptions(options) {
@@ -151,6 +230,9 @@ class MeetingScheduler {
       errors.push(
         'element option is missing or does not match any HTML element',
       );
+    }
+    if (setup && setup.formOptions) {
+      errors.push(...this._verifyFormOptions(setup.formOptions));
     }
     const result = {
       valid: errors.length === 0,

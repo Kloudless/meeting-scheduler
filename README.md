@@ -55,6 +55,7 @@ using our [zero-configuration embed script](#embed-the-widget), or
   - [Save the Connected Account's Access Token](#save-the-connected-accounts-access-token)
   - [Edit Meeting Window](#edit-meeting-window)
   - [Display Your Own Result Screen](#display-your-own-result-screen)
+  - [Autofill the Setup View Form Fields](#autofill-the-setup-view-form-fields)
   - [And More...](#and-more)
 - [Methods](#methods)
   - [config(options)](#configoptions)
@@ -82,7 +83,7 @@ using our [zero-configuration embed script](#embed-the-widget), or
     - [error](#error)
 - [Meeting Window API](#meeting-window-api)
   - [Object Definition](#object-definition)
-    - [Meeting Window](#meeting-window-object)
+    - [Meeting Window Object](#meeting-window-object)
     - [Availability](#availability)
   - [Authentication](#authentication)
   - [Endpoints](#endpoints)
@@ -165,7 +166,7 @@ so you don't need to do anything else.
 To launch the widget with additional options, follow the steps below to integrate
 the widget into your app:
 
-#### Setup Trusted Domains for your Kloudless App
+#### Setup Trusted Domains for Your Kloudless App
 
 You need to add your website's domain to your Kloudless app's list of
 `Trusted Domains` on the [App Detail Page](https://developers.kloudless.com/applications/*/details/).
@@ -470,6 +471,35 @@ Refer to the [submitMeetingWindow](#submitmeetingwindow) and
 [schedule](#schedule) event for more details.
 
 
+### Autofill the Setup View Form Fields
+
+Fill in form fields automatically with values set in launch options.
+We've included an example below to set the default field values:
+
+```js
+scheduler.launch({
+  appId: '<your_app_id>',
+  setup: {
+    formOptions: {
+      title: { default: "title" },
+      description: { default: "description" },
+      location: { default: "location" },
+      duration: { default: 60 },
+      organizer: { default: "shirley" },
+      weekday: { default: ["MON", "TUE", "FRI"] },
+      startHour: { default: "12:00:00" },
+      endHour: { default: "14:00:00" },
+      timeSlotInterval: { default: 60 },
+      availabilityRange: { default: 60 },
+      timeBufferBefore: { default: 30 },
+      timeBufferAfter: { default: 10 }
+    }
+  }
+});
+```
+
+Refer to [options](#options) for details.
+
 ### And More...
 For more examples, please check the [launch(options)](#launch(options)) for a full
 list of available options and their usage.
@@ -527,7 +557,58 @@ An object containing the following keys:
         - `'close'`: Close and destroy the scheduler.
         - `'restart'`: Go back and create another Meeting Window. Note that
           this is not supported in the Edit Mode.
-
+  - `formOptions`: _Optional (default: see below)_: Object  
+    - An object to configure the form fields of the Setup View.
+      - `title.default`: _Optional (default: '')_: String  
+        The default event title.
+      - `description.default`: _Optional (default: '')_: String  
+        The default event description.
+      - `location.default`: _Optional (default: '')_: String  
+        The default event location.
+      - `duration.default`: _Optional (default: 15)_: Number  
+        The default event duration.
+      - `organizer.default`: _Optional (default: '')_: String  
+        The default name of the event organizer.
+      - `weekday.default`: _Optional (default: [])_: Array  
+        The default available weekdays.
+        Possible values: `SUN`, `MON`, `TUE`, `WED`, `THU`, `FRI`, and `SAT`.
+      - `startHour.default`: _Optional (default: '08:00:00')_: String  
+        The ISO 8601 timestamp without offset indicating the default available
+        start time.
+        Possible value: `00:00:00` – `23:00:00`.
+      - `endHour.default`: _Optional (default: '17:00:00')_: String  
+        The ISO 8601 timestamp without offset indicating the default available
+        end time.
+        Possible value: `01:00:00` – `00:00:00`.
+      - `timeSlotInterval.default`: _Optional (default: 30)_: Number  
+        The default minutes of time between each time slots.
+        Possible value: 15, 30, 45, 60.
+      - `availabilityRange.default`: _Optional (default: 30)_: Number  
+        The default days from current point of time to show time slots.
+        Possible value: 1 – 99.
+      - `timeBufferBefore.default`: _Optional (default: 0)_: Number  
+        The default minutes of time buffer before each scheduled event.
+        Possible value: 0 – 99.
+      - `timeBufferAfter.default`: _Optional (default: 0)_: Number  
+        The default minutes of time buffer after each scheduled event.
+        Possible value: 0 – 99.
+    - Example:
+      ```javascript
+      {
+        title: { default: "" },
+        description: { default: "" },
+        location: { default: "" },
+        duration: { default: 15 },  // 15, 30, 60
+        organizer: { default: "" },
+        weekday: { default: [] },   // SUN, MON, TUE, WED, THU, FRI, SAT
+        startHour: { default: "08:00:00" }, // 00:00:00 – 23:00:00
+        endHour: { default: "17:00:00" },   // 01:00:00 – 00:00:00
+        timeSlotInterval: { default: 30 },  // 15, 30, 45, 60
+        availabilityRange: { default: 30 }, // 1 – 90
+        timeBufferBefore: { default: 0 },   // 0 – 99
+        timeBufferAfter: { default: 0 }     // 0 – 99
+      }
+      ```
 
 - `schedule`: _Required for the Schedule View_: Object  
   Options to launch the Schedule View. Available options:
@@ -672,7 +753,7 @@ launched from a trusted domain of your app.
 
 ### Object Definition
 
-#### Meeting Window object
+#### Meeting Window Object
 
 The [Meeting Window](#meeting-window-object) object contains information used
 for scheduling events with the Kloudless Calendar.

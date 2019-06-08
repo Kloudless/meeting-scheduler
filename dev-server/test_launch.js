@@ -5,6 +5,7 @@
  * Used in dev test page and build test pages
  */
 import { EVENTS_LIST } from 'constants';
+import { SETUP, SCHEDULE } from './launchOptions';
 
 function stringify(obj) {
   return JSON.stringify(obj, null, 2);
@@ -38,23 +39,15 @@ window.setupTestLaunch = function setupTestLaunch(MeetingScheduler, appId) {
   // set default launch options
   const params = MeetingScheduler.getQueryParams();
 
-  const optionsInput = {
-    mode: 'attach',
-  };
+  const isSetupView = params.meetingWindowId === undefined;
+  const launchOptions = isSetupView ? SETUP : SCHEDULE;
 
   if (appId) {
-    optionsInput.appId = appId;
+    launchOptions.appId = appId;
   }
 
-  if (params.meetingWindowId) {
-    optionsInput.schedule = {
-      meetingWindowId: params.meetingWindowId,
-    };
-  } else {
-    optionsInput.setup = {
-      scheduleUrl:
-        `${window.location.origin}/?meetingWindowId=MEETING_WINDOW_ID`,
-    };
+  if (!isSetupView) {
+    launchOptions.schedule.meetingWindowId = params.meetingWindowId;
   }
-  options.value = stringify(optionsInput);
+  options.value = stringify(launchOptions);
 };

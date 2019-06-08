@@ -21,15 +21,17 @@ div
           @change="updateInput")
 
       Accordion(title="2. Add Event Availability")
-        WeekdayPicker(label='Available Days *', name="weekday", required,
-                      @change="updateInput")
+        WeekdayPicker(
+          required, label='Available Days *', name="weekday",
+          :options="options.weekdays", :value="meetingWindow.weekday",
+          :presets="options.weekdayPresets", @change="updateInput")
         InputLabel Available Hours *
         v-container(grid-list-xs)
           v-layout(row, wrap, align-center)
             v-flex(xs5)
               Dropdown(
-                required, label="", :options="beginHourOptions",
-                name="beginHour", :value="meetingWindow.beginHour",
+                required, label="", :options="startHourOptions",
+                name="startHour", :value="meetingWindow.startHour",
                 @update="updateInput")
             v-flex(xs2)
               div.hour-to to

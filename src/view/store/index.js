@@ -36,7 +36,8 @@ export const schema = {
     },
   },
   actions: {
-    initialize({ commit }, payload) {
+    async initialize({ commit, dispatch }, payload) {
+      const { launchOptions: { setup } } = payload;
       commit({
         type: 'setLaunchOptions',
         launchOptions: payload.launchOptions,
@@ -44,6 +45,12 @@ export const schema = {
       commit('meetingWindow/reset');
       commit('timeSlots/reset');
       commit('api/reset');
+      if (setup && setup.formOptions) {
+        await dispatch(
+          'meetingWindow/setupFormOptions',
+          { formOptions: setup.formOptions },
+        );
+      }
     },
     /**
      * This action acts as a helper to forward event message
