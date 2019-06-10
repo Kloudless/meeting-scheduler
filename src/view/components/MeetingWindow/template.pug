@@ -39,9 +39,8 @@ div
                 name="endHour", :value="meetingWindow.endHour",
                 @update="updateInput")
 
-      Accordion(title="3. Connect Your Calendar",
-                v-if="!isUpdating")
-        Authenticator
+      Accordion(:title="calendarSectionTitle")
+        Authenticator(:isUpdating="isUpdating")
         TextInput(name="organizer" label="Organizer *", :rules="['required']",
           :value="meetingWindow.organizer",
           placeholder="Johnny Appleseed", @update="updateInput")

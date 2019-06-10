@@ -42,7 +42,7 @@ export default {
         token,
       });
       // account is included in authenticatorjs response
-      if (account || isEditWindow) {
+      if (account) {
         setAccountPromise = Promise.resolve();
       } else {
         // if initialized via Meeting Scheduler param, query account detail

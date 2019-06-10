@@ -50,6 +50,9 @@ export default {
     isUpdating: state => Boolean(state.launchOptions.setup.meetingWindowId),
     loading: state => state.api.loading.meetingWindow,
     launchOptions: state => state.launchOptions.setup,
+    calendarSectionTitle: state => (
+      state.launchOptions.setup.meetingWindowId ?
+        '3. Your Calendar' : '3. Connect Your Calendar'),
   }),
   props: [
   ],

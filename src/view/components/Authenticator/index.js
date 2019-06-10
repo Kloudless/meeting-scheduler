@@ -10,8 +10,12 @@ export default {
     Dropdown,
     Button,
   },
-  props: [
-  ],
+  props: {
+    isUpdating: {
+      type: Boolean,
+      default: false,
+    },
+  },
   computed: mapState({
     account: state => state.account,
     calendars: state => (
