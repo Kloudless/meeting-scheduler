@@ -1,5 +1,5 @@
 div.mb-4
-  div(v-if="account.id")
+  div(v-if="account.token")
     v-layout(row, wrap, align-center)
       v-flex(xs2)
         v-icon(color="accent" large) account_circle
@@ -10,15 +10,16 @@ div.mb-4
               v-progress-circular(indeterminate, size="24", color="primary")
             div(v-else).text-xs-left.subheading {{ account.account }}
           v-flex(xs1)
-            div(v-if="!loading.account")
+            div(v-if="!loading.account && !isUpdating")
               v-icon(color="error" @click="removeAccount") cancel
-    v-layout(row, wrap, align-center).mt-4
+    v-layout(v-if="!isUpdating", row, wrap, align-center).mt-4
       v-flex(xs12)
         Dropdown(label="Calendar *", name="calendarId",
-                 :loading="loading.calendar",
+                 :loading="loading.account || loading.calendar",
                  :value="account.calendarId", :options="calendars"
                  @update="setCalendarId")
-
+  div(v-else-if="isUpdating").subheading.error--text
+    | Error: Invalid Account Token
   Button(v-else,
   :btnProps="{outline: true}",
   @click="onAddAccount")
