@@ -764,6 +764,8 @@ Feel free to contact us at support@kloudless.com with any feedback or questions.
 
 
 ## Changelog
+- 1.2.1
+  - Fixed: Missing fields when editing Meeting Window
 - 1.2.0
   - Add new launch options to control the result page
   - Add event support
