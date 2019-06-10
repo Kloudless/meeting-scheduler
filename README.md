@@ -665,8 +665,8 @@ launched from a trusted domain of your app.
 
 ### from v1.0, v1.1 to v1.2 and above
 
-1. Launch options has been redesigned in order to provide more configuration
-flexibility. Please refer to the following table to migrate your
+1. Launch options have been redesigned to provide flexibility with configuration.
+Please refer to the following table to migrate your
 existing configuration.
 
 Purpose | v1.1 and below | v1.2 and above
@@ -676,7 +676,7 @@ URL template for users to schedule the event (*1) | eventUrlFormat | setup.sched
 Launch the Schedule View | eventId | schedule.meetingWindowId
 
   - \*1: `EVENT_ID` in the URL template has to be changed to
-        `MEETING_WINDOW_ID` in order to generate schedule URL properly.
+        `MEETING_WINDOW_ID` in order to generate the schedule link properly.
 
 2. `appId` is now required for both the Setup and Schedule View.
 
