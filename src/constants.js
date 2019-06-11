@@ -14,8 +14,8 @@ export const EVENTS = {
   PRE_SUBMIT_MEETING_WINDOW: 'preSubmitMeetingWindow',
   SUBMIT_MEETING_WINDOW: 'submitMeetingWindow',
   DELETE_MEETING_WINDOW: 'deleteMeetingWindow',
-  PRE_CONFIRM_SCHEDULE: 'preConfirmSchedule',
-  CONFIRM_SCHEDULE: 'confirmSchedule',
+  PRE_SCHEDULE: 'preSchedule',
+  SCHEDULE: 'schedule',
   RESTART: 'restart',
   ERROR: 'error',
 };

@@ -35,12 +35,12 @@ describe('timeSlots module events tests', () => {
       await store.dispatch('timeSlots/submit', { recaptchaToken: '' });
     } catch (e) { /* silent Promise.reject threw by api/request */ }
     expect(store.messenger.send).toHaveBeenNthCalledWith(1, {
-      event: EVENTS.PRE_CONFIRM_SCHEDULE,
+      event: EVENTS.PRE_SCHEDULE,
     });
 
     const submitEventData = {
-      event: EVENTS.CONFIRM_SCHEDULE,
-      schedule: scheduleResponse,
+      event: EVENTS.SCHEDULE,
+      scheduledEvent: scheduleResponse,
     };
 
     if (success) {

@@ -67,7 +67,7 @@ export default {
       const json = getJson(state, payload.recaptchaToken);
       const meetingWindowId = rootState.meetingWindow.id;
       dispatch('event', {
-        event: EVENTS.PRE_CONFIRM_SCHEDULE,
+        event: EVENTS.PRE_SCHEDULE,
       }, { root: true });
 
       return dispatch({
@@ -80,8 +80,8 @@ export default {
         },
       }, { root: true }).then((responseData) => {
         dispatch('event', {
-          event: EVENTS.CONFIRM_SCHEDULE,
-          schedule: responseData,
+          event: EVENTS.SCHEDULE,
+          scheduledEvent: responseData,
         }, { root: true });
         return responseData;
       });

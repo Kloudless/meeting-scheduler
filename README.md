@@ -76,8 +76,8 @@ using our [zero-configuration embed script](#embed-the-widget), or
     - [preSubmitMeetingWindow](#presubmitmeetingwindow)
     - [submitMeetingWindow](#submitmeetingwindow)
     - [deleteMeetingWindow](#deletemeetingwindow)
-    - [preConfirmSchedule](#preconfirmschedule)
-    - [confirmSchedule](#confirmschedule)
+    - [preSchedule](#preschedule)
+    - [schedule](#schedule)
     - [restart](#restart)
     - [error](#error)
 - [Migration Guide](#migration-guide)
@@ -452,8 +452,8 @@ scheduler.launch({
   }
 });
 
-scheduler.on('confirmSchedule', (eventData) => {
-  console.log('event details:', eventData.schedule);
+scheduler.on('schedule', (eventData) => {
+  console.log('calendar event details:', eventData.scheduledEvent);
   // create your own result screen here
 })
 
@@ -461,7 +461,7 @@ scheduler.on('confirmSchedule', (eventData) => {
 
 
 Refer to [submitMeetingWindow](#submitmeetingwindow) and
-[confirmSchedule](#confirmschedule) event for details of the event data.
+[schedule](#schedule) event for details of the event data.
 
 
 ### And More...
@@ -533,7 +533,7 @@ An object containing the following keys:
       options:
       - `showResult`: _Optional (default: true)_: Boolean  
         If true, a result page would be displayed. Otherwise, the scheduler is
-        destroyed, you will need to use the [confirmSchedule](#confirmschedule)
+        destroyed, you will need to use the [schedule](#confirmschedule)
         event to catch the result.
       - `actions`: _Optional (default: ['close'])_: Array  
         A list of available actions for users to choose, supported actions:
@@ -632,16 +632,17 @@ Event Data:
 
 When a Meeting Window is deleted
 
-#### preConfirmSchedule
+#### preSchedule
 
-Before submitting a schedule in the Schedule View
+Before scheduling an event in the Schedule View
 
-#### confirmSchedule
+#### schedule
 
-When a schedule is submitted
+When an event is scheduled
 
 Event Data:
-  - schedule: _Object_, scheduled details
+  - scheduledEvent: _Object_, scheduled calendar event details, including
+  calendar event ID
 
 #### restart
 
@@ -764,6 +765,8 @@ Feel free to contact us at support@kloudless.com with any feedback or questions.
 
 
 ## Changelog
+- 1.2.2
+  - Event name corrections
 - 1.2.1
   - Fixed: Missing fields when editing Meeting Window
 - 1.2.0
