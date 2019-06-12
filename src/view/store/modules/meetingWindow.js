@@ -107,6 +107,7 @@ export default {
           method: 'get',
           uri: `windows/${payload.meetingWindowId}`,
           loading: 'meetingWindow/meetingWindow',
+          resetErrorMessage: false,
         },
       }, { root: true });
       commit({

@@ -17,19 +17,8 @@ export default {
     requestErrorMsg: state => state.api.errorMessage,
   }),
   created() {
-    let defaultRoute = '/meetingWindow/';
-    if (this.launchOptions.schedule) {
-      // Launch Schedule View if eventId is supplied
-      defaultRoute = '/timeSlots/';
-    } else if (this.launchOptions.setup) {
-      // In Setup view, get account detail if account info is passed in
-      const { accountToken } = this.launchOptions.setup;
-      if (accountToken) {
-        this.$store.dispatch('account/setAccount', {
-          token: accountToken,
-        });
-      }
-    }
+    const defaultRoute = this.launchOptions.setup ?
+      '/meetingWindow/' : '/timeSlots/';
     // in vue-router abstract mode, we need to set the initial route.
     this.$router.push(defaultRoute);
   },

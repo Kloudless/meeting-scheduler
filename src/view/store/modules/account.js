@@ -29,11 +29,10 @@ export default {
     },
   },
   actions: {
-    setAccount({ dispatch, commit, rootState }, payload) {
+    async setAccount({ dispatch, commit, rootState }, payload) {
       const { id, account, token } = payload;
-      let setAccountPromise;
 
-      const isEditWindow = rootState.launchOptions.setup.meetingWindowId;
+      const isEditMode = rootState.launchOptions.setup.meetingWindowId;
 
       commit({
         type: 'setAccount',
@@ -42,59 +41,64 @@ export default {
         token,
       });
       // account is included in authenticatorjs response
-      if (account) {
-        setAccountPromise = Promise.resolve();
-      } else {
+      if (!account) {
         // if initialized via Meeting Scheduler param, query account detail
         // to get account name
-        setAccountPromise = dispatch('api/request', {
-          options: {
-            api: 'account',
-            uri: '',
-            loading: 'account/account',
-            tokenType: 'account',
-            onSuccess: (accountObj) => {
-              commit({
-                type: 'setAccount',
-                id: accountObj.id,
-                account: accountObj.account,
-                token,
-              });
+        try {
+          const accountObj = await dispatch('api/request', {
+            options: {
+              api: 'account',
+              uri: '',
+              loading: 'account/account',
+              tokenType: 'account',
+              resetErrorMessage: false,
             },
-            onError: () => {
-              commit('reset');
-            },
-          },
-        }, { root: true });
+          }, { root: true });
+
+          commit({
+            type: 'setAccount',
+            id: accountObj.id,
+            account: accountObj.account,
+            token,
+          });
+        } catch (exception) {
+          if (isEditMode) {
+            // block edit mode if token is invalid
+            throw exception;
+          } else {
+            // for create mode, reset the module, and let the view continue
+            // to function
+            commit('reset');
+            return;
+          }
+        }
       }
 
-      if (!isEditWindow) {
-        setAccountPromise.then(() => {
-          dispatch('api/request', {
+      if (!isEditMode) {
+        // get calendars for create mode
+        try {
+          const data = await dispatch('api/request', {
             options: {
               api: 'account',
               uri: 'cal/calendars',
               loading: 'account/calendar',
               tokenType: 'account',
-              onSuccess: (data) => {
-                const calendars = data.objects || [];
-                commit({
-                  type: 'setCalendars',
-                  calendars: calendars.map(obj => ({
-                    id: obj.id,
-                    name: obj.name,
-                  })),
-                });
-              },
-              onError: () => {
-                commit({
-                  type: 'setCalendars',
-                  calendars: [],
-                });
-              },
             },
           }, { root: true });
-        });
+          const calendars = data.objects || [];
+          commit({
+            type: 'setCalendars',
+            calendars: calendars.map(obj => ({
+              id: obj.id,
+              name: obj.name,
+            })),
+          });
+        } catch (exception) {
+          commit({
+            type: 'setCalendars',
+            calendars: [],
+          });
+        }
       }
     },
   },

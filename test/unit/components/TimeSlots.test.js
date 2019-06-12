@@ -3,7 +3,7 @@ import { EVENTS } from 'constants';
 import { getWrapper, createStore } from '../jest/vue-utils';
 
 // disable making API requests when mounting TimeSlots view
-TimeSlots.mounted = jest.fn();
+TimeSlots.beforeMount = jest.fn();
 
 describe('afterSchedule config tests', () => {
   test.each([

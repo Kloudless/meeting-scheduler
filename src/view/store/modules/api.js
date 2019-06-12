@@ -59,6 +59,7 @@ export default {
       const options = Object.assign({
         method: 'GET',
         api: 'meetings',
+        resetErrorMessage: true,
       }, payload.options);
 
       let prefix;
@@ -113,9 +114,11 @@ export default {
 
       return promise
         .then((response) => {
-          dispatch('setErrorMessage', {
-            message: null,
-          });
+          if (options.resetErrorMessage) {
+            dispatch('setErrorMessage', {
+              message: null,
+            });
+          }
           return (options.onSuccess || Object)(response.data);
         }).catch((error) => {
           let message;

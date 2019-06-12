@@ -17,7 +17,7 @@ export default {
     return { rules: [isRequired] };
   },
   props: {
-    isUpdating: {
+    isEditMode: {
       type: Boolean,
       default: false,
     },

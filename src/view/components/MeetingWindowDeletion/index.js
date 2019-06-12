@@ -12,7 +12,6 @@ export default {
   },
   computed: mapState({
     meetingWindow: state => state.meetingWindow,
-    hasCalendar: state => Boolean(state.account.calendarId),
     loading: state => state.api.loading.meetingWindow,
     launchOptions: state => state.launchOptions.setup,
   }),

@@ -46,11 +46,12 @@ describe('Mode check test', () => {
     ['Edit mode should show delete button', {
       setup: {
         meetingWindowId: 'windowId',
+        accountToken: 'accountToken',
       },
       expectedToHaveSubmit: true,
       expectedToHaveDelete: true,
     }],
-  ])('%s', (_, params) => {
+  ])('%s', async (_, params) => {
     const { store } = createStore({
       state: {
         launchOptions: {
@@ -58,6 +59,13 @@ describe('Mode check test', () => {
         },
       },
       modules: {
+        account: {
+          initState() {
+            return {
+              account: 'account',
+            };
+          },
+        },
         api: {
           actions: {
             request: () => (Promise.resolve('')),
@@ -66,7 +74,10 @@ describe('Mode check test', () => {
       },
     });
     store.state.meetingWindow.id = 'windowId';
-    const wrapper = getWrapper(MeetingWindow, { store });
+    const wrapper = getWrapper(MeetingWindow, {
+      store,
+    });
+    await wrapper.vm.$nextTick();
     const buttons = wrapper.findAll(Button);
     expect(buttons.filter(c => c.classes('action-submit')).length)
       .toBe(params.expectedToHaveSubmit ? 1 : 0);
@@ -74,44 +85,64 @@ describe('Mode check test', () => {
       .toBe(params.expectedToHaveDelete ? 1 : 0);
   });
 
-  test('Should not render the view until getting data for edit mode',
-    async () => {
-      const promise = new Promise((resolve) => {
-        // do not resolve immediately so that we can test the view
-        // before / after calling getMeetingWindow action
-        setTimeout(resolve, 1);
-      });
-
-      // replace API request with mock promise
-      const getMeetingWindow = jest.fn(() => promise);
-
-      const { store } = createStore({
-        state: {
-          launchOptions: {
-            setup: {
-              meetingWindowId: 'windowId',
-            },
+  test.each([
+    ['getMeetingWindow and setAccount failed, should not launch view', {
+      getMeetingWindow: false, setAccount: false, shouldLaunchView: false,
+    }],
+    ['getMeetingWindow succeed, setAccount failed, should not launch view', {
+      getMeetingWindow: true, setAccount: false, shouldLaunchView: false,
+    }],
+    ['getMeetingWindow failed, setAccount succeed, should not launch view', {
+      getMeetingWindow: false, setAccount: true, shouldLaunchView: false,
+    }],
+    ['getMeetingWindow succeed, setAccount succeed, should launch view', {
+      getMeetingWindow: true, setAccount: true, shouldLaunchView: true,
+    }],
+  ])('Edit Mode: %s', async (_, params) => {
+    const { store } = createStore({
+      state: {
+        launchOptions: {
+          setup: {
+            meetingWindowId: 'windowId',
+            accountToken: 'token',
           },
         },
-        modules: {
-          meetingWindow: {
-            actions: {
-              getMeetingWindow,
-            },
-          },
-          api: {
-            actions: {
-              request: () => (Promise.resolve('')),
-            },
+      },
+      modules: {
+        meetingWindow: {
+          actions: {
+            getMeetingWindow: () => (
+              params.getMeetingWindow ? Promise.resolve() : Promise.reject()
+            ),
           },
         },
-      });
-      const wrapper = getWrapper(MeetingWindow, {
-        store,
-      });
-      // initially the view should be launched with just loading screen
-      expect(wrapper.findAll(TextInput).length).toBe(0);
-      await promise;
-      expect(wrapper.findAll(TextInput).length > 0).toBe(true);
+        account: {
+          actions: {
+            setAccount: () => (
+              params.setAccount ? Promise.resolve() : Promise.reject()
+            ),
+          },
+        },
+        api: {
+          actions: {
+            request: () => (Promise.resolve('')),
+          },
+        },
+      },
     });
+
+    const wrapper = getWrapper(MeetingWindow, {
+      store,
+    });
+    // initially the view should be launched with just loading screen
+    expect(wrapper.findAll(TextInput).length).toBe(0);
+    await wrapper.vm.$nextTick();
+    if (params.shouldLaunchView) {
+      // should render TextInputs if view is expected to be launched
+      expect(wrapper.findAll(TextInput).length > 0).toBe(true);
+    } else {
+      // should not render any TextInput if view is expected to be not launched
+      expect(wrapper.findAll(TextInput).length).toBe(0);
+    }
+  });
 });

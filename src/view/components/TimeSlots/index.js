@@ -53,13 +53,14 @@ export default {
       return slotGroups;
     },
   }),
-  mounted() {
+  beforeMount() {
     if (!this.meetingWindow.id) {
       this.$store.dispatch({
         type: 'meetingWindow/getMeetingWindow',
         meetingWindowId: this.launchOptions.meetingWindowId,
       }).then(() => {
         if (this.meetingWindow.recaptchaSiteKey) {
+          this.enableRecaptcha = true;
           this.loadRecaptchaScript().then(() => {
             const lang = 'en';
             this.recaptchaId = grecaptcha.render('recaptcha', {
@@ -70,7 +71,6 @@ export default {
               isolated: true,
               lang,
             });
-            this.enableRecaptcha = true;
           });
         }
       });

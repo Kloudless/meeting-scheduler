@@ -45,23 +45,39 @@ export default {
     };
   },
   beforeMount() {
-    if (this.isUpdating && !this.meetingWindow.id) {
-      this.$store.dispatch({
+
+    const { accountToken, meetingWindowId } = this.launchOptions;
+    const promises = [];
+
+    if (accountToken && !this.hasAccount) {
+      promises.push(this.$store.dispatch('account/setAccount', {
+        token: accountToken,
+      }));
+    }
+
+    if (this.isEditMode && !this.meetingWindow.id) {
+      promises.push(this.$store.dispatch({
         type: 'meetingWindow/getMeetingWindow',
-        meetingWindowId: this.launchOptions.meetingWindowId,
-      }).then(() => {
-        // only render inputs after meetingWindow is set, to properly
-        // load initial values on inputs
+        meetingWindowId,
+      }));
+    }
+
+    if (this.isEditMode) {
+      // edit mode can only be launched if account token is valid
+      // and the window exists
+      Promise.all(promises).then(() => {
         this.canRenderView = true;
-      });
+      }).catch(() => {});
     } else {
+      // for create mode, we don't care if the token is invalid or not
       this.canRenderView = true;
     }
   },
   computed: {
     ...mapState({
       meetingWindow: state => state.meetingWindow,
-      isUpdating: state => Boolean(state.launchOptions.setup.meetingWindowId),
+      isEditMode: state => Boolean(state.launchOptions.setup.meetingWindowId),
+      hasAccount: state => Boolean(state.account.account),
       loading: state => state.api.loading.meetingWindow,
       launchOptions: state => state.launchOptions.setup,
       calendarSectionTitle: state => (
@@ -93,7 +109,7 @@ export default {
       if (afterSubmit.showResult) {
         this.$router.push(
           `/meetingWindowCompletion/${
-            this.isUpdating ? SUBMIT_STATUS.UPDATED : SUBMIT_STATUS.CREATED
+            this.isEditMode ? SUBMIT_STATUS.UPDATED : SUBMIT_STATUS.CREATED
           }`,
         );
       } else {
@@ -107,7 +123,7 @@ export default {
         return;
       }
       const promise = this.$store.dispatch('meetingWindow/submit', {
-        method: this.isUpdating ? 'patch' : 'post',
+        method: this.isEditMode ? 'patch' : 'post',
       });
       promise.then(this.afterSubmit);
     },

@@ -65,7 +65,7 @@ div
                 suffix="mins", @change="updateInput")
 
       Accordion(:title="calendarSectionTitle")
-        Authenticator(:isUpdating="isUpdating")
+        Authenticator(:isEditMode="isEditMode")
         TextInput(name="organizer" label="Organizer *", required,
                   :value="meetingWindow.organizer",
                   placeholder="Johnny Appleseed", @update="updateInput")
@@ -75,8 +75,8 @@ div
       div.mt-5
         Button.action-submit(
           @click="submit", :loading="loading.submit", :disabled="!isFormValid")
-          | {{ isUpdating ? 'Update' : 'Create' }} Event
+          | {{ isEditMode ? 'Update' : 'Create' }} Event
         Button.action-delete(
-            v-if="isUpdating" @click="deleteWindow", color="error")
+            v-if="isEditMode" @click="deleteWindow", color="error")
           | Delete Event
 
