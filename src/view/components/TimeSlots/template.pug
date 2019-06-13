@@ -1,51 +1,57 @@
 div
-  div(v-if="loading.timeSlots")
+  div(v-if="loading.meetingWindow")
     Title Retrieving Event Details...
-    v-progress-circular(size="70", color="primary", indeterminate)
   div(v-else)
     Title {{ stepTitles[step] }}
 
-    template(v-if="step === 0")
-      div.timeslots-scroll-panel
-        template(v-if="timeSlots.availableSlots.length")
-          template(v-for="(slots, date) in slotGroups")
-            div.text-xs-left.headline.accent--text.opacity-9.font-weight-medium
-              | {{ formatDate('date', date) }}
-            v-container(grid-list-xs)
-              v-layout(row wrap)
-                template(v-for="slot in slots")
-                  v-flex(xs4)
-                    Button(v-if="timeSlots.selectedSlot === slot",
-                          :padding="false"
-                          @click="selectTimeSlot(slot, false)").hour-block
-                      v-layout(row, wrap, align-center)
-                        v-flex(xs5)
-                          div.hour {{ formatDate('hour', slot.start) }}
-                          div.ampm.white--text.opacity-4
-                            | {{ formatDate('amPm', slot.start) }}
-                        v-flex(xs2)
-                          div.hour-to.white--text.opacity-4.pt-1 -
-                        v-flex(xs5)
-                          div.hour {{ formatDate('hour', slot.end) }}
-                          div.ampm.white--text.opacity-4
-                            | {{ formatDate('amPm', slot.end) }}
-                    Button(v-else, :padding="false",
-                          :btnProps="{depressed: true, outline: true}",
-                          @click="selectTimeSlot(slot, true)").hour-block
-                      span.hour.pr-1 {{ formatDate('hour', slot.start) }}
-                      span.ampm.primary--text.opacity-4
+  template(v-if="step === 0")
+    div.timeslots-scroll-panel
+      template(v-if="meetingWindow.id")
+        div(v-for="(slots, date) in slotGroups", :key="date")
+          div.text-xs-left.headline.accent--text.opacity-9.font-weight-medium
+            | {{ formatDate('date', date) }}
+          v-container(grid-list-xs)
+            v-layout(row wrap)
+              v-flex(xs4, v-for="(slot, index) in slots", :key="index")
+                Button(v-if="timeSlots.selectedSlot === slot",
+                      :padding="false"
+                      @click="selectTimeSlot(slot, false)").hour-block
+                  v-layout(row, wrap, align-center)
+                    v-flex(xs5)
+                      div.hour {{ formatDate('hour', slot.start) }}
+                      div.ampm.white--text.opacity-4
                         | {{ formatDate('amPm', slot.start) }}
-        div(v-else).headline.accent--text
-          | Sorry. There are no available times for this event.
-      v-container(grid-list-xs).px-0
-        v-layout(row wrap)
-          v-flex(xs8)
-            div.text-xs-left.subheading.success--text
-              | All times are in {{timeZone}} time
-          v-flex(xs4)
-            div.text-xs-right
-              Button(@click="moveStep(1)",
-                    :disabled="!timeSlots.selectedSlot").mx-0 Next
+                    v-flex(xs2)
+                      div.hour-to.white--text.opacity-4.pt-1 -
+                    v-flex(xs5)
+                      div.hour {{ formatDate('hour', slot.end) }}
+                      div.ampm.white--text.opacity-4
+                        | {{ formatDate('amPm', slot.end) }}
+                Button(v-else, :padding="false",
+                      :btnProps="{depressed: true, outline: true}",
+                      @click="selectTimeSlot(slot, true)").hour-block
+                  span.hour.pr-1 {{ formatDate('hour', slot.start) }}
+                  span.ampm.primary--text.opacity-4
+                    | {{ formatDate('amPm', slot.start) }}
+        InfiniteLoading(@infinite="infiniteHandler")
+          div(slot="spinner")
+            div.progress-container
+              v-progress-circular(size="70", color="primary", indeterminate)
+          div(slot="no-more")
+            .headline.accent--text
+            | No more time slots.
+          div(slot='no-results')
+            .headline.accent--text
+            | Sorry. There are no available times for this event.
+    v-container(grid-list-xs).px-0
+      v-layout(row wrap)
+        v-flex(xs8)
+          div.text-xs-left.subheading.success--text
+            | All times are in {{timeZone}} time
+        v-flex(xs4)
+          div.text-xs-right
+            Button(@click="moveStep(1)",
+                  :disabled="!timeSlots.selectedSlot").mx-0 Next
 
   template(v-if="step === 1")
     div.timeslots-scroll-panel
