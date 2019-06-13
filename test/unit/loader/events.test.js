@@ -86,9 +86,17 @@ describe('loader on and off with multiple callbacks', () => {
 
 describe('Actions for certain events', () => {
   scheduler = new MeetingScheduler();
-  test('Should launch the view when receiving view loaded event', () => {
+  test('Should launch the view when receiving view loaded event', async () => {
     scheduler.messenger.send = jest.fn();
+    // call launch() so that iframe can be created
+    scheduler.launch({ appId: 'appId', setup: {} });
+
     scheduler.onMessage({ event: INTERNAL_EVENTS.VIEW_LOAD });
+
+    // this message is only sent after the loader is launched
+    /* eslint-disable no-underscore-dangle */
+    await scheduler._iframePromise;
+    /* eslint-enable */
     expect(scheduler.messenger.send).toBeCalledWith(
       expect.objectContaining({
         event: INTERNAL_EVENTS.VIEW_LAUNCH,

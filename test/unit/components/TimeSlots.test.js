@@ -2,10 +2,19 @@ import TimeSlots from 'view/components/TimeSlots';
 import { EVENTS } from 'constants';
 import { getWrapper, createStore } from '../jest/vue-utils';
 
-// disable making API requests when mounting TimeSlots view
-TimeSlots.beforeMount = jest.fn();
+
+const { beforeMount } = TimeSlots;
 
 describe('afterSchedule config tests', () => {
+  beforeAll(() => {
+    // disable making API requests when mounting TimeSlots view
+    TimeSlots.beforeMount = jest.fn();
+  });
+
+  afterAll(() => {
+    TimeSlots.beforeMount = beforeMount;
+  });
+
   test.each([
     ['Show result after submit', true],
     ['Destroy the view after submit', false],
@@ -36,6 +45,14 @@ describe('afterSchedule config tests', () => {
 });
 
 describe('if time slot start to load tests', () => {
+  beforeAll(() => {
+    // disable making API requests when mounting TimeSlots view
+    TimeSlots.beforeMount = jest.fn();
+  });
+
+  afterAll(() => {
+    TimeSlots.beforeMount = beforeMount;
+  });
   test.each([
     ['already has time slots, hasMore = true', true, true, 1, 0, null],
     ['already has time slots, hasMore = false', true, false, 1, 1,
@@ -85,5 +102,121 @@ describe('if time slot start to load tests', () => {
       expect(infiniteHandlerState[calledOrder[1]])
         .toHaveBeenCalledAfter(infiniteHandlerState[calledOrder[0]]);
     }
+  });
+});
+
+describe('Recaptcha tests', () => {
+
+  beforeAll(() => {
+    // mock window.grecaptcha object
+    window.grecaptcha = {
+      render: jest.fn(),
+      execute: jest.fn(),
+    };
+  });
+
+  describe('Script tag tests', () => {
+    afterAll(() => {
+      // assume recaptcha key script tag finished loading
+      window.recaptchaLoaded();
+    });
+
+    test.each([
+      ['Should not add script tag if site key is not provided', false, 0],
+      ['Should add script tag if siteKey is provided', true, 1],
+      ['Should not add another script tag for the second time', true, 1],
+    ])('%s', async (_, hasSiteKey, numOfScriptTags) => {
+      const { store } = createStore({
+        state: {
+          launchOptions: {
+            schedule: {
+              meetingWindowId: 'meetingWindowId',
+            },
+          },
+        },
+        modules: {
+          meetingWindow: {
+            initState() {
+              return {
+                recaptchaSiteKey: hasSiteKey ? 'siteKey' : null,
+              };
+            },
+            actions: {
+              getMeetingWindow: () => Promise.resolve({}),
+            },
+          },
+        },
+      });
+
+      const wrapper = getWrapper(TimeSlots, {
+        store,
+      });
+
+      await wrapper.vm.$nextTick();
+
+      const scriptTags = document.querySelectorAll(
+        'script[src^="https://www.google.com/recaptcha/api.js"]',
+      );
+
+      expect(scriptTags.length).toBe(numOfScriptTags);
+    });
+  });
+
+  // This block depends on afterAll() above because recaptcha script is only
+  // loaded once and it has been done in previous tests
+  describe('Execute recaptcha on submit test', () => {
+    test.each([
+      [
+        'Should call vm.submit() on submit if siteKey is not provided',
+        false,
+      ],
+      [
+        'Should call grecaptcha.execute() on submit if siteKey is provided',
+        true,
+      ],
+    ])('%s', async (_, hasSiteKey) => {
+      const { store } = createStore({
+        state: {
+          launchOptions: {
+            schedule: {
+              meetingWindowId: 'meetingWindowId',
+            },
+          },
+        },
+        modules: {
+          meetingWindow: {
+            initState() {
+              return {
+                recaptchaSiteKey: hasSiteKey ? 'siteKey' : null,
+              };
+            },
+            actions: {
+              getMeetingWindow: () => Promise.resolve({}),
+            },
+          },
+        },
+      });
+
+      const wrapper = getWrapper(TimeSlots, {
+        store,
+      });
+
+      wrapper.vm.submit = jest.fn();
+
+      // wait for loadRecaptchaScript promise
+      await wrapper.vm.$nextTick();
+      wrapper.vm.executeRecaptcha();
+      // wait for executeRecaptcha to finish
+      await wrapper.vm.$nextTick();
+      await wrapper.vm.$nextTick();
+
+      if (hasSiteKey) {
+        expect(window.grecaptcha.execute).toHaveBeenCalled();
+        expect(wrapper.vm.submit).not.toHaveBeenCalled();
+      } else {
+        expect(window.grecaptcha.execute).not.toHaveBeenCalled();
+        expect(wrapper.vm.submit).toHaveBeenCalled();
+      }
+    });
   });
 });

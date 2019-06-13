@@ -40,7 +40,6 @@ class MeetingSchedulerView {
     });
     (async () => {
       await this.store.dispatch('initialize', { launchOptions });
-      this.store.dispatch('checkLoaderTrusted');
       // remove loading icon in iframe page
       const loading = document.getElementById('loading');
       if (loading) {
@@ -69,6 +68,7 @@ class MeetingSchedulerView {
   destroy() {
     if (this.vm) {
       this.vm.$destroy();
+      this.vm.$el.parentElement.innerHTML = '';
     }
   }
 }

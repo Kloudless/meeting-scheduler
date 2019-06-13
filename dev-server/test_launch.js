@@ -32,7 +32,7 @@ window.setupTestLaunch = function setupTestLaunch(MeetingScheduler, appId) {
   window.launchMeetingScheduler = (index) => {
     const launchOptions = JSON.parse(options.value);
     options.value = stringify(launchOptions);
-    launchOptions.element = `#kloudless-meeting-scheduler${index}`;
+    launchOptions.element = `#kloudless-meeting-scheduler-test${index}`;
     schedulers[index].launch(launchOptions);
   };
 

@@ -36,15 +36,33 @@ export const schema = {
     },
   },
   actions: {
-    async initialize({ commit, dispatch }, payload) {
+    async initialize({ state, commit, dispatch }, payload) {
       const { launchOptions: { setup } } = payload;
+      const shouldCheckLoaderOrigin
+        = state.launchOptions.appId !== payload.launchOptions.appId;
+
       commit({
         type: 'setLaunchOptions',
         launchOptions: payload.launchOptions,
       });
+
+      if (shouldCheckLoaderOrigin) {
+        dispatch('checkLoaderTrusted');
+      }
+
       commit('meetingWindow/reset');
       commit('timeSlots/reset');
       commit('api/reset');
+      if (setup && setup.accountToken
+          && state.account.token !== setup.accountToken) {
+        /** Reset account if accountToken is provided and not the same
+         * as current one in store.
+         * This would trigger account/setAccount action to re-retrieve
+         * account with the new account token.
+         */
+        commit('account/reset');
+      }
+
       if (setup && setup.formOptions) {
         await dispatch(
           'meetingWindow/setupFormOptions',

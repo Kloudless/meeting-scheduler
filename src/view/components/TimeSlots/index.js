@@ -8,6 +8,36 @@ import TextInput from '../common/TextInput';
 import Title from '../common/Title';
 import Button from '../common/Button';
 
+
+let onRecaptchaScriptLoad;
+/**
+* Load reCaptcha script
+*
+* @returns {Promise}
+*/
+function loadRecaptchaScript() {
+  if (!onRecaptchaScriptLoad) {
+    const recaptchaScript = document.createElement('script');
+    // TODO: modify the language of reCAPTCHA when we enable i18n
+    const lang = 'en';
+    recaptchaScript.src = 'https://www.google.com/recaptcha/api.js' +
+      `?onload=recaptchaLoaded&render=explicit&hl=${lang}`;
+    recaptchaScript.async = true;
+    recaptchaScript.defer = true;
+
+    onRecaptchaScriptLoad = new Promise((resolve) => {
+      if (typeof window !== 'undefined') {
+        // window.recaptchaLoaded will be called when reCaptcha script is
+        // loaded
+        window.recaptchaLoaded = resolve;
+      }
+    });
+    document.head.appendChild(recaptchaScript);
+  }
+  return onRecaptchaScriptLoad;
+}
+
+
 export default {
   name: 'TimeSlots',
   components: {
@@ -61,7 +91,7 @@ export default {
       }).then(() => {
         if (this.meetingWindow.recaptchaSiteKey) {
           this.enableRecaptcha = true;
-          this.loadRecaptchaScript().then(() => {
+          loadRecaptchaScript().then(() => {
             const lang = 'en';
             this.recaptchaId = grecaptcha.render('recaptcha', {
               sitekey: this.meetingWindow.recaptchaSiteKey,
@@ -115,32 +145,7 @@ export default {
       });
       promise.then(() => this.afterSubmit());
     },
-    /**
-     * Load reCaptcha script
-     *
-     * @returns {Promise}
-     */
-    loadRecaptchaScript() {
-      const recaptchaScript = document.createElement('script');
-      // TODO: modify the language of reCAPTCHA when we enable i18n
-      const lang = 'en';
-      recaptchaScript.src = 'https://www.google.com/recaptcha/api.js' +
-        `?onload=recaptchaLoaded&render=explicit&hl=${lang}`;
-      recaptchaScript.async = true;
-      recaptchaScript.defer = true;
 
-      this.onRecaptchaScriptLoad = new Promise((resolve) => {
-        if (typeof window !== 'undefined') {
-          // window.recaptchaLoaded will be called when reCaptcha script is
-          // loaded
-          window.recaptchaLoaded = resolve;
-        }
-      });
-
-      document.head.appendChild(recaptchaScript);
-
-      return this.onRecaptchaScriptLoad;
-    },
     /**
      * Run after reCAPTCHA successfully verified.
      *
@@ -164,7 +169,7 @@ export default {
     },
     executeRecaptcha() {
       if (this.enableRecaptcha) {
-        this.onRecaptchaScriptLoad.then(
+        onRecaptchaScriptLoad.then(
           () => grecaptcha.execute(this.recaptchaId),
         );
       } else {

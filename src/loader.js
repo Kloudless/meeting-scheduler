@@ -28,16 +28,19 @@ class MeetingScheduler {
   constructor() {
     schedulerId += 1;
     this.id = schedulerId;
+    this.options = null;
 
-    this.doms = {};
-    this.options = {};
-    this.launched = false;
     this.messenger = new EventMessenger({
       id: this.id,
       role: ROLES.LOADER,
       onMessage: this.onMessage.bind(this),
     });
     this.events = {};
+    this.viewContainer = null;
+
+    // flags to control if iframe should be displayed
+    this._launched = false;
+    this._viewLoaded = false;
   }
 
   log(message, level = 'error') {
@@ -135,12 +138,14 @@ class MeetingScheduler {
     } else {
       // for modal mode, ignore element option
       let parentElement
-        = document.getElementById('kloudless-meeting-scheduler');
+        = document.getElementById(`kloudless-meeting-scheduler-${this.id}`);
       if (!parentElement) {
         // create and append an empty div at the end of body
         // if the element does not exist yet
         parentElement = document.createElement('div');
-        parentElement.setAttribute('id', 'kloudless-meeting-scheduler');
+        parentElement.setAttribute(
+          'id', `kloudless-meeting-scheduler-${this.id}`,
+        );
         document.body.appendChild(parentElement);
       }
       _options.element = parentElement;
@@ -242,52 +247,18 @@ class MeetingScheduler {
     return result;
   }
 
-  config(options) {
-    if (this.launched) {
-      this.log('You cannot change options after widget is launched');
-      return false;
-    }
-    const _options = this._applyDefaultOptions(options);
-    this._convertOptions(_options);
-    const result = this._verifyOptions(_options);
-    result.warns.forEach((warn) => { this.log(warn, 'warn'); });
-    if (result.valid) {
-      this.options = _options;
-      return true;
-    }
-    result.errors.forEach((error) => { this.log(error, 'error'); });
-    return false;
-  }
-
-  /**
-   * Launch Meeting Scheduler
-   * @param {Object} options - launch options
-   * see README for available options
-   */
-  launch(options) {
-    if (this.launched) {
-      this.destroy();
-    }
-
-    if (!this.options) {
-      this.log('options were not specified or pre-configured.');
-      return this;
-    }
-
-    if (options) {
-      if (!this.config(options)) {
-        return this;
-      }
-    }
-
-    this.doms = {};
+  _createContainer() {
+    this._removeContainer();
 
     const _options = this.options;
+
     const parentElement = _options.element;
 
-    // empty the parent
-    parentElement.innerHTML = '';
-    this.doms.parentElement = parentElement;
+    const viewContainer = document.createElement('div');
+    viewContainer.setAttribute(
+      'class', 'kloudless-meeting-scheduler',
+    );
+    viewContainer.setAttribute('style', 'display:none');
 
     const container = document.createElement('div');
     container.setAttribute(
@@ -306,27 +277,92 @@ class MeetingScheduler {
       );
       modal.appendChild(overlay);
       modal.appendChild(container);
-      parentElement.append(modal);
+      viewContainer.append(modal);
       // launch the view inside modal
     } else {
-      parentElement.append(container);
+      viewContainer.append(container);
     }
+    parentElement.appendChild(viewContainer);
 
-    this.doms.container = container;
-    this.options = _options;
+    this.viewContainer = viewContainer;
 
     const iframe = document.createElement('iframe');
+
     iframe.setAttribute(
       'class', 'kloudless-meeting-scheduler-iframe',
     );
     iframe.setAttribute('src', `${globalOptions.schedulerPath}#${this.id}`);
     container.append(iframe);
-
-    this.doms.iframe = iframe;
     this.messenger.connect(iframe.contentWindow);
-    window.addEventListener('message', this.messageEventHandler);
-    this.launched = true;
+  }
+
+  config(options) {
+    const _options = this._applyDefaultOptions(options);
+    this._convertOptions(_options);
+    const result = this._verifyOptions(_options);
+    result.warns.forEach((warn) => { this.log(warn, 'warn'); });
+    if (result.valid) {
+      const shouldCreateContainer =
+        (!this.options || (this.options.mode !== _options.mode));
+      this.options = _options;
+      if (shouldCreateContainer) {
+        if (this._launched) {
+          // must destroy current view before creating a new one
+          this.destroy();
+        }
+        this._createContainer();
+      }
+      return true;
+    }
+    result.errors.forEach((error) => { this.log(error, 'error'); });
+    return false;
+  }
+
+  /**
+   * Launch Meeting Scheduler
+   * @param {Object} options - launch options
+   * see README for available options
+   */
+  launch(options) {
+    if (options) {
+      if (!this.config(options)) {
+        return this;
+      }
+    }
+
+    if (!this.options) {
+      this.log('options were not specified or pre-configured.');
+      return this;
+    }
+
+    if (!this.viewContainer) {
+      /** This condition is satisfied when destroy() is called, then
+       * launch() without options is called, and there is no config() call in
+       * between
+       */
+      this._createContainer();
+    }
+
+    this._launched = true;
+    this.viewContainer.setAttribute('style', '');
+    this._launchView();
     return this;
+  }
+
+  _launchView() {
+    // Only launch the view when view is full loaded and launch() is called
+    if (this._launched && this._viewLoaded) {
+      this.messenger.send({
+        event: INTERNAL_EVENTS.VIEW_LAUNCH,
+        options: {
+          ...this.options,
+          globalOptions,
+          // element will be set inside the view
+          element: null,
+          targetPath: window.location.href,
+        },
+      });
+    }
   }
 
   /**
@@ -350,16 +386,8 @@ class MeetingScheduler {
     /* eslint-enable */
     switch (event) {
       case INTERNAL_EVENTS.VIEW_LOAD: {
-        this.messenger.send({
-          event: INTERNAL_EVENTS.VIEW_LAUNCH,
-          options: {
-            ...this.options,
-            globalOptions,
-            // element will be set inside the view
-            element: null,
-            targetPath: window.location.href,
-          },
-        });
+        this._viewLoaded = true;
+        this._launchView();
         return;
       }
       case EVENTS.CLOSE: {
@@ -374,14 +402,20 @@ class MeetingScheduler {
     });
   }
 
-  destroy() {
-    if (this.launched) {
-      // empty the parent element
-      // if the view is launched in iframe, it will be removed as well
-      this.doms.parentElement.innerHTML = '';
-      this.launched = false;
-      this.onMessage({ event: 'destroy' });
+  _removeContainer() {
+    if (this.viewContainer) {
       this.messenger.disconnect();
+      this.viewContainer.remove();
+      this.viewContainer = null;
+      this._viewLoaded = false;
+    }
+  }
+
+  destroy() {
+    this._removeContainer();
+    if (this._launched) {
+      this.onMessage({ event: 'destroy' });
+      this._launched = false;
     }
   }
 

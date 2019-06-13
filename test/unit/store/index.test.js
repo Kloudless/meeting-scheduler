@@ -80,6 +80,54 @@ describe('checkLoaderTrusted should always set flag and be resolved', () => {
   });
 });
 
+describe('initialize action tests', () => {
+  /**
+   * These tests have to be executed together to get correct result.
+   */
+  const checkLoaderTrusted = jest.fn();
+  const { states, store } = createStore({
+    state: {
+      launchOptions: {},
+      loaderTrusted: false,
+    },
+    actions: {
+      checkLoaderTrusted,
+    },
+  });
+
+  const launchOptions = {
+    appId: 'appId',
+    setup: {},
+  };
+
+  test('Should dispatch checkLoaderTrusted',
+    async () => {
+      await store.dispatch('initialize', { launchOptions });
+      expect(checkLoaderTrusted).toHaveBeenCalledTimes(1);
+    });
+
+  test('Should not dispatch checkLoaderTrusted with the same appId',
+    async () => {
+      await store.dispatch('initialize', { launchOptions });
+      expect(checkLoaderTrusted).toHaveBeenCalledTimes(1);
+    });
+
+  test('Should dispatch checkLoaderTrusted again if appId is changed',
+    async () => {
+      launchOptions.appId = 'appId2';
+      await store.dispatch('initialize', { launchOptions });
+      expect(checkLoaderTrusted).toHaveBeenCalledTimes(2);
+    });
+
+  test('Should reset account if accountToken is changed',
+    async () => {
+      states.account.token = 'accountToken';
+      launchOptions.setup.accountToken = 'accountToken2';
+      await store.dispatch('initialize', { launchOptions });
+      expect(states.account.token).toBe(null);
+    });
+});
+
 describe('Others', () => {
   test('test generate schedule Url', () => {
     const { states, store } = createStore({
