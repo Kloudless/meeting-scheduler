@@ -142,7 +142,7 @@ Add the following iframe to your web page to launch the Setup View without
 any additional code:
 
 ```html
-<iframe src="https://kloudl.es/m/b/<app_id>" with="515px" height="695px">
+<iframe src="https://kloudl.es/m/b/<app_id>" width="515px" height="695px">
 ```
 
 Replace `<app_id>` with your Kloudless App ID. You can obtain the App ID by
