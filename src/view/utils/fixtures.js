@@ -24,17 +24,17 @@ export const WEEKDAY_PRESETS = [
   {
     text: 'Everyday (Monday–Sunday)',
     value: 'everyday',
-    weekdays: ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'],
+    weekdaySet: new Set(['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']),
   },
   {
     text: 'Weekdays (Monday–Friday)',
     value: 'weekdays',
-    weekdays: ['MON', 'TUE', 'WED', 'THU', 'FRI'],
+    weekdaySet: new Set(['MON', 'TUE', 'WED', 'THU', 'FRI']),
   },
   {
     text: 'Weekends (Saturday–Sunday)',
     value: 'weekends',
-    weekdays: ['SAT', 'SUN'],
+    weekdaySet: new Set(['SAT', 'SUN']),
   },
 ];
 

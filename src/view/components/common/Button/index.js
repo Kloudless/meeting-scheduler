@@ -22,5 +22,9 @@ export default {
       type: String,
       default: 'primary',
     },
+    icon: {
+      type: String,
+      default: '',
+    },
   },
 };

@@ -818,39 +818,42 @@ List the user's Meeting Windows. The user is identified by the bearer token.
 
 ```json
 {
-    "count": 1,
-    "total": 88,
-    "page": 1,
-    "objects": [
-        {
-            "id": "ihfvxYPnUSwpQqc4jx3P",
-            "booking_calendar_id": "faG9uZ2NoZW4uZGV2QGdtYWlsLmNvbQ==",
-            "duration": 15,
-            "title": "Wine Tasting Tour",
-            "organizer": "Peter",
-            "location": "Napa",
-            "description": "Wonderful wine tasting.",
-            "availability": [
-                {
-                    "start": "2018-11-29T00:00:00-08:00",
-                    "end": "2018-11-29T24:00:00-08:00",
-                    "recurring": {
-                        "month": "*",
-                        "weekday": "MON, TUE, WED, THU, FRI, SAT, SUN",
-                        "day": "*"
-                    }
-                }
-            ], 
-            "time_zone": "America/Los_Angeles",
-            "availability_range": 60,
-            "time_slot_interval": 30,
-            "time_buffer_before": 0,
-            "time_buffer_after": 0,
-            "api": "meeting_scheduler"
-        }
-    ],
-    "type": "object_list",
-    "api": "meeting_scheduler"
+  "count": 1,
+  "total": 88,
+  "page": 1,
+  "objects": [
+    {
+      "id": "ihfvxYPnUSwpQqc4jx3P",
+      "booking_calendar_id": "faG9uZ2NoZW4uZGV2QGdtYWlsLmNvbQ==",
+      "duration": 15,
+      "title": "Wine Tasting Tour",
+      "organizer": "Peter",
+      "location": "Napa",
+      "description": "Wonderful wine tasting.",
+      "availability": {
+        "end_repeat": "NEVER",
+        "available_times": [
+          {
+            "start": "2018-11-29T00:00:00-08:00",
+            "end": "2018-11-29T24:00:00-08:00",
+            "recurring": {
+              "month": "*",
+              "weekday": "MON, TUE, WED, THU, FRI, SAT, SUN",
+              "day": "*"
+            }
+          }
+        ]
+      }, 
+      "time_zone": "America/Los_Angeles",
+      "availability_range": 60,
+      "time_slot_interval": 30,
+      "time_buffer_before": 0,
+      "time_buffer_after": 0,
+      "api": "meeting_scheduler"
+    }
+  ],
+  "type": "object_list",
+  "api": "meeting_scheduler"
 }
 ```
 
@@ -865,30 +868,33 @@ Retrieve the meeting window via meeting window ID.
 
 ```json
 {
-    "id": "ihfvxYPnUSwpQqc4jx3P",
-    "booking_calendar_id": "faG9uZ2NoZW4uZGV2QGdtYWlsLmNvbQ==",
-    "duration": 15,
-    "title": "Wine Tasting Tour",
-    "organizer": "Peter",
-    "location": "Napa",
-    "description": "Wonderful wine tasting.",
-    "availability": [
-        {
-            "start": "2018-11-29T00:00:00-08:00",
-            "end": "2018-11-29T24:00:00-08:00",
-            "recurring": {
-                "month": "*",
-                "weekday": "MON, TUE, WED, THU, FRI, SAT, SUN",
-                "day": "*"
-            }
+  "id": "ihfvxYPnUSwpQqc4jx3P",
+  "booking_calendar_id": "faG9uZ2NoZW4uZGV2QGdtYWlsLmNvbQ==",
+  "duration": 15,
+  "title": "Wine Tasting Tour",
+  "organizer": "Peter",
+  "location": "Napa",
+  "description": "Wonderful wine tasting.",
+  "availability": {
+    "end_repeat": "NEVER",
+    "available_times": [
+      {
+        "start": "2018-11-29T00:00:00-08:00",
+        "end": "2018-11-29T24:00:00-08:00",
+        "recurring": {
+          "month": "*",
+          "weekday": "MON, TUE, WED, THU, FRI, SAT, SUN",
+          "day": "*"
         }
-    ], 
-    "time_zone": "America/Los_Angeles",
-    "availability_range": 60,
-    "time_slot_interval": 30,
-    "time_buffer_before": 0,
-    "time_buffer_after": 0,
-    "api": "meeting_scheduler"
+      }
+    ]
+  },
+  "time_zone": "America/Los_Angeles",
+  "availability_range": 60,
+  "time_slot_interval": 30,
+  "time_buffer_before": 0,
+  "time_buffer_after": 0,
+  "api": "meeting_scheduler"
 }
 ```
 
@@ -902,26 +908,29 @@ Create a Meeting Window.
 
 ```json
 {
-    "booking_calendar_id": "faG9uZ2NoZW4uZGV2QGdtYWlsLmNvbQ==",
-    "duration": 15,
-    "title": "Wine Tasting Tour",
-    "organizer": "Peter",
-    "location": "Napa",
-    "description": "Wonderful wine tasting.",
-    "availability": [
-        {
-            "start": "2018-11-29T00:00:00-08:00",
-            "end": "2018-11-29T24:00:00-08:00",
-            "recurring": {
-                "weekday": "MON, TUE, WED, THU, FRI, SAT, SUN",
-            }
+  "booking_calendar_id": "faG9uZ2NoZW4uZGV2QGdtYWlsLmNvbQ==",
+  "duration": 15,
+  "title": "Wine Tasting Tour",
+  "organizer": "Peter",
+  "location": "Napa",
+  "description": "Wonderful wine tasting.",
+  "availability": {
+    "end_repeat": "NEVER",
+    "available_times": [
+      {
+        "start": "2018-11-29T00:00:00-08:00",
+        "end": "2018-11-29T24:00:00-08:00",
+        "recurring": {
+          "weekday": "MON, TUE, WED, THU, FRI, SAT, SUN",
         }
-    ], 
-    "time_zone": "America/Los_Angeles",
-    "availability_range": 60,
-    "time_slot_interval": 30,
-    "time_buffer_before": 0,
-    "time_buffer_after": 0
+      }
+    ]
+  },
+  "time_zone": "America/Los_Angeles",
+  "availability_range": 60,
+  "time_slot_interval": 30,
+  "time_buffer_before": 0,
+  "time_buffer_after": 0
 }
 ```
 
@@ -932,28 +941,31 @@ Create a Meeting Window.
 
 ```json
 {
-    "id": "ihfvxYPnUSwpQqc4jx3P",
-    "booking_calendar_id": "faG9uZ2NoZW4uZGV2QGdtYWlsLmNvbQ==",
-    "duration": 15,
-    "title": "Wine Tasting Tour",
-    "organizer": "Peter",
-    "location": "Napa",
-    "description": "Wonderful wine tasting.",
-    "availability": [
-        {
-            "start": "2018-11-29T00:00:00-08:00",
-            "end": "2018-11-29T24:00:00-08:00",
-            "recurring": {
-                "weekday": "MON, TUE, WED, THU, FRI, SAT, SUN",
-            }
+  "id": "ihfvxYPnUSwpQqc4jx3P",
+  "booking_calendar_id": "faG9uZ2NoZW4uZGV2QGdtYWlsLmNvbQ==",
+  "duration": 15,
+  "title": "Wine Tasting Tour",
+  "organizer": "Peter",
+  "location": "Napa",
+  "description": "Wonderful wine tasting.",
+  "availability": {
+    "end_repeat": "NEVER",
+    "available_times": [
+      {
+        "start": "2018-11-29T00:00:00-08:00",
+        "end": "2018-11-29T24:00:00-08:00",
+        "recurring": {
+          "weekday": "MON, TUE, WED, THU, FRI, SAT, SUN",
         }
-    ], 
-    "time_zone": "America/Los_Angeles",
-    "availability_range": 60,
-    "time_slot_interval": 30,
-    "time_buffer_before": 0,
-    "time_buffer_after": 0,
-    "api": "meeting_scheduler"
+      }
+    ]
+  },
+  "time_zone": "America/Los_Angeles",
+  "availability_range": 60,
+  "time_slot_interval": 30,
+  "time_buffer_before": 0,
+  "time_buffer_after": 0,
+  "api": "meeting_scheduler"
 }
 ```
 
@@ -967,26 +979,29 @@ Update the meeting window.
 
 ```json
 {
-    "booking_calendar_id": "faG9uZ2NoZW4uZGV2QGdtYWlsLmNvbQ==",
-    "duration": 15,
-    "title": "Wine Tasting Tour",
-    "organizer": "Peter",
-    "location": "Napa",
-    "description": "Wonderful wine tasting.",
-   "availability": [
-        {
-            "start": "2018-11-29T00:00:00-08:00",
-            "end": "2018-11-29T24:00:00-08:00",
-            "recurring": {
-                "weekday": "MON, TUE, WED, THU, FRI, SAT, SUN",
-            }
+  "booking_calendar_id": "faG9uZ2NoZW4uZGV2QGdtYWlsLmNvbQ==",
+  "duration": 15,
+  "title": "Wine Tasting Tour",
+  "organizer": "Peter",
+  "location": "Napa",
+  "description": "Wonderful wine tasting.",
+  "availability": {
+    "end_repeat": "NEVER",
+    "available_times": [
+      {
+        "start": "2018-11-29T00:00:00-08:00",
+        "end": "2018-11-29T24:00:00-08:00",
+        "recurring": {
+          "weekday": "MON, TUE, WED, THU, FRI, SAT, SUN",
         }
-    ], 
-    "time_zone": "America/Los_Angeles",
-    "availability_range": 60,
-    "time_slot_interval": 30,
-    "time_buffer_before": 0,
-    "time_buffer_after": 0
+      }
+    ]
+  },
+  "time_zone": "America/Los_Angeles",
+  "availability_range": 60,
+  "time_slot_interval": 30,
+  "time_buffer_before": 0,
+  "time_buffer_after": 0
 }
 ```
 
@@ -996,28 +1011,31 @@ Update the meeting window.
      
 ```json
 {
-    "id": "ihfvxYPnUSwpQqc4jx3P",
-    "booking_calendar_id": "faG9uZ2NoZW4uZGV2QGdtYWlsLmNvbQ==",
-    "duration": 15,
-    "title": "Wine Tasting Tour",
-    "organizer": "Peter",
-    "location": "Napa",
-    "description": "Wonderful wine tasting.",
-    "availability": [
-        {
-            "start": "2018-11-29T00:00:00-08:00",
-            "end": "2018-11-29T24:00:00-08:00",
-            "recurring": {
-                "weekday": "MON, TUE, WED, THU, FRI, SAT, SUN",
-            }
+  "id": "ihfvxYPnUSwpQqc4jx3P",
+  "booking_calendar_id": "faG9uZ2NoZW4uZGV2QGdtYWlsLmNvbQ==",
+  "duration": 15,
+  "title": "Wine Tasting Tour",
+  "organizer": "Peter",
+  "location": "Napa",
+  "description": "Wonderful wine tasting.",
+  "availability": {
+    "end_repeat": "NEVER",
+    "available_times": [
+      {
+        "start": "2018-11-29T00:00:00-08:00",
+        "end": "2018-11-29T24:00:00-08:00",
+        "recurring": {
+          "weekday": "MON, TUE, WED, THU, FRI, SAT, SUN",
         }
-    ], 
-    "time_zone": "America/Los_Angeles",
-    "availability_range": 60,
-    "time_slot_interval": 30,
-    "time_buffer_before": 0,
-    "time_buffer_after": 0,
-    "api": "meeting_scheduler"
+      }
+    ]
+  },
+  "time_zone": "America/Los_Angeles",
+  "availability_range": 60,
+  "time_slot_interval": 30,
+  "time_buffer_before": 0,
+  "time_buffer_after": 0,
+  "api": "meeting_scheduler"
 }
 ```
 

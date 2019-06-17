@@ -1,14 +1,20 @@
 import authenticator from '@kloudless/authenticator/src/auth-widget';
 import { mapState } from 'vuex';
 import { EVENTS } from 'constants';
+import { isRequired } from '../../utils/form_validator';
 import Dropdown from '../common/Dropdown';
 import Button from '../common/Button';
+import InputWrapper from '../common/InputWrapper';
 
 export default {
   name: 'Authenticator',
   components: {
     Dropdown,
     Button,
+    InputWrapper,
+  },
+  data() {
+    return { rules: [isRequired] };
   },
   props: {
     isUpdating: {

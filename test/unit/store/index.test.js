@@ -97,11 +97,13 @@ describe('Others', () => {
       meetingWindow: {
         id: 'meetingWindowId',
         name: 'test window',
-        availability: [{
-          start: '',
-          end: '',
-          recurring: {},
-        }],
+        availability: {
+          available_times: [{
+            start: '',
+            end: '',
+            recurring: { weekday: '' },
+          }],
+        },
       },
     });
     store.commit({

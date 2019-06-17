@@ -1,17 +1,16 @@
-div.mb-4
+div.mb-4.authenticator
   div(v-if="account.token")
-    v-layout(row, wrap, align-center)
-      v-flex(xs2)
-        v-icon(color="accent" large) account_circle
-      v-flex(xs10)
-        v-layout(row, wrap, align-center)
-          v-flex(xs11)
-            div(v-if="loading.account")
-              v-progress-circular(indeterminate, size="24", color="primary")
-            div(v-else).text-xs-left.subheading {{ account.account }}
-          v-flex(xs1)
-            div(v-if="!loading.account && !isUpdating")
-              v-icon(color="error" @click="removeAccount") cancel
+    v-list-tile(avatar="")
+      v-list-tile-avatar
+        v-icon(color="accent", large) account_circle
+      v-list-tile-content
+        v-list-tile-title(v-if="loading.account")
+          div.text-xs-center
+            v-progress-circular(indeterminate, size="20", color="primary")
+        v-list-tile-title(v-else) {{ account.account }}
+      v-list-tile-action
+        v-btn(icon="", ripple="")
+          v-icon(color="error", @click="removeAccount") cancel
     v-layout(v-if="!isUpdating", row, wrap, align-center).mt-4
       v-flex(xs12)
         Dropdown(required, label="Calendar *", name="calendarId",
@@ -20,7 +19,7 @@ div.mb-4
                  @update="setCalendarId")
   div(v-else-if="isUpdating").subheading.error--text
     | Error: Invalid Account Token
-  Button(v-else,
-  :btnProps="{outline: true}",
-  @click="onAddAccount")
-    | Connect Calendar
+  InputWrapper(v-show="!account.token && !isUpdating",
+               :value="account.token", :rules="rules")
+    Button(icon="add", :btnProps="{outline: true}", @click="onAddAccount")
+      | Connect Calendar

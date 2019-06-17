@@ -16,14 +16,14 @@ div
                 Button(v-if="timeSlots.selectedSlot === slot",
                       :padding="false"
                       @click="selectTimeSlot(slot, false)").hour-block
-                  v-layout(row, wrap, align-center)
-                    v-flex(xs5)
+                  v-layout(row, wrap, align-center, justify-center)
+                    v-flex(xs4)
                       div.hour {{ formatDate('hour', slot.start) }}
                       div.ampm.white--text.opacity-4
                         | {{ formatDate('amPm', slot.start) }}
-                    v-flex(xs2)
+                    v-flex(xs1)
                       div.hour-to.white--text.opacity-4.pt-1 -
-                    v-flex(xs5)
+                    v-flex(xs4)
                       div.hour {{ formatDate('hour', slot.end) }}
                       div.ampm.white--text.opacity-4
                         | {{ formatDate('amPm', slot.end) }}
