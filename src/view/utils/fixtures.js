@@ -10,12 +10,46 @@ export default '';
 const now = moment();
 
 export const options = {
-  durations: [
-    { value: 15, text: '15 mins', caption: '(0.25 hour)' },
-    { value: 30, text: '30 mins', caption: '(0.5 hour)' },
-    { value: 45, text: '45 mins', caption: '(.75 hour)' },
-    { value: 60, text: '60 mins', caption: '(1 hour)' },
+  weekdayPresets: [
+    {
+      text: 'Everyday (Monday–Sunday)',
+      value: 'everyday',
+      weekdays: ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'],
+    },
+    {
+      text: 'Weekdays (Monday–Friday)',
+      value: 'weekdays',
+      weekdays: ['MON', 'TUE', 'WED', 'THU', 'FRI'],
+    },
+    {
+      text: 'Weekends (Saturday–Sunday)',
+      value: 'weekends',
+      weekdays: ['SAT', 'SUN'],
+    },
   ],
+  timeSlotIntervals: [
+    { value: '15', text: '15 mins', caption: '(0.25 hour)' },
+    { value: '30', text: '30 mins', caption: '(0.5 hour)' },
+    { value: '45', text: '45 mins', caption: '(0.75 hour)' },
+    { value: '60', text: '60 mins', caption: '(1 hour)' },
+  ],
+  durations: [
+    { value: '15', text: '15 mins', caption: '(0.25 hour)' },
+    { value: '30', text: '30 mins', caption: '(0.5 hour)' },
+    { value: '60', text: '60 mins', caption: '(1 hour)' },
+  ],
+  weekdays: [
+    'Sunday',
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
+  ].map(weekday => ({
+    value: weekday.slice(0, 3).toUpperCase(),
+    text: weekday,
+  })),
   availabilities: [
     {
       value: 'MON, TUE, WED, THU, FRI',

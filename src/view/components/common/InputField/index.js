@@ -5,7 +5,14 @@ export default {
   components: {
     InputLabel,
   },
-  props: [
-    'label',
-  ],
+  props: {
+    label: {
+      type: String,
+      default: '',
+    },
+    tooltip: {
+      type: String,
+      default: '',
+    },
+  },
 };
