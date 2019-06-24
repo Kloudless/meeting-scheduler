@@ -473,8 +473,9 @@ Refer to the [submitMeetingWindow](#submitmeetingwindow) and
 
 ### Autofill the Setup View Form Fields
 
-Fill in form fields automatically with values set in launch options.
-We've included an example below to set the default field values:
+The form in the Setup View can be filled in automatically with values set in 
+launch options. We've included an example below to set the default field 
+values:
 
 ```js
 scheduler.launch({
@@ -575,23 +576,23 @@ An object containing the following keys:
       - `startHour.default`: _Optional (default: '08:00:00')_: String  
         The ISO 8601 timestamp without offset indicating the default available
         start time.
-        Possible value: `00:00:00` – `23:00:00`.
+        Possible values: `00:00:00` – `23:00:00`.
       - `endHour.default`: _Optional (default: '17:00:00')_: String  
         The ISO 8601 timestamp without offset indicating the default available
         end time.
-        Possible value: `01:00:00` – `00:00:00`.
+        Possible values: `01:00:00` – `00:00:00`.
       - `timeSlotInterval.default`: _Optional (default: 30)_: Number  
         The default minutes of time between each time slots.
-        Possible value: 15, 30, 45, 60.
+        Possible values: 15, 30, 45, or 60.
       - `availabilityRange.default`: _Optional (default: 30)_: Number  
         The default days from current point of time to show time slots.
-        Possible value: 1 – 99.
+        Possible values: 1 – 99.
       - `timeBufferBefore.default`: _Optional (default: 0)_: Number  
         The default minutes of time buffer before each scheduled event.
-        Possible value: 0 – 99.
+        Possible values: 0 – 99.
       - `timeBufferAfter.default`: _Optional (default: 0)_: Number  
         The default minutes of time buffer after each scheduled event.
-        Possible value: 0 – 99.
+        Possible values: 0 – 99.
     - Example:
       ```javascript
       {
