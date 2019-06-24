@@ -1,6 +1,6 @@
 import InputField from '../InputField';
 import ToggleButton from '../ToggleButton';
-import getValidators from '../../../utils/form_validator';
+import { isRequired } from '../../../utils/form_validator';
 
 export default {
   name: 'DurationField',
@@ -14,7 +14,6 @@ export default {
       custom: false,
       selectedValue: value,
       customValue: '',
-      formRules: getValidators(['required']),
     };
   },
   methods: {
@@ -30,10 +29,17 @@ export default {
       const { custom, selectedValue, customValue } = this;
       return custom ? customValue : selectedValue;
     },
+    rules() {
+      const { required } = this.$props;
+      return required ? [isRequired] : [];
+    },
   },
   watch: {
     finalValue(value) {
-      this.$emit('change', { name: this.name, value });
+      this.$emit(
+        'change',
+        { name: this.name, value: Number.parseInt(value, 10) },
+      );
     },
   },
   props: {
@@ -51,8 +57,12 @@ export default {
       default: () => [],
     },
     value: {
-      type: String,
+      type: Number,
       required: true,
+    },
+    required: {
+      type: Boolean,
+      default: false,
     },
   },
 };

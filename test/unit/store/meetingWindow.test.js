@@ -1,5 +1,6 @@
 import { EVENTS } from 'constants';
 import { createStore } from '../jest/vue-utils';
+import { FORM_OPTIONS } from '../jest/constants';
 
 describe('meetingWindow module events tests', () => {
   const meetingWindowResponse = {
@@ -120,5 +121,18 @@ describe('meetingWindow module events tests', () => {
       accountToken: loaderTrusted ? 'token' : undefined,
     };
     expect(store.messenger.send).toHaveBeenNthCalledWith(2, submitEventData);
+  });
+
+  test('setupFormOptions test', async () => {
+    const { store } = createStore();
+    const expected = Object.keys(FORM_OPTIONS).reduce((result, field) => {
+      result[field] = FORM_OPTIONS[field].default;
+      return result;
+    }, {});
+    await store.dispatch(
+      'meetingWindow/setupFormOptions',
+      { formOptions: FORM_OPTIONS },
+    );
+    expect(store.state.meetingWindow).toMatchObject(expected);
   });
 });

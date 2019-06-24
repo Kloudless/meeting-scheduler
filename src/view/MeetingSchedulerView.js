@@ -27,11 +27,11 @@ class MeetingSchedulerView {
    *   targetPath: (loader's path)
    * }
    */
-  launch(options) {
+  launch(launchOptions) {
     this.destroy();
-
-    EventMessenger.setTargetOrigin(ROLES.LOADER, options.targetPath);
-    const dom = options.element;
+    const { targetPath, element } = launchOptions;
+    EventMessenger.setTargetOrigin(ROLES.LOADER, targetPath);
+    const dom = element;
     this.vm = new Vue({
       router,
       store: this.store,
@@ -39,7 +39,7 @@ class MeetingSchedulerView {
       template: '<App/>',
     });
     (async () => {
-      await this.store.dispatch('initialize', { launchOptions: options });
+      await this.store.dispatch('initialize', { launchOptions });
       this.store.dispatch('checkLoaderTrusted');
       // remove loading icon in iframe page
       const loading = document.getElementById('loading');

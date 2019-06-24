@@ -58,13 +58,6 @@ describe('Mode check test', () => {
         },
       },
       modules: {
-        meetingWindow: {
-          initState() {
-            return {
-              id: 'windowId',
-            };
-          },
-        },
         api: {
           actions: {
             request: () => (Promise.resolve('')),
@@ -72,9 +65,8 @@ describe('Mode check test', () => {
         },
       },
     });
-    const wrapper = getWrapper(MeetingWindow, {
-      store,
-    });
+    store.state.meetingWindow.id = 'windowId';
+    const wrapper = getWrapper(MeetingWindow, { store });
     const buttons = wrapper.findAll(Button);
     expect(buttons.filter(c => c.classes('action-submit')).length)
       .toBe(params.expectedToHaveSubmit ? 1 : 0);

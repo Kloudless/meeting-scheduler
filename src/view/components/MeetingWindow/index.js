@@ -11,7 +11,9 @@ import Button from '../common/Button';
 import DurationField from '../common/DurationField';
 import NumberField from '../common/NumberField';
 import WeekdayPicker from '../common/WeekdayPicker';
-import { options } from '../../utils/fixtures.js';
+import {
+  HOURS, TIME_SLOT_INTERVALS, DURATIONS, TIME_ZONES, WEEKDAYS, WEEKDAY_PRESETS,
+} from '../../utils/fixtures.js';
 
 export default {
   name: 'MeetingWindow',
@@ -32,11 +34,17 @@ export default {
     return {
       isFormValid: true,
       canRenderView: false,
-      options,
+      options: {
+        timeSlotIntervals: TIME_SLOT_INTERVALS,
+        durations: DURATIONS,
+        timeZones: TIME_ZONES,
+        hours: HOURS,
+        weekdays: WEEKDAYS,
+        weekdayPresets: WEEKDAY_PRESETS,
+      },
     };
   },
   beforeMount() {
-    this.updateHourOptions();
     if (this.isUpdating && !this.meetingWindow.id) {
       this.$store.dispatch({
         type: 'meetingWindow/getMeetingWindow',
@@ -50,18 +58,29 @@ export default {
       this.canRenderView = true;
     }
   },
-  computed: mapState({
-    meetingWindow: state => state.meetingWindow,
-    hasCalendar: state => Boolean(state.account.calendarId),
-    isUpdating: state => Boolean(state.launchOptions.setup.meetingWindowId),
-    loading: state => state.api.loading.meetingWindow,
-    launchOptions: state => state.launchOptions.setup,
-    calendarSectionTitle: state => (
-      state.launchOptions.setup.meetingWindowId ?
-        '3. Your Calendar' : '3. Connect Your Calendar'),
-  }),
-  props: [
-  ],
+  computed: {
+    ...mapState({
+      meetingWindow: state => state.meetingWindow,
+      hasCalendar: state => Boolean(state.account.calendarId),
+      isUpdating: state => Boolean(state.launchOptions.setup.meetingWindowId),
+      loading: state => state.api.loading.meetingWindow,
+      launchOptions: state => state.launchOptions.setup,
+      calendarSectionTitle: state => (
+        state.launchOptions.setup.meetingWindowId ?
+          '3. Your Calendar' : '3. Connect Your Calendar'),
+    }),
+    startHourOptions() {
+      const { meetingWindow: { endHour }, options: { hours } } = this;
+      const index = hours.findIndex(h => h.value === endHour);
+      return hours.slice(0, index);
+    },
+    endHourOptions() {
+      const { meetingWindow: { startHour }, options: { hours } } = this;
+      const index = hours.findIndex(h => h.value === startHour);
+      return hours.slice(index + 1);
+    },
+  },
+  props: [],
   methods: {
     updateInput(event) {
       this.$store.commit({
@@ -69,9 +88,6 @@ export default {
         name: event.name,
         value: event.value,
       });
-      if (event.name === 'beginHour' || event.name === 'endHour') {
-        this.updateHourOptions();
-      }
     },
     afterSubmit() {
       const { afterSubmit } = this.launchOptions;
@@ -98,15 +114,6 @@ export default {
     },
     deleteWindow() {
       this.$router.push('/meetingWindowDeletion/');
-    },
-    updateHourOptions() {
-      const hourOptions = this.options.hours;
-      const beginHourIndex = hourOptions
-        .findIndex(option => option.value === this.meetingWindow.beginHour);
-      const endHourIndex = hourOptions
-        .findIndex(option => option.value === this.meetingWindow.endHour);
-      this.beginHourOptions = hourOptions.slice(0, endHourIndex);
-      this.endHourOptions = hourOptions.slice(beginHourIndex + 1);
     },
   },
 };

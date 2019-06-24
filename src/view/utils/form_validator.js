@@ -2,38 +2,56 @@
  * validator functions for form input
  */
 
-function parseValue(value) {
-  if (typeof value === 'undefined' || value === null) {
-    return '';
+/**
+  * Return true if value is following:
+  * - undefined
+  * - null
+  * - empty string
+  * - empty array
+  * @param {*} value
+  */
+function isEmpty(value) {
+  if (value === undefined || value === null) {
+    return true;
   }
-  return String(value);
+  if (Array.isArray(value) && value.length === 0) {
+    return true;
+  }
+  if (typeof value === 'string' && value.trim() === '') {
+    return true;
+  }
+  return false;
 }
 
-/* eslint-disable no-param-reassign */
-const validators = {
-  required(value) {
-    value = parseValue(value);
-    if (value.length > 0) {
+function isRequired(value) {
+  return !isEmpty(value) || 'This field is is required.';
+}
+
+const PATTERN_EMAIL = /^([a-zA-Z0-9_+\-.]+)@([a-zA-Z0-9_\-.]+)\.([a-zA-Z]+)$/;
+function isEmail(value) {
+  if (isEmpty(value)) {
+    return true;
+  }
+  if (PATTERN_EMAIL.test(value)) {
+    return true;
+  }
+  return 'Not a valid email address.';
+}
+
+function inRangeOf(min, max) {
+  return (value) => {
+    if (isEmpty(value)) {
       return true;
     }
-    return 'This field is required.';
-  },
-  email(value) {
-    value = parseValue(value);
-    if (value === '') {
+    if (value >= min && value <= max) {
       return true;
     }
-    /* eslint-disable function-paren-newline */
-    const index = value.search(
-      /^([a-zA-Z0-9_+\-.]+)@([a-zA-Z0-9_\-.]+)\.([a-zA-Z]+)$/);
-    /* eslint-enable */
-    if (index > -1) {
-      return true;
-    }
-    return 'Not a valid email address';
-  },
+    return `Should be in range of ${min}–${max}.`;
+  };
+}
+
+export {
+  isRequired,
+  isEmail,
+  inRangeOf,
 };
-
-export default function getValidators(rules) {
-  return rules.map(rule => validators[rule]);
-}

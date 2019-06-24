@@ -1,21 +1,43 @@
 
 import InputField from '../InputField';
-import getValidators from '../../../utils/form_validator';
+import { isRequired } from '../../../utils/form_validator';
 
 export default {
   name: 'TextField',
   components: {
     InputField,
   },
-  data() {
-    return {
-      formRules: getValidators(this.rules || []),
-    };
+  computed: {
+    rules() {
+      const { required } = this;
+      return required ? [isRequired] : [];
+    },
   },
-  props: [
-    'name', 'label', 'placeholder', 'input', 'value', 'readonly',
-    'rules',
-  ],
-  methods: {
+  props: {
+    name: {
+      type: String,
+      default: '',
+    },
+    label: {
+      type: String,
+      required: true,
+    },
+    placeholder: {
+      type: String,
+      default: '',
+    },
+    value: {
+      type: String,
+      required: true,
+    },
+    readonly: {
+      type: Boolean,
+      default: false,
+    },
+    required: {
+      type: Boolean,
+      default: false,
+    },
   },
+  methods: {},
 };

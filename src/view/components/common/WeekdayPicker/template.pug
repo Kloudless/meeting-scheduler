@@ -1,7 +1,7 @@
 InputField(:label="label").weekday-picker
   v-autocomplete(v-model="selectedWeekdays", placeholder="Select Weekdays",
-           multiple, chips, :rules="[validator]", :items="weekdays",
-           @input="input")
+                 multiple, chips, :rules="rules", :items="options",
+                 @input="input")
     template(v-slot:prepend-item="")
       template(v-for="preset in presets")
         v-list-tile(ripple, @click='togglePreset(preset)')

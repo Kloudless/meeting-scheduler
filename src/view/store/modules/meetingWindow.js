@@ -8,17 +8,17 @@ function getJson(state) {
     title: state.title,
     location: state.location,
     description: state.description,
-    duration: Number.parseInt(state.duration, 10),
+    duration: state.duration,
     organizer: state.organizer,
     time_zone: state.timeZone,
     availability_range: state.availabilityRange,
     time_buffer_before: state.timeBufferBefore,
     time_buffer_after: state.timeBufferAfter,
-    time_slot_interval: Number.parseInt(state.timeSlotInterval, 10),
+    time_slot_interval: state.timeSlotInterval,
   };
 
   // TODO: remove state.timeZone which is deprecated since DEV-1997
-  const start = moment.tz(state.beginHour, 'HH:mm:ss', state.timeZone);
+  const start = moment.tz(state.startHour, 'HH:mm:ss', state.timeZone);
   const end = moment.tz(state.endHour, 'HH:mm:ss', state.timeZone);
 
   // if state.endHour is '24:00:00', the time will be recorded as `00:00:00`
@@ -47,20 +47,19 @@ export default {
     return {
       id: null,
       title: '',
-      duration: '15',
+      duration: 15,
       organizer: '',
       location: '',
       description: '',
-      access: '',
       timeZone: moment.tz.guess(),
       weekday: [],
-      beginHour: '08:00:00',
+      startHour: '08:00:00',
       endHour: '17:00:00',
       recaptchaSiteKey: null,
       timeBufferBefore: 0,
       timeBufferAfter: 0,
       availabilityRange: 30,
-      timeSlotInterval: '30',
+      timeSlotInterval: 30,
     };
   },
   mutations: {
@@ -81,13 +80,23 @@ export default {
       if (availableTimes && availableTimes[0]) {
         const { recurring, start, end } = availableTimes[0];
         data.weekday = recurring.weekday;
-        data.beginHour = start.substr(11, 8);
+        data.startHour = start.substr(11, 8);
         data.endHour = end.substr(11, 8);
       }
       Object.assign(state, data);
     },
   },
   actions: {
+    setupFormOptions({ commit }, { formOptions }) {
+      Object.keys(formOptions)
+        .filter(field => (
+          formOptions[field] && formOptions[field].default !== undefined
+          && formOptions[field].default !== null))
+        .forEach((field) => {
+          const { [field]: { default: value } } = formOptions;
+          commit('update', { name: field, value });
+        });
+    },
     async getMeetingWindow({ dispatch, commit }, payload) {
       const meetingWindow = await dispatch({
         type: 'api/request',
