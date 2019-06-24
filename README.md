@@ -1130,6 +1130,9 @@ Feel free to contact us at support@kloudless.com with any feedback or questions.
 
 
 ## Changelog
+- 1.3.0
+  - Added advanced availability settings in the Setup View
+  - Added new launch option `formOptions`
 - 1.2.2
   - Event name corrections
 - 1.2.1

@@ -6,6 +6,10 @@ describe('meetingWindow module events tests', () => {
   const meetingWindowResponse = {
     id: 'meetingWindowId',
     name: 'test window',
+    availability: {
+      end_repeat: 'NEVER',
+      availableTimes: [],
+    },
   };
 
 
