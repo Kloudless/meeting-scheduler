@@ -1,5 +1,6 @@
 /* global grecaptcha */
 import moment from 'moment-timezone';
+import InfiniteLoading from 'vue-infinite-loading';
 import { EVENTS } from 'constants';
 import { mapState } from 'vuex';
 import date from '../../utils/date';
@@ -7,10 +8,10 @@ import TextInput from '../common/TextInput';
 import Title from '../common/Title';
 import Button from '../common/Button';
 
-
 export default {
   name: 'TimeSlots',
   components: {
+    InfiniteLoading,
     TextInput,
     Title,
     Button,
@@ -55,7 +56,8 @@ export default {
   mounted() {
     if (!this.meetingWindow.id) {
       this.$store.dispatch({
-        type: 'timeSlots/getTimeSlots',
+        type: 'meetingWindow/getMeetingWindow',
+        meetingWindowId: this.launchOptions.meetingWindowId,
       }).then(() => {
         if (this.meetingWindow.recaptchaSiteKey) {
           this.loadRecaptchaScript().then(() => {
@@ -167,6 +169,22 @@ export default {
         );
       } else {
         this.submit();
+      }
+    },
+    async infiniteHandler(state) {
+      const hasMore = await this.$store.dispatch({
+        type: 'timeSlots/getTimeSlots',
+      });
+      if (!this.timeSlots.availableSlots.length && !hasMore) {
+        // to trigger "no-results"
+        state.complete();
+      } else {
+        state.loaded();
+        if (!hasMore) {
+          // disable the infinite scroll to fetch more time slots
+          // and show the message about "no more items"
+          state.complete();
+        }
       }
     },
   },

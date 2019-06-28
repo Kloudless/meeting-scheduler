@@ -34,3 +34,7 @@ $scroll-panel-height: 420px;
     height: $scroll-panel-height - $modal-header-height - $error-height;
   }
 }
+
+.progress-container {
+  height: 90px;
+}

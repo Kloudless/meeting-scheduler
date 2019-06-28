@@ -15,6 +15,7 @@ module.exports = {
   transformIgnorePatterns: common.ignorePaths.map(regExp => regExp.source),
   snapshotSerializers: ['<rootDir>/node_modules/jest-serializer-vue'],
   setupFiles: ['<rootDir>/test/unit/jest/setup'],
+  setupFilesAfterEnv: ['jest-extended'],
   coverageDirectory: '<rootDir>/test/unit/coverage',
   collectCoverageFrom: [
     'src/**/*.{js,vue}',
