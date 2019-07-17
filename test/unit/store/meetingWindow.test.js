@@ -8,7 +8,7 @@ describe('meetingWindow module events tests', () => {
     name: 'test window',
     availability: {
       end_repeat: 'NEVER',
-      availableTimes: [],
+      available_times: [],
     },
   };
 

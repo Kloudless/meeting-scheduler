@@ -1,0 +1,27 @@
+v-form.add-available-time-form(ref="form", v-model="isFormValid",
+                               lazy-validation)
+  v-input(:rules="rules", :value="availableTime")
+    v-container(grid-list-xs).pt-2.pb-2
+      WeekdayPicker(
+        required, label='Available Days', name="weekday", :hideDetails="true",
+        :options="weekdayOptions", :value="availableTime.weekday",
+        :presets="weekdayPresets", @change="update")
+      InputLabel Available Hours
+      v-layout(row, wrap, align-center)
+        v-flex(xs4)
+          Dropdown(
+            required, label="", name="startHour", :hideDetails="true",
+            :options="startHourOptions", :value="availableTime.startHour",
+            @update="update")
+        v-flex(xs3)
+          div.hour-to.opacity-4 TO
+        v-flex(xs4)
+          Dropdown(
+            required, label="", name="endHour", :hideDetails="true",
+            :options="endHourOptions", :value="availableTime.endHour",
+            @update="update")
+      v-layout(justify-center, row)
+        Button(:btnProps="{outline: true}", :disabled="!isFormValid", @click="add")
+          | Add
+        Button(:btnProps="{outline: true}", color="error", @click="$emit('cancel')")
+          | Cancel

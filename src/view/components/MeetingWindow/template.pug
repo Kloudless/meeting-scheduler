@@ -21,25 +21,14 @@ div
           @change="updateInput")
 
       Accordion(title="2. Add Event Availability")
-        WeekdayPicker(
-          required, label='Available Days *', name="weekday",
-          :options="options.weekdays", :value="meetingWindow.weekday",
-          :presets="options.weekdayPresets", @change="updateInput")
-        InputLabel Available Hours *
-        v-container(grid-list-xs)
-          v-layout(row, wrap, align-center)
-            v-flex(xs5)
-              Dropdown(
-                required, label="", :options="startHourOptions",
-                name="startHour", :value="meetingWindow.startHour",
-                @update="updateInput")
-            v-flex(xs2)
-              div.hour-to to
-            v-flex(xs5)
-              Dropdown(
-                required, label="", :options="endHourOptions",
-                name="endHour", :value="meetingWindow.endHour",
-                @update="updateInput")
+        AvailabilityField(
+          label='Availability *', name="availableTimes",
+          :value="meetingWindow.availableTimes",
+          :weekdayOptions="options.weekdays",
+          :weekdayPresets="options.weekdayPresets",
+          :hourOptions="options.hours", :weekday="meetingWindow.weekday", 
+          :startHour="meetingWindow.startHour",
+          :endHour="meetingWindow.endHour", @change="updateInput")
 
         Accordion(title="Advanced Settings" :expanded="false", small)
           v-layout(row, wrap)
@@ -84,8 +73,8 @@ div
           required, label="Time Zone *", name="timeZone", :value="meetingWindow.timeZone",
           :options="options.timeZones", @update="updateInput")
       div.mt-5
-        Button.action-submit(@click="submit", :loading="loading.submit"
-              :disabled="!isFormValid || (!isUpdating && !hasCalendar)")             
+        Button.action-submit(
+          @click="submit", :loading="loading.submit", :disabled="!isFormValid")
           | {{ isUpdating ? 'Update' : 'Create' }} Event
         Button.action-delete(
             v-if="isUpdating" @click="deleteWindow", color="error")

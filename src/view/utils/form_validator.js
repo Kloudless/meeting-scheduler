@@ -50,8 +50,38 @@ function inRangeOf(min, max) {
   };
 }
 
+/**
+ * Check if weekday set is equal to weekdays (order is ignored)
+ * @param {Set} weekdaySet
+ * @param {Array} weekdays
+ */
+function isWeekdayEqual(weekdaySet, weekdays) {
+  return (
+    weekdaySet.size === weekdays.length
+    && weekdays.every(weekday => weekdaySet.has(weekday))
+  );
+}
+
+function notInAvailableTimes(availableTimes) {
+  return (newAvailableTime) => {
+    const isIn = availableTimes.some(a => (
+      a.startHour === newAvailableTime.startHour
+    && a.endHour === newAvailableTime.endHour
+    && isWeekdayEqual(new Set(a.weekday), newAvailableTime.weekday)
+    ));
+    if (isIn) {
+      return `
+        The specified available days and hours have been added.<br/>
+        Please choose a different days / hours.`;
+    }
+    return true;
+  };
+}
+
 export {
   isRequired,
   isEmail,
   inRangeOf,
+  isWeekdayEqual,
+  notInAvailableTimes,
 };

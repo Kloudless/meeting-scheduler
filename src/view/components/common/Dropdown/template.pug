@@ -3,4 +3,4 @@ InputField(:label="label")
   v-autocomplete(
     v-model="selected", :items="options", :rules="rules",
     item-text="text", :label="placeholder", :loading="loading"
-    @change="onChange")
+    @change="onChange", :hide-details="hideDetails")

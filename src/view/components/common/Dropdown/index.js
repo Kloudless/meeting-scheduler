@@ -7,13 +7,17 @@ export default {
     InputField,
   },
   data() {
+    const { options, value } = this.$props;
     return {
-      selected: this.getSelected(this.options),
+      selected: this.getSelected(options, value),
     };
   },
   watch: {
     options(newOptions) {
-      this.selected = this.getSelected(newOptions);
+      this.selected = this.getSelected(newOptions, this.$props.value);
+    },
+    value(newValue) {
+      this.selected = this.getSelected(this.$props.options, newValue);
     },
   },
   computed: {
@@ -55,14 +59,17 @@ export default {
       type: Boolean,
       default: false,
     },
+    hideDetails: {
+      type: Boolean,
+      default: false,
+    },
   },
   methods: {
-    getSelected(options) {
+    getSelected(options, value) {
       if (options.length === 0) {
         return '';
       }
-      let selected =
-        options.findIndex(option => option.value === this.$props.value);
+      let selected = options.findIndex(option => option.value === value);
       if (selected === -1) {
         selected = 0;
         this.onChange(options[selected].value);

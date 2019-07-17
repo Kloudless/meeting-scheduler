@@ -17,26 +17,28 @@ function getJson(state) {
     time_slot_interval: state.timeSlotInterval,
   };
 
-  // TODO: remove state.timeZone which is deprecated since DEV-1997
-  const start = moment.tz(state.startHour, 'HH:mm:ss', state.timeZone);
-  const end = moment.tz(state.endHour, 'HH:mm:ss', state.timeZone);
+  const availableTimes = state.availableTimes.map((availableTime) => {
+    // TODO: remove state.timeZone which is deprecated since DEV-1997
 
-  // if state.endHour is '24:00:00', the time will be recorded as `00:00:00`
-  // and the date will be added 1
+    // if state.endHour is '24:00:00', the time will be recorded as `00:00:00`
+    // and the date will be added 1
+    const { startHour, endHour, weekday } = availableTime;
+    const start = moment.tz(startHour, 'HH:mm:ss', state.timeZone);
+    const end = moment.tz(endHour, 'HH:mm:ss', state.timeZone);
+    return {
+      start: start.format(),
+      end: end.format(),
+      recurring: {
+        month: '*',
+        day: '*',
+        weekday: weekday.join(', '),
+      },
+    };
+  });
 
   json.availability = {
     end_repeat: 'NEVER', // TODO: UI: support end_repeat
-    available_times: [
-      {
-        start: start.format(),
-        end: end.format(),
-        recurring: {
-          month: '*',
-          day: '*',
-          weekday: state.weekday.join(', '),
-        },
-      },
-    ],
+    available_times: availableTimes,
   };
   return json;
 }
@@ -52,6 +54,7 @@ export default {
       location: '',
       description: '',
       timeZone: moment.tz.guess(),
+      availableTimes: [],
       weekday: [],
       startHour: '08:00:00',
       endHour: '17:00:00',
@@ -75,14 +78,14 @@ export default {
         description: meetingWindow.description,
         timeZone: meetingWindow.time_zone,
         recaptchaSiteKey: meetingWindow.recaptcha_site_key,
+        availableTimes: meetingWindow.availability.available_times.map(
+          ({ recurring, start, end }) => ({
+            weekday: recurring.weekday.split(',').map(w => w.trim()),
+            startHour: start.substr(11, 8),
+            endHour: end.substr(11, 8),
+          }),
+        ),
       };
-      const { available_times: availableTimes } = meetingWindow.availability;
-      if (availableTimes && availableTimes[0]) {
-        const { recurring, start, end } = availableTimes[0];
-        data.weekday = recurring.weekday;
-        data.startHour = start.substr(11, 8);
-        data.endHour = end.substr(11, 8);
-      }
       Object.assign(state, data);
     },
   },

@@ -1,5 +1,5 @@
 
-import { isRequired } from 'view/utils/form_validator';
+import { isRequired, isWeekdayEqual } from 'view/utils/form_validator';
 import InputField from '../InputField';
 
 export default {
@@ -39,6 +39,10 @@ export default {
       type: Array,
       default: () => [],
     },
+    hideDetails: {
+      type: Boolean,
+      default: false,
+    },
   },
   computed: {
     rules() {
@@ -57,14 +61,26 @@ export default {
         this.selectedWeekdays = [];
         this.selectedPreset = '';
       } else {
-        this.selectedWeekdays = [...preset.weekdays];
+        this.selectedWeekdays = [...preset.weekdaySet];
         this.selectedPreset = preset.value;
       }
     },
+    reset(weekdays) {
+      const { presets } = this.$props;
+      const preset = presets.find(p => isWeekdayEqual(p.weekdaySet, weekdays));
+      this.selectedWeekdays = weekdays;
+      this.selectedPreset = preset ? preset.value : '';
+    },
   },
   watch: {
+    value(newValue) {
+      this.reset(newValue);
+    },
     selectedWeekdays(weekdays) {
       this.$emit('change', { name: this.name, value: weekdays });
     },
+  },
+  mounted() {
+    this.reset(this.$props.value);
   },
 };

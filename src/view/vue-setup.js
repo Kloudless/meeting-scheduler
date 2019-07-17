@@ -31,10 +31,13 @@ import Vuetify, {
   VProgressCircular,
   VInput,
   VDivider,
+  VList,
   VListTile,
+  VListTileAvatar,
   VListTileTitle,
   VListTileAction,
   VListTileContent,
+  VListTileSubTitle,
   VTooltip,
 } from 'vuetify/lib';
 import Vue from 'vue';
@@ -62,10 +65,13 @@ Vue.use(Vuetify, {
     VProgressCircular,
     VInput,
     VDivider,
+    VList,
     VListTile,
+    VListTileAvatar,
     VListTileTitle,
     VListTileAction,
     VListTileContent,
+    VListTileSubTitle,
     VTooltip,
   },
   /**

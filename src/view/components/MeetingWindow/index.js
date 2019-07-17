@@ -10,7 +10,7 @@ import InputLabel from '../common/InputLabel';
 import Button from '../common/Button';
 import DurationField from '../common/DurationField';
 import NumberField from '../common/NumberField';
-import WeekdayPicker from '../common/WeekdayPicker';
+import AvailabilityField from '../common/AvailabilityField';
 import {
   HOURS, TIME_SLOT_INTERVALS, DURATIONS, TIME_ZONES, WEEKDAYS, WEEKDAY_PRESETS,
 } from '../../utils/fixtures.js';
@@ -28,7 +28,7 @@ export default {
     Button,
     DurationField,
     NumberField,
-    WeekdayPicker,
+    AvailabilityField,
   },
   data() {
     return {
@@ -61,7 +61,6 @@ export default {
   computed: {
     ...mapState({
       meetingWindow: state => state.meetingWindow,
-      hasCalendar: state => Boolean(state.account.calendarId),
       isUpdating: state => Boolean(state.launchOptions.setup.meetingWindowId),
       loading: state => state.api.loading.meetingWindow,
       launchOptions: state => state.launchOptions.setup,
