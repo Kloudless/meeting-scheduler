@@ -1148,6 +1148,10 @@ Feel free to contact us at support@kloudless.com with any feedback or questions.
 
 
 ## Changelog
+
+- 1.4.0
+  - Feat: Allow set multiple availability
+  - Use vue-infinite-loading for time slot page
 - 1.3.0
   - Added advanced availability settings in the Setup View
   - Added new launch option `formOptions`
