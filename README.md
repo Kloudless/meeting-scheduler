@@ -55,7 +55,7 @@ using our [zero-configuration embed script](#embed-the-widget), or
   - [Save the Connected Account's Access Token](#save-the-connected-accounts-access-token)
   - [Edit Meeting Window](#edit-meeting-window)
   - [Display Your Own Result Screen](#display-your-own-result-screen)
-  - [Autofill the Setup View Form Fields](#autofill-the-setup-view-form-fields)
+  - [Autofill Form Fields](#autofill-form-fields)
   - [And More...](#and-more)
 - [Methods](#methods)
   - [config(options)](#configoptions)
@@ -472,33 +472,48 @@ Refer to the [submitMeetingWindow](#submitmeetingwindow) and
 [schedule](#schedule) event for more details.
 
 
-### Autofill the Setup View Form Fields
+### Autofill Form Fields
 
-The form in the Setup View can be filled in automatically with values set in 
+The form in both views can be filled in automatically with values set in 
 launch options. We've included an example below to set the default field 
 values:
 
-```js
-scheduler.launch({
-  appId: '<your_app_id>',
-  setup: {
-    formOptions: {
-      title: { default: "title" },
-      description: { default: "description" },
-      location: { default: "location" },
-      duration: { default: 60 },
-      organizer: { default: "shirley" },
-      weekday: { default: ["MON", "TUE", "FRI"] },
-      startHour: { default: "12:00:00" },
-      endHour: { default: "14:00:00" },
-      timeSlotInterval: { default: 60 },
-      availabilityRange: { default: 60 },
-      timeBufferBefore: { default: 30 },
-      timeBufferAfter: { default: 10 }
+- For Setup View:
+  ```js
+  scheduler.launch({
+    appId: '<your_app_id>',
+    setup: {
+      formOptions: {
+        title: { default: "title" },
+        description: { default: "description" },
+        location: { default: "location" },
+        duration: { default: 60 },
+        organizer: { default: "shirley" },
+        weekday: { default: ["MON", "TUE", "FRI"] },
+        startHour: { default: "12:00:00" },
+        endHour: { default: "14:00:00" },
+        timeSlotInterval: { default: 60 },
+        availabilityRange: { default: 60 },
+        timeBufferBefore: { default: 30 },
+        timeBufferAfter: { default: 10 }
+      }
     }
-  }
-});
-```
+  });
+  ```
+
+- For Schedule View:
+  ```js
+  scheduler.launch({
+    appId: '<your_app_id>',
+    schedule: {
+      meetingWindowId: '<your_meeting_window_id>',
+      formOptions: {
+        name: { default: "Johnny Appleseed" },
+        email: { default: "youremail@example.com" }
+      }
+    }
+  });
+  ```
 
 Refer to [options](#options) for details.
 
@@ -628,6 +643,19 @@ An object containing the following keys:
         A list of available actions for users to choose from. Supported actions
         include:
         - `'close'`: Close and destroy the scheduler.
+  - `formOptions`: _Optional (default: see below)_: Object  
+    - An object to configure the form fields of the Setup View.
+      - `name.default`: _Optional (default: '')_: String  
+        The default name of the attendee.
+      - `email.default`: _Optional (default: '')_: String  
+        The default email of the attendee.
+    - Example:
+      ```javascript
+      {
+        name: { default: "Johnny Appleseed" },
+        email: { default: "youremail@example.com" }
+      }
+      ```
 
 __Note__: You must specify either `setup` or `schedule` to launch the Meeting
 Scheduler.

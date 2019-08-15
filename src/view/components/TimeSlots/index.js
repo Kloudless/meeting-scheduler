@@ -145,7 +145,11 @@ export default {
       });
       promise.then(() => this.afterSubmit());
     },
-
+    validateForm() {
+      if (this.$refs.form.validate()) {
+        this.moveStep(1);
+      }
+    },
     /**
      * Run after reCAPTCHA successfully verified.
      *

@@ -90,16 +90,6 @@ export default {
     },
   },
   actions: {
-    setupFormOptions({ commit }, { formOptions }) {
-      Object.keys(formOptions)
-        .filter(field => (
-          formOptions[field] && formOptions[field].default !== undefined
-          && formOptions[field].default !== null))
-        .forEach((field) => {
-          const { [field]: { default: value } } = formOptions;
-          commit('update', { name: field, value });
-        });
-    },
     async getMeetingWindow({ dispatch, commit }, payload) {
       const meetingWindow = await dispatch({
         type: 'api/request',

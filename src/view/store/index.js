@@ -37,7 +37,7 @@ export const schema = {
   },
   actions: {
     async initialize({ state, commit, dispatch }, payload) {
-      const { launchOptions: { setup } } = payload;
+      const { launchOptions: { setup, schedule } } = payload;
       const shouldCheckLoaderOrigin
         = state.launchOptions.appId !== payload.launchOptions.appId;
 
@@ -65,8 +65,15 @@ export const schema = {
 
       if (setup && setup.formOptions) {
         await dispatch(
-          'meetingWindow/setupFormOptions',
-          { formOptions: setup.formOptions },
+          'setupFormOptions',
+          { formOptions: setup.formOptions, module: 'meetingWindow' },
+        );
+      }
+
+      if (schedule && schedule.formOptions) {
+        await dispatch(
+          'setupFormOptions',
+          { formOptions: schedule.formOptions, module: 'timeSlots' },
         );
       }
     },
@@ -119,6 +126,16 @@ export const schema = {
           trusted: false,
         });
       }
+    },
+    setupFormOptions({ commit }, { formOptions, module }) {
+      Object.keys(formOptions)
+        .filter(field => (
+          formOptions[field] && formOptions[field].default !== undefined
+          && formOptions[field].default !== null))
+        .forEach((field) => {
+          const { [field]: { default: value } } = formOptions;
+          commit(`${module}/update`, { name: field, value });
+        });
     },
   },
 };

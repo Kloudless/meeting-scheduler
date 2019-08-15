@@ -1,6 +1,6 @@
 /* global SCHEDULE_URL */
 import MeetingScheduler from 'loader';
-import { FORM_OPTIONS } from '../jest/constants';
+import { SETUP_FORM_OPTIONS } from '../jest/constants';
 
 let scheduler;
 
@@ -166,7 +166,7 @@ describe('loader._verifyOptions tests', () => {
 
 describe('loader._verifyFormOptions tests', () => {
   test('success', () => {
-    const errors = scheduler._verifyFormOptions(FORM_OPTIONS);
+    const errors = scheduler._verifyFormOptions(SETUP_FORM_OPTIONS);
     expect(errors).toEqual([]);
   });
 });

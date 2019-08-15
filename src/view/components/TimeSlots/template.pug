@@ -55,12 +55,12 @@ div
 
   template(v-if="step === 1")
     div.timeslots-scroll-panel
-      v-form(ref="form", v-model="isTargetFormValid")
+      v-form(ref="form", v-model="isTargetFormValid", lazy-validation)
         TextInput(name="name" label="Name *", :value="timeSlots.name",
-          :rules=['required'],
+          required,
           placeholder="Johnny Appleseed", @update="updateInput")
         TextInput(name="email" label="Email *", :value="timeSlots.email",
-          :rules=['required', 'email'],
+          required, type="email",
           placeholder="youremail@example.com", @update="updateInput")
     v-container(grid-list-xs).px-0
       v-layout(row wrap, align-center)
@@ -68,7 +68,7 @@ div
           Button(@click="moveStep(-1)").mx-0 Back
         v-flex(xs6)
           div.text-xs-right
-            Button(@click="moveStep(1)",
+            Button(@click="validateForm",
                   :disabled="!isTargetFormValid").mx-0 Next
 
   template(v-if="step === 2")

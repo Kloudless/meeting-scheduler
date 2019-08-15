@@ -1,6 +1,6 @@
 
 import InputField from '../InputField';
-import { isRequired } from '../../../utils/form_validator';
+import { isRequired, isEmail } from '../../../utils/form_validator';
 
 export default {
   name: 'TextField',
@@ -9,8 +9,15 @@ export default {
   },
   computed: {
     rules() {
-      const { required } = this;
-      return required ? [isRequired] : [];
+      const { required, type } = this;
+      const rules = [];
+      if (required) {
+        rules.push(isRequired);
+      }
+      if (type === 'email') {
+        rules.push(isEmail);
+      }
+      return rules;
     },
   },
   props: {
@@ -34,9 +41,14 @@ export default {
       type: Boolean,
       default: false,
     },
+    // Props for input validation, check rules() above for details
     required: {
       type: Boolean,
       default: false,
+    },
+    type: {
+      type: String,
+      default: 'text',
     },
   },
   methods: {},
