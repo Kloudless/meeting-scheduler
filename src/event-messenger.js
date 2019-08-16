@@ -10,7 +10,10 @@
  * Message data should always be a valid JSON
  */
 
-import { ROLES } from 'constants';
+import { ROLES, INTERNAL_EVENTS } from 'constants';
+
+const waitPromiseResolves = {};
+let waitPromiseId = 0;
 
 /**
  * EventMessenger / Window instances map
@@ -33,7 +36,13 @@ export function processMessage(data) {
     typeof data === 'object' && data !== null && typeof data.event === 'string'
     && data.event.startsWith(MESSAGE_PREFIX)) {
     // process message data
-    const { id, role, event } = data;
+    const {
+      id,
+      role,
+      event,
+      callbackId,
+      ...message
+    } = data;
     if (!id) {
       throwError('Message should contain id');
     }
@@ -47,11 +56,25 @@ export function processMessage(data) {
     if (messenger && messenger.onMessage) {
       // Construct message sent to onMessage.
       // Extract event name and delete fields only used by EventMessenger
-      const message = Object.assign({}, data);
       message.event = event.replace(MESSAGE_PREFIX, '');
       delete message.role;
       delete message.id;
-      messenger.onMessage(message);
+      if (message.event === INTERNAL_EVENTS.RESPONSE) {
+        const resolve = waitPromiseResolves[callbackId];
+        if (resolve) {
+          resolve(message.data);
+          delete waitPromiseResolves[callbackId];
+        }
+      } else {
+        const result = messenger.onMessage(message);
+        if (callbackId) {
+          messenger.send({
+            event: INTERNAL_EVENTS.RESPONSE,
+            callbackId,
+            data: result,
+          });
+        }
+      }
     } else {
       throwError(`Cannot find messenger for ${role} id ${id}`);
     }
@@ -105,24 +128,39 @@ export class EventMessenger {
   /**
    * Send message to receiver
    * @param {Object} data
-   *   should contain `event` key
+   *   `event`: Required, String, the event key
+   *   `wait`: Optional, Boolean, if set, the function will return a promise.
+   *           The promise is resolved when messenger received a message
+   *           with event=RESPONSE and callbackId == {assigned id}.
+   *           the promise will then be resolved with responseMessage.data
    * @param {string} targetOrigin
    *   override targetOrigin, used by view to send initial event
    */
+  /* eslint-disable consistent-return */
   send(data, targetOrigin = undefined) {
+  /* eslint-enable */
     const { id } = this;
     const receiverRole = getOppositeRole(this.role);
-    const message = { ...data, id, role: receiverRole };
+    const { wait, ...rest } = data;
+    const message = { ...rest, id, role: receiverRole };
     // attach message prefix;
     message.event = `${MESSAGE_PREFIX}${message.event}`;
     const receiver = messengers[id][receiverRole];
 
     // receiver instanceof Window does not work in chrome
     if (receiver && typeof receiver.postMessage === 'function') {
+      let promise;
+      if (wait) {
+        waitPromiseId += 1;
+        message.callbackId = waitPromiseId;
+        promise = new Promise((resolve) => {
+          waitPromiseResolves[waitPromiseId] = resolve;
+        });
+      }
       receiver.postMessage(message, targetOrigin || origins[receiverRole]);
-    } else {
-      throwError(`Cannot find EventMessenger for ${receiverRole} id ${id}`);
+      return promise;
     }
+    throwError(`Cannot find EventMessenger for ${receiverRole} id ${id}`);
   }
 
   /**

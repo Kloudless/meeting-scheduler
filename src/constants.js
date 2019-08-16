@@ -23,6 +23,7 @@ export const EVENTS = {
 export const INTERNAL_EVENTS = {
   VIEW_LAUNCH: 'VIEW_LAUNCH',
   VIEW_LOAD: 'VIEW_LOAD',
+  RESPONSE: 'RESPONSE',
 };
 
 export const EVENTS_LIST = Object.values(EVENTS);

@@ -10,6 +10,12 @@ describe('timeSlots module events tests', () => {
     ['submit action should send preSchedule and schedule event', true],
     ['submit action should only send preSchedule if request failed', false],
   ])('%s', async (_, success) => {
+    /**
+     * Overriding request body with preSchedule event is not tested here because
+     * event messenger can't actually do PostMessage in test environment out
+     * of the box. Please see the test in event-messenger.test.js for testing
+     * getting return values via events.
+     */
     const { store } = createStore({
       modules: {
         timeSlots: {
@@ -35,9 +41,14 @@ describe('timeSlots module events tests', () => {
     try {
       await store.dispatch('timeSlots/submit', { recaptchaToken: '' });
     } catch (e) { /* silent Promise.reject threw by api/request */ }
-    expect(store.messenger.send).toHaveBeenNthCalledWith(1, {
+    const { calls } = store.messenger.send.mock;
+    const message = calls[0][0];
+    expect(message).toMatchObject({
       event: EVENTS.PRE_SCHEDULE,
+      wait: true,
     });
+    expect(message).toHaveProperty('schedule');
+    expect(message).toHaveProperty('meetingWindow');
 
     const submitEventData = {
       event: EVENTS.SCHEDULE,

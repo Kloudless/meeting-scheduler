@@ -65,6 +65,15 @@ class MeetingScheduler {
           errors.push(`setup.formOptions.${field}: should be string.`);
         }
       });
+    // check boolean field
+    ['allowEventMetadata']
+      .filter(this._hasDefault(formOptions))
+      .forEach((field) => {
+        const { [field]: { default: value } } = formOptions;
+        if (typeof value !== 'boolean') {
+          errors.push(`setup.formOptions.${field}: should be boolean.`);
+        }
+      });
     // check options: [<field>, <options>]
     [
       ['duration', DURATIONS],
@@ -388,7 +397,7 @@ class MeetingScheduler {
       case INTERNAL_EVENTS.VIEW_LOAD: {
         this._viewLoaded = true;
         this._launchView();
-        return;
+        return undefined;
       }
       case EVENTS.CLOSE: {
         this.destroy();
@@ -397,9 +406,12 @@ class MeetingScheduler {
       default:
         break;
     }
+
+    let response;
     (this.events[event] || []).forEach((callback) => {
-      callback({ scheduler: this, ...eventData });
+      response = callback({ scheduler: this, ...eventData });
     });
+    return response;
   }
 
   _removeContainer() {

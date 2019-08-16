@@ -611,6 +611,9 @@ An object containing the following keys:
       - `timeBufferAfter.default`: _Optional (default: 0)_: Number  
         The default minutes of time buffer after each scheduled event.
         Possible values: 0 – 99.
+      - `allowEventMetadata.default`: _Optional (default: false)_: Boolean  
+        Set this to true to allow changing the created calendar event details
+        in [preSchedule](#preschedule) event.
     - Example:
       ```javascript
       {
@@ -744,7 +747,7 @@ A Meeting Window is about to be created or updated.
 A Meeting Window has been created or updated.
 
 Event Data:
-  - meetingWindow: Meeting Window object
+  - `meetingWindow`: Meeting Window object
   - `accountToken`([\*1](#event-note)): _String_, Bearer Token of this account
 
 #### deleteMeetingWindow
@@ -755,12 +758,40 @@ A Meeting Window has been deleted
 
 Before scheduling an event in the Schedule View
 
+Event Data:
+  - `meetingWindow`: _Object_, the Meeting Window object this schedule is
+  created from.
+  - `schedule`: _Object_, details for this schedule, include selected time and
+  attendee information.
+
+Return Value:  
+  - You can modify the `schedule` object passed in and return the object, the
+    returned object will be used to schedule the event. If the meetingWindow
+    object has `allow_event_metadata` set to true, you can add a property
+    `event_metadata` and customize the created calendar event as follows:
+
+    ```js
+    scheduler.on('preSchedule', (eventData) => {
+      const { meetingWindow, schedule } = eventData;
+      if (meetingWindow.allow_event_metadata) {
+        schedule.event_metadata = {
+          // This will override the created event name
+          'name': meetingWindow.title + ' Customized',
+          // This will append extra texts in the created event description
+          'extra_description': 'Customized'
+        }
+        return schedule;
+      }
+    })
+    ```
+  - Return undefined if you don't want to change `schedule` object.
+
 #### schedule
 
 When an event is scheduled
 
 Event Data:
-  - scheduledEvent: _Object_, scheduled calendar event details, including
+  - `scheduledEvent`: _Object_, scheduled calendar event details, including
   calendar event ID
 
 #### restart
@@ -805,6 +836,7 @@ for scheduling events with the Kloudless Calendar.
 | time_slot_interval | integer | Indicate the number of minutes of time between each time slots. Defaults to 30. | Yes | No | 
 | time_buffer_before | integer | Indicate the number of minutes of time buffer before each schedule event. Defaults to 0. | Yes | No | 
 | time_buffer_after | integer | Indicate the number of minutes of time buffer after each schedule event. Defaults to 0. | Yes | No | 
+| allow_event_metadata | boolean | Indicate if the created calendar event can be customized when scheduling events. See the [preSchedule](#preschedule) event for details. Defaults to false. | Yes | No | 
 
 
 

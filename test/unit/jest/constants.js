@@ -14,6 +14,7 @@ export const SETUP_FORM_OPTIONS = {
   availabilityRange: { default: 15 },
   timeSlotInterval: { default: 15 },
   organizer: { default: 'shirley@kloudless.com' },
+  allowEventMetadata: { default: true },
 };
 
 export const SCHEDULE_FORM_OPTIONS = {
