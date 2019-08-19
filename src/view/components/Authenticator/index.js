@@ -33,6 +33,7 @@ export default {
     appId: state => state.launchOptions.appId,
     loading: state => state.api.loading.account,
     baseUrl: state => state.launchOptions.globalOptions.baseUrl,
+    authOptions: state => state.launchOptions.setup.authOptions,
   }),
   methods: {
     onAddAccount(e) {
@@ -45,8 +46,8 @@ export default {
       const auth = authenticator.authenticator(
         e.target,
         {
-          client_id: this.appId,
-          scope: 'any:normal.calendar',
+          ...this.authOptions,
+          ...{ client_id: this.appId },
         },
         this.handleAuthResult,
       );
@@ -57,20 +58,30 @@ export default {
         this.$store.dispatch('api/setErrorMessage', {
           message: 'An error occurred connecting your account.',
         });
-      } else {
-        this.$store.dispatch('account/setAccount', {
-          id: result.account.id,
-          account: result.account.account,
-          token: result.access_token,
-        });
-        this.$store.dispatch('event', {
-          event: EVENTS.CONNECT_ACCOUNT,
-          account: result.account,
-          confidentialData: {
-            accountToken: result.access_token,
-          },
-        });
+        return;
       }
+
+      if (!result.account.apis.includes('calendar')) {
+        const { account } = result;
+        this.$store.dispatch('api/setErrorMessage', {
+          message: `The connected account doesn't support calendar API.
+          Account: ${account.account}. Service: ${account.service_name}`,
+        });
+        return;
+      }
+
+      this.$store.dispatch('account/setAccount', {
+        id: result.account.id,
+        account: result.account.account,
+        token: result.access_token,
+      });
+      this.$store.dispatch('event', {
+        event: EVENTS.CONNECT_ACCOUNT,
+        account: result.account,
+        confidentialData: {
+          accountToken: result.access_token,
+        },
+      });
     },
     removeAccount() {
       this.$store.commit({

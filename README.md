@@ -631,6 +631,45 @@ An object containing the following keys:
         timeBufferAfter: { default: 0 }     // 0 – 99
       }
       ```
+  - `authOptions`: _Optional (default: see below)_: Object
+    - An object to configure the query parameters used for
+      [Kloudless OAuth 2.0](https://developers.kloudless.com/docs/v1/authentication#oauth-2.0-first-leg)
+      to connect a calendar account.
+
+      Meeting Scheduler leverages
+      [Authenticator](https://github.com/Kloudless/authenticator) library for
+      OAuth. The `authOptions` object will be passed to [Authenticator
+      options](https://github.com/Kloudless/authenticator#options).
+
+      Here is the default `authOption`:
+
+      ```javascript
+      {
+        scope: 'any:normal.calendar'
+      }
+      ```
+
+      If you want to explicitly define the available services for account
+      connection, you can change the `scope` option. Here is an example to
+      explicitly define Google Calendar and Outlook Calendar as available
+      services:
+
+      ```javascript
+      {
+        scope: 'google_calendar outlook_calendar'
+      }
+      ```
+
+      The following options cannot be overridden for consistency or security
+      reasons:
+      - `client_id`
+      - `response_type`
+      - `redirect_uri`
+      - `state`
+
+      Please check [Kloudless OAuth 2.0](https://developers.kloudless.com/docs/v1/authentication#oauth-2.0-first-leg)
+      and [Authenticator options](https://github.com/Kloudless/authenticator#options)
+      for more details.
 
 - `schedule`: _Required for the Schedule View_: Object  
   Options to launch the Schedule View. Available options:

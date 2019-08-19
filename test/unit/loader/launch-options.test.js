@@ -28,6 +28,9 @@ describe('loader._applyDefaultOptions tests', () => {
             showResult: true,
             actions: ['close'],
           },
+          authOptions: {
+            scope: 'any:normal.calendar',
+          },
         },
       },
     }],

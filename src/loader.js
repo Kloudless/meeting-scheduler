@@ -170,6 +170,11 @@ class MeetingScheduler {
         actions: ['close'],
         ..._options.setup.afterSubmit,
       };
+
+      _options.setup.authOptions = {
+        scope: 'any:normal.calendar',
+        ..._options.setup.authOptions,
+      };
     } else if (_options.schedule) {
       _options.schedule.afterSchedule = {
         showResult: true,

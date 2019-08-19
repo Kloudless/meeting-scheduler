@@ -16,8 +16,11 @@ describe('Test events', () => {
     store,
   });
 
-  test('should send error event when auth failed', () => {
-    wrapper.vm.handleAuthResult({});
+  test.each([
+    ['no account', {}],
+    ['account no calendar api', { account: { apis: [] } }],
+  ])('should send error event when auth failed. %s', (_, authResult) => {
+    wrapper.vm.handleAuthResult(authResult);
     const { calls } = store.messenger.send.mock;
     const eventData = calls[calls.length - 1][0];
     expect(eventData).toMatchObject({
@@ -38,6 +41,7 @@ describe('Test events', () => {
       const account = {
         id: 10000,
         account: 'test@test.com',
+        apis: ['calendar'],
       };
       wrapper.vm.handleAuthResult({
         account,
