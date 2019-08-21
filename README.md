@@ -835,7 +835,7 @@ List the user's Meeting Windows. The user is identified by the bearer token.
         "available_times": [
           {
             "start": "2018-11-29T00:00:00-08:00",
-            "end": "2018-11-29T24:00:00-08:00",
+            "end": "2018-12-01T00:00:00-08:00",
             "recurring": {
               "month": "*",
               "weekday": "MON, TUE, WED, THU, FRI, SAT, SUN",
@@ -880,7 +880,7 @@ Retrieve the meeting window via meeting window ID.
     "available_times": [
       {
         "start": "2018-11-29T00:00:00-08:00",
-        "end": "2018-11-29T24:00:00-08:00",
+        "end": "2018-12-01T00:00:00-08:00",
         "recurring": {
           "month": "*",
           "weekday": "MON, TUE, WED, THU, FRI, SAT, SUN",
@@ -919,7 +919,7 @@ Create a Meeting Window.
     "available_times": [
       {
         "start": "2018-11-29T00:00:00-08:00",
-        "end": "2018-11-29T24:00:00-08:00",
+        "end": "2018-12-01T00:00:00-08:00",
         "recurring": {
           "weekday": "MON, TUE, WED, THU, FRI, SAT, SUN",
         }
@@ -953,7 +953,7 @@ Create a Meeting Window.
     "available_times": [
       {
         "start": "2018-11-29T00:00:00-08:00",
-        "end": "2018-11-29T24:00:00-08:00",
+        "end": "2018-12-01T00:00:00-08:00",
         "recurring": {
           "weekday": "MON, TUE, WED, THU, FRI, SAT, SUN",
         }
@@ -990,7 +990,7 @@ Update the meeting window.
     "available_times": [
       {
         "start": "2018-11-29T00:00:00-08:00",
-        "end": "2018-11-29T24:00:00-08:00",
+        "end": "2018-12-01T00:00:00-08:00",
         "recurring": {
           "weekday": "MON, TUE, WED, THU, FRI, SAT, SUN",
         }
@@ -1023,7 +1023,7 @@ Update the meeting window.
     "available_times": [
       {
         "start": "2018-11-29T00:00:00-08:00",
-        "end": "2018-11-29T24:00:00-08:00",
+        "end": "2018-12-01T00:00:00-08:00",
         "recurring": {
           "weekday": "MON, TUE, WED, THU, FRI, SAT, SUN",
         }
