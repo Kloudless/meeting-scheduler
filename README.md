@@ -87,6 +87,7 @@ using our [zero-configuration embed script](#embed-the-widget), or
     - [Availability](#availability)
   - [Authentication](#authentication)
   - [Endpoints](#endpoints)
+  - [Integrating Activity Stream API](#integrating-activity-stream-api)
 - [Migration Guide](#migration-guide)
   - [from v1.0, v1.1 to v1.2 and above](#from-v10-v11-to-v12-and-above)
 - [Contribute](#contribute)
@@ -1044,6 +1045,92 @@ Update the meeting window.
 Delete the Meeting Window.
 
 - Response `204`
+
+
+
+### Integrating Activity Stream API
+
+**This is only supported for Meeting Windows created with a
+Google Calendar or Outlook Calendar account.**
+
+Kloudless Calendar API Offers [Activity Stream](https://developers.kloudless.com/docs/v1/calendar#activity-stream) endpoint where you can get a list of past events
+happened to this calendar, including calendar events creation.
+
+You can check if a calendar event is created by the Meeting Scheduler by
+checking the following properties for each event object in `object_list`:
+- `event.type` is "add"
+- `event.metadata.type` is "event"
+- `event.metadata.custom_properties` is a list and contains an object with
+  `key="meeting_window_id"`, the `value` property of this object is the
+  associated Meeting Window's ID that this calendar event is created from.
+
+Here is an example of an event object representing a calendar event created
+by the Meeting Scheduler: (assuming Meeting Window ID is `abcxyz12345`). Notice
+that `metadata` property contains the entire data of the created calendar
+event, and the associated Meeting Window's ID is listed under
+`custom_properties`:
+```json
+    {
+      "id": "event_id",
+      "account": 9999,
+      "action": "+",
+      "ip": null,
+      "modified": "2019-08-28T03:55:02Z",
+      "type": "add",
+      "user_id": null,
+      "metadata": {
+        "api": "calendar",
+        "type": "event",
+        "id": "calendar_event_id",
+        "account_id": "9999",
+        "calendar_id": "calendar_id",
+        "recurrence_type": "solo",
+        "creator": {
+          "id": null,
+          "name": null,
+          "email": "creator@gmail.com"
+        },
+        "organizer": {
+          "id": null,
+          "name": "organizer",
+          "email": "organizer@group.calendar.google.com"
+        },
+        "attendees": [
+          {
+            "id": null,
+            "name": "attendee",
+            "email": "attendee@kloudless.com",
+            "status": "pending",
+            "required": true,
+            "resource": false
+          }
+        ],
+        "created": "2019-08-28T03:55:02Z",
+        "modified": "2019-08-28T03:55:02Z",
+        "all_day": false,
+        "start": "2019-09-15T22:30:00-07:00",
+        "start_time_zone": "America/Los_Angeles",
+        "end": "2019-09-15T23:30:00-07:00",
+        "end_time_zone": "America/Los_Angeles",
+        "name": "event_name",
+        "description": "event_description",
+        "location": "event_location",
+        "status": "confirmed",
+        "visibility": null,
+        "attachments": [],
+        "custom_properties": [
+          {
+            "key": "meeting_window_id",
+            "value": "abcxyz12345"
+          }
+        ],
+        "use_default_reminder": true,
+        "reminders": [],
+        "reminder": null
+      }
+    }
+```
+
 
 ## Migration Guide
 
