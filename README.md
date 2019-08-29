@@ -1048,27 +1048,28 @@ Delete the Meeting Window.
 
 
 
-### Integrating Activity Stream API
+### Activity Stream API
 
 **This is only supported for Meeting Windows created with a
 Google Calendar or Outlook Calendar account.**
 
-Kloudless Calendar API Offers [Activity Stream](https://developers.kloudless.com/docs/v1/calendar#activity-stream) endpoint where you can get a list of past events
-happened to this calendar, including calendar events creation.
+The Kloudless Calendar API offers an [Activity Stream](https://developers.kloudless.com/docs/v1/calendar#activity-stream)
+where actions performed on calendar events are tracked. When an event is
+scheduled by the Meeting Scheduler, a corresponding activity object will be
+returned in the stream.
 
-You can check if a calendar event is created by the Meeting Scheduler by
-checking the following properties for each event object in `object_list`:
-- `event.type` is "add"
-- `event.metadata.type` is "event"
-- `event.metadata.custom_properties` is a list and contains an object with
+You can tell if the activity object corresponds to an event created by the
+Meeting scheduler if the following cases are true:
+- `type` is `add`
+- `metadata.type` is `event`
+- `metadata.custom_properties` is a list and contains an object with
   `key="meeting_window_id"`, the `value` property of this object is the
   associated Meeting Window's ID that this calendar event is created from.
 
-Here is an example of an event object representing a calendar event created
+Here is an example activity object representing a calendar event created
 by the Meeting Scheduler: (assuming Meeting Window ID is `abcxyz12345`). Notice
-that `metadata` property contains the entire data of the created calendar
-event, and the associated Meeting Window's ID is listed under
-`custom_properties`:
+that `metadata` property contains the entire calendar event, and the associated
+Meeting Window's ID is listed under `custom_properties`:
 ```json
     {
       "id": "event_id",
