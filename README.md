@@ -87,9 +87,9 @@ using our [zero-configuration embed script](#embed-the-widget), or
     - [Availability](#availability)
   - [Authentication](#authentication)
   - [Endpoints](#endpoints)
-  - [Integrating Activity Stream API](#integrating-activity-stream-api)
+  - [Monitoring Scheduled Events](#monitoring-scheduled-events)
 - [Migration Guide](#migration-guide)
-  - [from v1.0, v1.1 to v1.2 and above](#from-v10-v11-to-v12-and-above)
+  - [From v1.0, v1.1 to v1.2 and above](#from-v10-v11-to-v12-and-above)
 - [Contribute](#contribute)
   - [Development](#development)
   - [Building](#building)
@@ -1048,31 +1048,39 @@ Delete the Meeting Window.
 
 
 
-### Activity Stream API
+### Monitoring Scheduled Events
 
-**This is only supported for Meeting Windows created with a
-Google Calendar or Outlook Calendar account.**
+The Kloudless Calendar API offers an
+[Activity Stream](https://developers.kloudless.com/docs/latest/calendar#activity-stream)
+that tracks new, updated, or deleted events on connected calendar accounts.
+Since this includes calendar events created by the Meeting Scheduler, your
+application can monitor an organizer's calendar  to determine when an end-user
+books a time slot on it.
 
-The Kloudless Calendar API offers an [Activity Stream](https://developers.kloudless.com/docs/v1/calendar#activity-stream)
-where actions performed on calendar events are tracked. When an event is
-scheduled by the Meeting Scheduler, a corresponding activity object will be
-returned in the stream.
+**This is currently only supported for Google Calendar or Outlook Calendar
+accounts connected with a Meeting Window.**
 
-You can tell if the activity object corresponds to an event created by the
-Meeting scheduler if the following cases are true:
-- `type` is `add`
-- `metadata.type` is `event`
-- `metadata.custom_properties` is a list and contains an object with
-  `key="meeting_window_id"`, the `value` property of this object is the
-  associated Meeting Window's ID that this calendar event is created from.
+When [listing new activity](https://developers.kloudless.com/docs/v1/events#events-list-events),
+you can tell if an activity object corresponds to a calendar event created by
+the Meeting scheduler if the following cases are all true:
+- The `type` is `add`
+- The `metadata.type` is `event`
+- The `metadata.custom_properties` is a list that contains an object where the
+  `key` is `"meeting_window_id"`.
 
-Here is an example activity object representing a calendar event created
-by the Meeting Scheduler: (assuming Meeting Window ID is `abcxyz12345`). Notice
-that `metadata` property contains the entire calendar event, and the associated
-Meeting Window's ID is listed under `custom_properties`:
+If so, the `value` attribute in the `metadata.custom_properties` object 
+described above is the ID of the Meeting Window for which the calendar event was
+booked.
+
+Below is an example activity object representing a calendar event created
+by the Meeting Scheduler. The Meeting Window ID in this example is
+`abcxyz12345`. Notice that the `metadata` property contains the entire calendar
+event, and the associated Meeting Window's ID is listed within
+`custom_properties`.
+
 ```json
     {
-      "id": "event_id",
+      "id": "activity_id",
       "account": 9999,
       "action": "+",
       "ip": null,
@@ -1135,7 +1143,7 @@ Meeting Window's ID is listed under `custom_properties`:
 
 ## Migration Guide
 
-### from v1.0, v1.1 to v1.2 and above
+### From v1.0, v1.1 to v1.2 and above
 
 1. Launch options have been redesigned to provide flexibility with configuration.
 Please refer to the following table to migrate your
