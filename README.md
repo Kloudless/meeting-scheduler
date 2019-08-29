@@ -1245,6 +1245,9 @@ Feel free to contact us at support@kloudless.com with any feedback or questions.
 
 ## Changelog
 
+- 1.4.1
+  - Improved widget loading time
+  - Stop Launching Edit Mode if the Bearer Token passed in is invalid
 - 1.4.0
   - Feat: Allow set multiple availability
   - Use vue-infinite-loading for time slot page
