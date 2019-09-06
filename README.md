@@ -1245,6 +1245,8 @@ Feel free to contact us at support@kloudless.com with any feedback or questions.
 
 ## Changelog
 
+- 1.4.2
+  - Fixed: Modal was blocked by elements with z-index > 0
 - 1.4.1
   - Improved widget loading time
   - Stop Launching Edit Mode if the Bearer Token passed in is invalid
