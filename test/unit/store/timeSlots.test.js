@@ -1,5 +1,6 @@
 import { EVENTS } from 'constants';
 import { createStore } from '../jest/vue-utils';
+import { SCHEDULE_FORM_OPTIONS } from '../jest/constants';
 
 describe('timeSlots module events tests', () => {
   const scheduleResponse = {
@@ -50,5 +51,22 @@ describe('timeSlots module events tests', () => {
         2, submitEventData,
       );
     }
+  });
+});
+
+describe('timeSlots module action tests', () => {
+  test('setupFormOptions test', async () => {
+    const { store } = createStore();
+    const expected = Object.keys(SCHEDULE_FORM_OPTIONS).reduce(
+      (result, field) => {
+        result[field] = SCHEDULE_FORM_OPTIONS[field].default;
+        return result;
+      }, {},
+    );
+    await store.dispatch(
+      'setupFormOptions',
+      { formOptions: SCHEDULE_FORM_OPTIONS, module: 'timeSlots' },
+    );
+    expect(store.state.timeSlots).toMatchObject(expected);
   });
 });

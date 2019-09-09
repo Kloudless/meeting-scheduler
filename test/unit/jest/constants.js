@@ -1,6 +1,6 @@
 /* eslint-disable import/prefer-default-export */
 
-export const FORM_OPTIONS = {
+export const SETUP_FORM_OPTIONS = {
   title: { default: 'title' },
   location: { default: 'location' },
   description: { default: 'description' },
@@ -14,4 +14,9 @@ export const FORM_OPTIONS = {
   availabilityRange: { default: 15 },
   timeSlotInterval: { default: 15 },
   organizer: { default: 'shirley@kloudless.com' },
+};
+
+export const SCHEDULE_FORM_OPTIONS = {
+  name: { default: 'andy' },
+  email: { default: 'andy@kloudless.com' },
 };
