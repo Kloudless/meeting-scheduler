@@ -1269,34 +1269,3 @@ Open http://localhost:8080/test/dist to test the build
 ## Support
 
 Feel free to contact us at support@kloudless.com with any feedback or questions.
-
-
-## Changelog
-
-- 1.4.2
-  - Fixed: Modal was blocked by elements with z-index > 0
-- 1.4.1
-  - Improved widget loading time
-  - Stop Launching Edit Mode if the Bearer Token passed in is invalid
-- 1.4.0
-  - Feat: Allow set multiple availability
-  - Use vue-infinite-loading for time slot page
-- 1.3.0
-  - Added advanced availability settings in the Setup View
-  - Added new launch option `formOptions`
-- 1.2.2
-  - Event name corrections
-- 1.2.1
-  - Fixed: Missing fields when editing Meeting Window
-- 1.2.0
-  - Added new launch options to control the result page
-  - Added event support
-  - Added ability to edit and delete existing Meeting Window objects
-- 1.1.0
-  - Updated README
-  - Fixed: Available times were off due to daylight saving timezone
-  - Render the widget inside iframe to preserve layout
-  - Added new build options
-  - Added setOptions to configure global options in runtime
-- 1.0.0
-  - Initial release
