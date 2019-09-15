@@ -1080,53 +1080,72 @@ Delete the Meeting Window.
 
 ### Monitoring Scheduled Events
 
-To monitor events scheduled by the Meeting Scheduler, you can use either
-WebHooks or Activity Stream endpoint.
+To monitor events scheduled by the Meeting Scheduler, you can choose to
+either receive WebHooks from Kloudless, or poll the account via the Activity
+Stream endpoint.
 
-If you want your application be notified shortly after an event is scheduled,
-we recommend using [WebHooks](#webhooks). If your application only want to
-check scheduled events once in a set time period, then consider using
-[Activity Stream Endpoint](#activity-stream-endpoint).
+We recommend receiving [WebHooks](#webhooks) if possible since your application
+will receive a notification immediately after a time slot is booked by a user
+with the ID of the calendar event created.
+
+If your application can't receive webhooks, the
+[Activity Stream](#activity-stream-endpoint) endpoint returns all activity in
+the connected calendar account, which your application can filter to be aware
+of just the calendar events created by the Meeting Scheduler.
 
 #### WebHooks
-Kloudless API supports
+The Kloudless API supports
 [WebHooks](https://developers.kloudless.com/docs/latest/events#webhooks) to
-send notification whenever an activity from a connected account happens,
-this includes when an event is scheduled by the Meeting Scheduler.
+send notifications whenever activity occurs in a connected calendar account.
 
-Check the [documentation](https://developers.kloudless.com/docs/latest/events#webhooks)
-for instructions to setup webhooks in your application.
+This includes both activity as a result of time slots booked via the Meeting
+Scheduler as well as general usage of the calendar account.
 
-The webhook request data for these activities will be sent as urlencoded form
-data like this:
+Check the [Kloudless API Docs](https://developers.kloudless.com/docs/latest/events#webhooks)
+for information on how to configure webhooks for your application.
+
+The webhook's body URL-encodes data that your application can parse. Be aware
+that not all attributes will be present on each notification. Here is an
+example:
+
 ```
 account=123456&event_category=calendar&event_type=add&event_subtype=meeting_scheduler_slot_booked&calendar_id=calendar_id&calendar_event_id=calendar_event_id&meeting_window_id=abcxyz12345
 ```
 
-The form data contains multiple attributes as listed below:
-- `account`: ID of the connected account
-- `event_category`: Always "calendar"
-- `event_type`: Always "add"
-- `event_subtype`: Always "meeting_scheduler_slot_booked"
-- `meeting_window_id`: ID of the Meeting Window that is used to schedule the
-                       calendar event
-- `calendar_id`: ID of the calendar that the event is scheduled in
-- `calendar_event_id` ID of the scheduled event
+Most notifications only include the account ID or limited information in
+the payload, but notifications from the Meeting Scheduler have the following
+attributes that your application should check for:
 
-You can verify if a webhook request is about events scheduled by the
-Meeting Scheduler by checking the values of `event_category`, `event_type`, and
-`event_subtype` attributes stated above.
+- `event_category`: Always `calendar`.
+- `event_type`: Always `add`.
+- `event_subtype`: Always `meeting_scheduler_slot_booked`.
 
-You can then use the `meeting_window_id` to
-[retrieve the associated Meeting Window object](##get-httpsapikloudlesscomv1meetingswindowsid),
-and `account`, `calendar_id` and `calendar_event_id` to
-[retrieve the scheduled calendar event](https://developers.kloudless.com/docs/v1/calendar#events-retrieve-an-event).
+If your application sees a notification with the data above, check the
+remaining included data for which calendar event was created:
 
+- `meeting_window_id`: ID of the Meeting Window used to schedule the
+                       calendar event.
+- `account`: ID of the connected calendar account.
+- `calendar_id`: ID of the calendar that the event is scheduled in.
+- `calendar_event_id` ID of the scheduled calendar event.
+
+You can then either
+[retrieve the associated Meeting Window object](#get-httpsapikloudlesscomv1meetingswindowsid),
+or more commonly,
+[retrieve the scheduled calendar event](https://developers.kloudless.com/docs/v1/calendar#events-retrieve-an-event)
+via the Kloudless API.
+
+For example, retrieving the metadata of a calendar event that was scheduled
+involves a GET request to the following URL based on the attributes above:
+
+```
+https://api.kloudless.com/v1/accounts/{account}/cal/calendars/{calendar_id}/events/{calendar_event_id}
+```
 
 #### Activity Stream Endpoint
 
 **This is currently only supported for Google Calendar or Outlook Calendar
-accounts connected with a Meeting Window.**
+accounts connected to a Meeting Window.**
 
 The Kloudless Calendar API offers an
 [Activity Stream](https://developers.kloudless.com/docs/latest/calendar#activity-stream)
@@ -1141,7 +1160,7 @@ the Meeting scheduler if the following cases are all true:
 - The `type` is `add`
 - The `metadata.api` is `calendar`
 - The `metadata.type` is `event`
-- The `metadata.custom_properties` is a list that contains an object where the
+- `metadata.custom_properties` is a list that contains an object where the
   `key` is `"meeting_window_id"`.
 
 If so, the `value` attribute in the `metadata.custom_properties` object 
