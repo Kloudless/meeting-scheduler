@@ -64,7 +64,7 @@ export default {
       if (!result.account.apis.includes('calendar')) {
         const { account } = result;
         this.$store.dispatch('api/setErrorMessage', {
-          message: `The connected account doesn't support calendar API.
+          message: `The connected account doesn't support calendaring.
           Account: ${account.account}. Service: ${account.service_name}`,
         });
         return;

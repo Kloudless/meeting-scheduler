@@ -172,7 +172,7 @@ class MeetingScheduler {
       };
 
       _options.setup.authOptions = {
-        scope: 'any:normal.calendar',
+        scope: 'calendar:normal',
         ..._options.setup.authOptions,
       };
     } else if (_options.schedule) {

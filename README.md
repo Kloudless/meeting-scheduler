@@ -632,20 +632,20 @@ An object containing the following keys:
       }
       ```
   - `authOptions`: _Optional (default: see below)_: Object
-    - An object to configure the query parameters used for
+    - An object to configure the query parameters used during the
       [Kloudless OAuth 2.0](https://developers.kloudless.com/docs/v1/authentication#oauth-2.0-first-leg)
-      to connect a calendar account.
+      flow to connect a calendar account.
 
-      Meeting Scheduler leverages
+      The Meeting Scheduler leverages the
       [Authenticator](https://github.com/Kloudless/authenticator) library for
-      OAuth. The `authOptions` object will be passed to [Authenticator
+      OAuth so will pass the `authOptions` object to the [Authenticator's
       options](https://github.com/Kloudless/authenticator#options).
 
-      Here is the default `authOption`:
+      Here is the default `authOptions` object:
 
       ```javascript
       {
-        scope: 'any:normal.calendar'
+        scope: 'calendar:normal'
       }
       ```
 
@@ -667,9 +667,9 @@ An object containing the following keys:
       - `redirect_uri`
       - `state`
 
-      Please check [Kloudless OAuth 2.0](https://developers.kloudless.com/docs/v1/authentication#oauth-2.0-first-leg)
-      and [Authenticator options](https://github.com/Kloudless/authenticator#options)
-      for more details.
+      Please check the
+      [Authenticator options](https://github.com/Kloudless/authenticator#options)
+      for more details on the format and attributes accepted.
 
 - `schedule`: _Required for the Schedule View_: Object  
   Options to launch the Schedule View. Available options:
