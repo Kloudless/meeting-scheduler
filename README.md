@@ -88,6 +88,8 @@ using our [zero-configuration embed script](#embed-the-widget), or
   - [Authentication](#authentication)
   - [Endpoints](#endpoints)
   - [Monitoring Scheduled Events](#monitoring-scheduled-events)
+    - [WebHooks](#webhooks)
+    - [Activity Stream Endpoint](#activity-stream-endpoint)
 - [Migration Guide](#migration-guide)
   - [From v1.0, v1.1 to v1.2 and above](#from-v10-v11-to-v12-and-above)
 - [Contribute](#contribute)
@@ -97,7 +99,7 @@ using our [zero-configuration embed script](#embed-the-widget), or
     - [Build Options](#build-options)
   - [Test the Build](#test-the-build)
 - [Support](#support)
-- [Changelog](#changelog)
+- [Changelog](CHANGELOG.md)
 
 ## Supported Browsers
 - Google Chrome 70.0+
@@ -1078,6 +1080,73 @@ Delete the Meeting Window.
 
 ### Monitoring Scheduled Events
 
+To monitor events scheduled by the Meeting Scheduler, you can choose to
+either receive WebHooks from Kloudless, or poll the account via the Activity
+Stream endpoint.
+
+We recommend receiving [WebHooks](#webhooks) if possible since your application
+will receive a notification immediately after a time slot is booked by a user
+with the ID of the calendar event created.
+
+If your application can't receive webhooks, the
+[Activity Stream](#activity-stream-endpoint) endpoint returns all activity in
+the connected calendar account, which your application can filter to be aware
+of just the calendar events created by the Meeting Scheduler.
+
+#### WebHooks
+The Kloudless API supports
+[WebHooks](https://developers.kloudless.com/docs/latest/events#webhooks) to
+send notifications whenever activity occurs in a connected calendar account.
+
+This includes both activity as a result of time slots booked via the Meeting
+Scheduler as well as general usage of the calendar account.
+
+Check the [Kloudless API Docs](https://developers.kloudless.com/docs/latest/events#webhooks)
+for information on how to configure webhooks for your application.
+
+The webhook's body URL-encodes data that your application can parse. Be aware
+that not all attributes will be present on each notification. Here is an
+example:
+
+```
+account=123456&event_category=calendar&event_type=add&event_subtype=meeting_scheduler_slot_booked&calendar_id=calendar_id&calendar_event_id=calendar_event_id&meeting_window_id=abcxyz12345
+```
+
+Most notifications only include the account ID or limited information in
+the payload, but notifications from the Meeting Scheduler have the following
+attributes that your application should check for:
+
+- `event_category`: Always `calendar`.
+- `event_type`: Always `add`.
+- `event_subtype`: Always `meeting_scheduler_slot_booked`.
+
+If your application sees a notification with the data above, check the
+remaining included data for which calendar event was created:
+
+- `meeting_window_id`: ID of the Meeting Window used to schedule the
+                       calendar event.
+- `account`: ID of the connected calendar account.
+- `calendar_id`: ID of the calendar that the event is scheduled in.
+- `calendar_event_id` ID of the scheduled calendar event.
+
+You can then either
+[retrieve the associated Meeting Window object](#get-httpsapikloudlesscomv1meetingswindowsid),
+or more commonly,
+[retrieve the scheduled calendar event](https://developers.kloudless.com/docs/v1/calendar#events-retrieve-an-event)
+via the Kloudless API.
+
+For example, retrieving the metadata of a calendar event that was scheduled
+involves a GET request to the following URL based on the attributes above:
+
+```
+https://api.kloudless.com/v1/accounts/{account}/cal/calendars/{calendar_id}/events/{calendar_event_id}
+```
+
+#### Activity Stream Endpoint
+
+**This is currently only supported for Google Calendar or Outlook Calendar
+accounts connected to a Meeting Window.**
+
 The Kloudless Calendar API offers an
 [Activity Stream](https://developers.kloudless.com/docs/latest/calendar#activity-stream)
 that tracks new, updated, or deleted events on connected calendar accounts.
@@ -1085,15 +1154,13 @@ Since this includes calendar events created by the Meeting Scheduler, your
 application can monitor an organizer's calendar  to determine when an end-user
 books a time slot on it.
 
-**This is currently only supported for Google Calendar or Outlook Calendar
-accounts connected with a Meeting Window.**
-
 When [listing new activity](https://developers.kloudless.com/docs/v1/events#events-list-events),
 you can tell if an activity object corresponds to a calendar event created by
 the Meeting scheduler if the following cases are all true:
 - The `type` is `add`
+- The `metadata.api` is `calendar`
 - The `metadata.type` is `event`
-- The `metadata.custom_properties` is a list that contains an object where the
+- `metadata.custom_properties` is a list that contains an object where the
   `key` is `"meeting_window_id"`.
 
 If so, the `value` attribute in the `metadata.custom_properties` object 
