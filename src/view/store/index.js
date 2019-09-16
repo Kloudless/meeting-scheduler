@@ -88,7 +88,7 @@ export const schema = {
         Object.assign(eventData, confidentialData);
       }
       // this.messenger is set in MeetingSchedulerView constructor
-      this.messenger.send(eventData);
+      return this.messenger.send(eventData);
     },
     async checkLoaderTrusted({ dispatch, commit, state }) {
       const { launchOptions } = state;

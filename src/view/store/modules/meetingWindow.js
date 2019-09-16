@@ -2,7 +2,7 @@ import moment from 'moment-timezone';
 import { EVENTS } from 'constants';
 import common from '../common.js';
 
-function getJson(state) {
+export function getJson(state) {
   // basic props
   const json = {
     title: state.title,
@@ -15,6 +15,7 @@ function getJson(state) {
     time_buffer_before: state.timeBufferBefore,
     time_buffer_after: state.timeBufferAfter,
     time_slot_interval: state.timeSlotInterval,
+    allow_event_metadata: state.allowEventMetadata,
   };
 
   const availableTimes = state.availableTimes.map((availableTime) => {
@@ -63,6 +64,7 @@ export default {
       timeBufferAfter: 0,
       availabilityRange: 30,
       timeSlotInterval: 30,
+      allowEventMetadata: false,
     };
   },
   mutations: {
@@ -85,6 +87,7 @@ export default {
             endHour: end.substr(11, 8),
           }),
         ),
+        allowEventMetadata: meetingWindow.allow_event_metadata,
       };
       Object.assign(state, data);
     },

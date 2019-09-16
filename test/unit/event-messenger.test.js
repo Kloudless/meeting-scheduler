@@ -134,3 +134,46 @@ describe('EventMessenger.setTargetOrigin tests', () => {
     expect(calls[calls.length - 1][1]).not.toBeDefined();
   });
 });
+
+describe('EventMessenger send with "wait" property tests', () => {
+  const receiverId = 2;
+  const windowObj = {
+    postMessage(message) {
+      /** redirect messages between messenger and receiverMessenger by changing
+       * message id here.
+       * Simulating postMessage between two windows in real browsers
+       */
+      message.id = message.id === id ? receiverId : id;
+      processMessage(message);
+    },
+  };
+  let receiverMessenger;
+
+  beforeEach(() => {
+    receiverMessenger = new EventMessenger({
+      id: receiverId,
+      role: ROLES.VIEW,
+      onMessage: jest.fn(),
+    });
+
+    messenger.connect(windowObj);
+    receiverMessenger.connect(windowObj);
+  });
+
+  test(
+    'messenger.send should return the value returned by '
+    + 'receiverMessenger.onMessage',
+    async () => {
+      const message = {
+        event: 'event',
+        wait: true,
+        test: 'test',
+      };
+      const exceptedResponse = { foo: 'bar' };
+      receiverMessenger.onMessage.mockReturnValue(exceptedResponse);
+      const response = await messenger.send(message);
+      expect(receiverMessenger.onMessage).toHaveBeenCalledTimes(1);
+      expect(response).toBe(exceptedResponse);
+    },
+  );
+});

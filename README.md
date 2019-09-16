@@ -611,6 +611,9 @@ An object containing the following keys:
       - `timeBufferAfter.default`: _Optional (default: 0)_: Number  
         The default minutes of time buffer after each scheduled event.
         Possible values: 0 – 99.
+      - `allowEventMetadata.default`: _Optional (default: false)_: Boolean  
+        Set this to true to allow changing the created calendar event details
+        via a [preSchedule](#preschedule) event handler.
     - Example:
       ```javascript
       {
@@ -713,27 +716,27 @@ the following properties:
 
 #### open
 
-The scheduler has launched
+The scheduler has launched.
 
 #### close
 
-The scheduler has closed
+The scheduler has closed.
 
 #### destroyed
 
-The scheduler window and placeholders has been destroyed
+The scheduler window and placeholders have been destroyed.
 
 #### connectAccount
 
-A calendar account has been connected
+A calendar account has been connected.
 
 Event Data:
-  - `account`: __Object__, Connected account
-  - `accountToken`([\*1](#event-note)): _String_, Bearer Token of this account
+  - `account`: __Object__; Connected account
+  - `accountToken`([\*1](#event-note)): _String_; Bearer Token of this account
 
 #### removeAccount
 
-A calendar account has been removed
+A calendar account has been removed.
 
 #### preSubmitMeetingWindow
 
@@ -744,42 +747,74 @@ A Meeting Window is about to be created or updated.
 A Meeting Window has been created or updated.
 
 Event Data:
-  - meetingWindow: Meeting Window object
-  - `accountToken`([\*1](#event-note)): _String_, Bearer Token of this account
+  - `meetingWindow`: Meeting Window object
+  - `accountToken`([\*1](#event-note)): _String_; Bearer Token of this account
 
 #### deleteMeetingWindow
 
-A Meeting Window has been deleted
+A Meeting Window has been deleted.
 
 #### preSchedule
 
-Before scheduling an event in the Schedule View
+Triggered before a time slot is booked in the Schedule view.
+
+Event Data:
+  - `meetingWindow`: _Object_; The Meeting Window object this time slot selection
+  was created for.
+  - `schedule`: _Object_; Details for the selected time slot, including the
+  selected time and attendee information.
+
+Return Value:  
+  - Modify and return the `schedule` object provided to override details
+    for the calendar event about to be scheduled.
+    This requires your application to ensure the `meetingWindow` object
+    has the property `allow_event_metadata` set to `true` during the Setup
+    process.
+    You can then modify `schedule` to add in the property `event_metadata`
+    as shown below. `schedule.event_metadata` accepts the following
+    attributes:
+    - `name`: Overrides the calendar event's name
+    - `extra_description`: Appends extra text to the calendar event's
+      description.
+
+    ```js
+    scheduler.on('preSchedule', (eventData) => {
+      const { meetingWindow, schedule } = eventData;
+      schedule.event_metadata = {
+        'name': meetingWindow.title + ' - Custom',
+        'extra_description': 'Custom additional description.'
+      }
+      return schedule;
+    })
+    ```
+  - Don't return anything, or return `undefined`, if you don't want to change
+    the `schedule` object.
 
 #### schedule
 
-When an event is scheduled
+Triggered when a time slot is booked via the Schedule view.
 
 Event Data:
-  - scheduledEvent: _Object_, scheduled calendar event details, including
-  calendar event ID
+  - `scheduledEvent`: _Object_, scheduled calendar event details, including
+  calendar event ID.
 
 #### restart
 
 A view has been restarted.
 
 This event is currently only emitted in the Setup View when a user has clicked
-'Create another event' button after an event has been created.
+'Create another event' button to set up a new Meeting Window after setting one
+up.
 
 #### error
 
-An error response or no response has been returned from an API request
+An error response, or no response returned for an API request.
 
 Event Data:
-  - `message`: _String_, Error message
-
+  - `message`: _String_; Error message if available.
 
 <a name="event-note"></a>(\*1) This data is only sent when the scheduler is 
-launched from a trusted domain of your app.
+launched from a [Trusted Domain](#setup-trusted-domains-for-your-kloudless-app).
 
 ## Meeting Window API
 
@@ -805,6 +840,7 @@ for scheduling events with the Kloudless Calendar.
 | time_slot_interval | integer | Indicate the number of minutes of time between each time slots. Defaults to 30. | Yes | No | 
 | time_buffer_before | integer | Indicate the number of minutes of time buffer before each schedule event. Defaults to 0. | Yes | No | 
 | time_buffer_after | integer | Indicate the number of minutes of time buffer after each schedule event. Defaults to 0. | Yes | No | 
+| allow_event_metadata | boolean | Indicate if the created calendar event can be customized when scheduling events. See the [preSchedule](#preschedule) event for details. Defaults to false. | Yes | No | 
 
 
 

@@ -1,5 +1,6 @@
 import { EVENTS } from 'constants';
 import common from '../common.js';
+import { getJson as getMeetingWindowJson } from './meetingWindow';
 
 function getJson(state, recaptchaToken) {
   const json = {
@@ -79,28 +80,35 @@ export default {
      *    recaptchaToken {string} - token returned by reCAPTCHA
      * }
      */
-    submit({ dispatch, state, rootState }, payload) {
-      const json = getJson(state, payload.recaptchaToken);
-      const meetingWindowId = rootState.meetingWindow.id;
-      dispatch('event', {
+    async submit({ dispatch, state, rootState }, payload) {
+      let json = getJson(state, payload.recaptchaToken);
+
+      const { meetingWindow } = rootState;
+      const jsonOverride = await dispatch('event', {
         event: EVENTS.PRE_SCHEDULE,
+        wait: true,
+        meetingWindow: getMeetingWindowJson(meetingWindow),
+        schedule: JSON.parse(JSON.stringify(json)),
       }, { root: true });
 
-      return dispatch({
+      if (jsonOverride) {
+        json = jsonOverride;
+      }
+
+      const responseData = await dispatch({
         type: 'api/request',
         options: {
           method: 'post',
           data: json,
-          uri: `windows/${meetingWindowId}/schedule`,
+          uri: `windows/${meetingWindow.id}/schedule`,
           loading: 'timeSlots/submit',
         },
-      }, { root: true }).then((responseData) => {
-        dispatch('event', {
-          event: EVENTS.SCHEDULE,
-          scheduledEvent: responseData,
-        }, { root: true });
-        return responseData;
-      });
+      }, { root: true });
+      dispatch('event', {
+        event: EVENTS.SCHEDULE,
+        scheduledEvent: responseData,
+      }, { root: true });
+      return responseData;
     },
   },
 };
