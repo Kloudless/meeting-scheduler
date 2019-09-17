@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.5.0]
+
+- Added `formOptions` for the Schedule View
+- Changed `preSchedule` event to be able to customize title and description
+  for scheduled events
+- Added `authOptions` for the Setup View
+
 ## [1.4.2]
 
 ### Fixed
