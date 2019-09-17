@@ -21,7 +21,7 @@
     "@babel/core": "7.2.2",
     "@babel/polyfill": "7.2.5",
     "@babel/preset-env": "7.2.3",
-    "@kloudless/authenticator": "https://github.com/Kloudless/authenticator.js.git",
+    "@kloudless/authenticator": "git+https://github.com/Kloudless/authenticator.js.git",
     "@vue/devtools": "5.1.0",
     "@vue/test-utils": "1.0.0-beta.27",
     "autoprefixer": "9.4.3",
