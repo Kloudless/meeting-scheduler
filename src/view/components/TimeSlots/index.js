@@ -1,7 +1,7 @@
 /* global grecaptcha */
 import moment from 'moment-timezone';
 import InfiniteLoading from 'vue-infinite-loading';
-import { EVENTS } from 'constants';
+import { MAX_TIME_SLOTS_PER_SCROLL, EVENTS } from 'constants';
 import { mapState } from 'vuex';
 import date from '../../utils/date';
 import TextInput from '../common/TextInput';
@@ -9,6 +9,7 @@ import Textarea from '../common/Textarea';
 import InputLabel from '../common/InputLabel';
 import Title from '../common/Title';
 import Button from '../common/Button';
+import TimeSlotBlock from './TimeSlotBlock';
 
 
 let onRecaptchaScriptLoad;
@@ -39,7 +40,6 @@ function loadRecaptchaScript() {
   return onRecaptchaScriptLoad;
 }
 
-
 export default {
   name: 'TimeSlots',
   components: {
@@ -49,10 +49,13 @@ export default {
     InputLabel,
     Title,
     Button,
+    TimeSlotBlock,
   },
   data() {
     return {
       step: 0,
+      timeSlotsRenderOffset: 0,
+      hasMoreTimeSlotsPages: true,
       stepTitles: [
         'Choose an available time slot',
         'What\'s your name and email?',
@@ -70,7 +73,8 @@ export default {
     loading: state => state.api.loading.timeSlots,
     launchOptions: state => state.launchOptions.schedule,
     slotGroups(state) {
-      const availableSlots = state.timeSlots.availableSlots || [];
+      let availableSlots = state.timeSlots.availableSlots || [];
+      availableSlots = availableSlots.slice(0, this.timeSlotsRenderOffset);
 
       const slotGroups = {};
 
@@ -130,6 +134,7 @@ export default {
     },
     moveStep(step) {
       this.step += step;
+      this.timeSlotsRenderOffset = 0;
     },
     updateInput(event) {
       this.$store.commit({
@@ -189,16 +194,42 @@ export default {
         this.submit();
       }
     },
+    /**
+     * Render the next MAX_TIME_SLOTS_PER_SCROLL slots from the time slots list
+     * in vuex state when user scrolls to the bottom.
+     */
     async infiniteHandler(state) {
-      const hasMore = await this.$store.dispatch({
-        type: 'timeSlots/getTimeSlots',
-      });
-      if (!this.timeSlots.availableSlots.length && !hasMore) {
+      let availableSlotsLength = this.timeSlots.availableSlots.length;
+      if (
+        (availableSlotsLength - this.timeSlotsRenderOffset
+          < MAX_TIME_SLOTS_PER_SCROLL) && this.hasMoreTimeSlotsPages) {
+        // if remain slots are not enough for this scroll and there is
+        // a next page id from previous response, pull the next page.
+        // This condition is also triggered when the view is loaded.
+        this.hasMoreTimeSlotsPages = await this.$store.dispatch({
+          type: 'timeSlots/getTimeSlots',
+        });
+      }
+
+      // new time slots might be added, get the latest slot list length
+      availableSlotsLength = this.timeSlots.availableSlots.length;
+
+      if (availableSlotsLength) {
+        // move render offset, view will be updated automatically
+        // because the computed value `slotGroup` will be updated
+        this.timeSlotsRenderOffset += MAX_TIME_SLOTS_PER_SCROLL;
+        if (this.timeSlotsRenderOffset >= availableSlotsLength) {
+          this.timeSlotsRenderOffset = availableSlotsLength;
+        }
+      }
+
+      if (!availableSlotsLength && !this.hasMoreTimeSlotsPages) {
         // to trigger "no-results"
         state.complete();
       } else {
         state.loaded();
-        if (!hasMore) {
+        if (this.timeSlotsRenderOffset === availableSlotsLength
+            && !this.hasMoreTimeSlotsPages) {
           // disable the infinite scroll to fetch more time slots
           // and show the message about "no more items"
           state.complete();

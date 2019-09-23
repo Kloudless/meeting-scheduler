@@ -34,9 +34,12 @@ export const SUBMIT_STATUS = {
   DELETED: 'DELETED',
 };
 
+export const MAX_TIME_SLOTS_PER_SCROLL = 100;
+
 export default {
   EVENTS,
   EVENTS_LIST,
   INTERNAL_EVENTS,
   ROLES,
+  MAX_TIME_SLOTS_PER_SCROLL,
 };

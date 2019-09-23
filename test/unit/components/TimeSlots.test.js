@@ -1,7 +1,6 @@
 import TimeSlots from 'view/components/TimeSlots';
-import { EVENTS } from 'constants';
+import { MAX_TIME_SLOTS_PER_SCROLL, EVENTS } from 'constants';
 import { getWrapper, createStore } from '../jest/vue-utils';
-
 
 const { beforeMount } = TimeSlots;
 
@@ -44,9 +43,9 @@ describe('afterSchedule config tests', () => {
   });
 });
 
-describe('if time slot start to load tests', () => {
+describe('Infinite scroll tests', () => {
+  const offset = 10; // need to be less than MAX_TIME_SLOTS_PER_SCROLL;
   beforeAll(() => {
-    // disable making API requests when mounting TimeSlots view
     TimeSlots.beforeMount = jest.fn();
   });
 
@@ -54,29 +53,296 @@ describe('if time slot start to load tests', () => {
     TimeSlots.beforeMount = beforeMount;
   });
   test.each([
-    ['already has time slots, hasMore = true', true, true, 1, 0, null],
-    ['already has time slots, hasMore = false', true, false, 1, 1,
-      ['loaded', 'complete']],
-    ['no time slots, hasMore = true', false, true, 1, 0, null],
-    ['no time slots, hasMore = false', false, false, 0, 1, null],
-  ])('%s', async (_, hasAvailableSlots, hasMore, loadedCalledTimes,
-    completeCalledTimes, calledOrder) => {
+    [
+      'First Scroll, No available slot',
+      {
+        numOfAvailableSlots: 0,
+        initTimeSlotsRenderOffset: 0,
+        expectDispatchGetTimeSlots: true,
+        numOfSlotsInResponse: 0,
+        hasNextPage: false,
+        expectTimeSlotsRenderOffset: 0,
+        expectScrollState: 'no-result',
+      },
+    ],
+    [
+      'First scroll: Num of slots returned < MAX_TIME_SLOTS_PER_SCROLL'
+      + ', has remaining pages',
+      {
+        numOfAvailableSlots: 0,
+        initTimeSlotsRenderOffset: 0,
+        expectDispatchGetTimeSlots: true,
+        numOfSlotsInResponse: MAX_TIME_SLOTS_PER_SCROLL - offset,
+        hasNextPage: true,
+        expectTimeSlotsRenderOffset: MAX_TIME_SLOTS_PER_SCROLL - offset,
+        expectScrollState: 'has-more',
+      },
+    ],
+    [
+      'First scroll: Num of slots returned > MAX_TIME_SLOTS_PER_SCROLL'
+      + ', has remaining pages',
+      {
+        numOfAvailableSlots: 0,
+        initTimeSlotsRenderOffset: 0,
+        expectDispatchGetTimeSlots: true,
+        numOfSlotsInResponse: MAX_TIME_SLOTS_PER_SCROLL + offset,
+        hasNextPage: true,
+        expectTimeSlotsRenderOffset: MAX_TIME_SLOTS_PER_SCROLL,
+        expectScrollState: 'has-more',
+      },
+    ],
+    [
+      'First scroll: Num of slots returned = MAX_TIME_SLOTS_PER_SCROLL'
+      + ', has remaining pages',
+      {
+        numOfAvailableSlots: 0,
+        initTimeSlotsRenderOffset: 0,
+        expectDispatchGetTimeSlots: true,
+        numOfSlotsInResponse: MAX_TIME_SLOTS_PER_SCROLL,
+        hasNextPage: true,
+        expectTimeSlotsRenderOffset: MAX_TIME_SLOTS_PER_SCROLL,
+        expectScrollState: 'has-more',
+      },
+    ],
+    [
+      'First scroll: Num of slots returned < MAX_TIME_SLOTS_PER_SCROLL'
+      + ', reached last page',
+      {
+        numOfAvailableSlots: 0,
+        initTimeSlotsRenderOffset: 0,
+        expectDispatchGetTimeSlots: true,
+        numOfSlotsInResponse: MAX_TIME_SLOTS_PER_SCROLL - offset,
+        hasNextPage: false,
+        expectTimeSlotsRenderOffset: MAX_TIME_SLOTS_PER_SCROLL - offset,
+        expectScrollState: 'completed',
+      },
+    ],
+    [
+      'First scroll: Num of slots returned > MAX_TIME_SLOTS_PER_SCROLL'
+      + ', reached last page',
+      {
+        numOfAvailableSlots: 0,
+        initTimeSlotsRenderOffset: 0,
+        expectDispatchGetTimeSlots: true,
+        numOfSlotsInResponse: MAX_TIME_SLOTS_PER_SCROLL + offset,
+        hasNextPage: false,
+        expectTimeSlotsRenderOffset: MAX_TIME_SLOTS_PER_SCROLL,
+        expectScrollState: 'has-more',
+      },
+    ],
+    [
+      'First scroll: Num of slots returned = MAX_TIME_SLOTS_PER_SCROLL'
+      + ', reached last page',
+      {
+        numOfAvailableSlots: 0,
+        initTimeSlotsRenderOffset: 0,
+        expectDispatchGetTimeSlots: true,
+        numOfSlotsInResponse: MAX_TIME_SLOTS_PER_SCROLL,
+        hasNextPage: false,
+        expectTimeSlotsRenderOffset: MAX_TIME_SLOTS_PER_SCROLL,
+        expectScrollState: 'completed',
+      },
+    ],
+    [
+      'Second scroll: Remaining slots < MAX_TIME_SLOTS_PER_SCROLL'
+      + ', has remaining pages'
+      + '\n        '
+      + 'Second response slots < remaining slots needed for this scroll'
+      + ', second response is not the last page',
+      {
+        numOfAvailableSlots: MAX_TIME_SLOTS_PER_SCROLL * 2 - offset,
+        initTimeSlotsRenderOffset: MAX_TIME_SLOTS_PER_SCROLL,
+        expectDispatchGetTimeSlots: true,
+        numOfSlotsInResponse: offset - 1,
+        hasNextPage: true,
+        expectTimeSlotsRenderOffset: (
+          MAX_TIME_SLOTS_PER_SCROLL * 2 - offset) + (offset - 1),
+        expectScrollState: 'has-more',
+      },
+    ],
+    [
+      'Second scroll: Remaining slots < MAX_TIME_SLOTS_PER_SCROLL'
+      + ', has remaining pages'
+      + '\n        '
+      + 'Second response slots > remaining slots needed for this scroll'
+      + ', second response is not the last page',
+      {
+        numOfAvailableSlots: MAX_TIME_SLOTS_PER_SCROLL * 2 - offset,
+        initTimeSlotsRenderOffset: MAX_TIME_SLOTS_PER_SCROLL,
+        expectDispatchGetTimeSlots: true,
+        numOfSlotsInResponse: offset + 1,
+        hasNextPage: true,
+        expectTimeSlotsRenderOffset: MAX_TIME_SLOTS_PER_SCROLL * 2,
+        expectScrollState: 'has-more',
+      },
+    ],
+    [
+      'Second scroll: Remaining slots < MAX_TIME_SLOTS_PER_SCROLL'
+      + ', has remaining pages'
+      + '\n        '
+      + 'Second response slots = remaining slots needed for this scroll'
+      + ', second response is not the last page',
+      {
+        numOfAvailableSlots: MAX_TIME_SLOTS_PER_SCROLL * 2 - offset,
+        initTimeSlotsRenderOffset: MAX_TIME_SLOTS_PER_SCROLL,
+        expectDispatchGetTimeSlots: true,
+        numOfSlotsInResponse: offset,
+        hasNextPage: true,
+        expectTimeSlotsRenderOffset: MAX_TIME_SLOTS_PER_SCROLL * 2,
+        expectScrollState: 'has-more',
+      },
+    ],
+    [
+      'Second scroll: Remaining slots < MAX_TIME_SLOTS_PER_SCROLL'
+      + ', has remaining pages'
+      + '\n        '
+      + 'Second response slots < remaining slots needed for this scroll'
+      + ', second response is the last page',
+      {
+        numOfAvailableSlots: MAX_TIME_SLOTS_PER_SCROLL * 2 - offset,
+        initTimeSlotsRenderOffset: MAX_TIME_SLOTS_PER_SCROLL,
+        expectDispatchGetTimeSlots: true,
+        numOfSlotsInResponse: offset - 1,
+        hasNextPage: false,
+        expectTimeSlotsRenderOffset: (
+          MAX_TIME_SLOTS_PER_SCROLL * 2 - offset) + (offset - 1),
+        expectScrollState: 'completed',
+      },
+    ],
+    [
+      'Second scroll: Remaining slots < MAX_TIME_SLOTS_PER_SCROLL'
+      + ', has remaining pages'
+      + '\n        '
+      + 'Second response slots > remaining slots needed for this scroll'
+      + ', second response is the last page',
+      {
+        numOfAvailableSlots: MAX_TIME_SLOTS_PER_SCROLL * 2 - offset,
+        initTimeSlotsRenderOffset: MAX_TIME_SLOTS_PER_SCROLL,
+        expectDispatchGetTimeSlots: true,
+        numOfSlotsInResponse: offset + 1,
+        hasNextPage: false,
+        expectTimeSlotsRenderOffset: MAX_TIME_SLOTS_PER_SCROLL * 2,
+        expectScrollState: 'has-more',
+      },
+    ],
+    [
+      'Second scroll: Remaining slots < MAX_TIME_SLOTS_PER_SCROLL'
+      + ', has remaining pages'
+      + '\n        '
+      + 'Second response slots = remaining slots needed for this scroll'
+      + ', second response is the last page',
+      {
+        numOfAvailableSlots: MAX_TIME_SLOTS_PER_SCROLL * 2 - offset,
+        initTimeSlotsRenderOffset: MAX_TIME_SLOTS_PER_SCROLL,
+        expectDispatchGetTimeSlots: true,
+        numOfSlotsInResponse: offset,
+        hasNextPage: false,
+        expectTimeSlotsRenderOffset: MAX_TIME_SLOTS_PER_SCROLL * 2,
+        expectScrollState: 'completed',
+      },
+    ],
+    [
+      'Second scroll: Remaining slots > MAX_TIME_SLOTS_PER_SCROLL'
+      + ', has remaining pages',
+      {
+        numOfAvailableSlots: MAX_TIME_SLOTS_PER_SCROLL * 2 + offset,
+        initTimeSlotsRenderOffset: MAX_TIME_SLOTS_PER_SCROLL,
+        expectDispatchGetTimeSlots: false,
+        expectTimeSlotsRenderOffset: MAX_TIME_SLOTS_PER_SCROLL * 2,
+        expectScrollState: 'has-more',
+      },
+    ],
+    [
+      'Second scroll: Remaining slots = MAX_TIME_SLOTS_PER_SCROLL'
+      + ', has remaining pages',
+      {
+        numOfAvailableSlots: MAX_TIME_SLOTS_PER_SCROLL * 2,
+        initTimeSlotsRenderOffset: MAX_TIME_SLOTS_PER_SCROLL,
+        expectDispatchGetTimeSlots: false,
+        expectTimeSlotsRenderOffset: MAX_TIME_SLOTS_PER_SCROLL * 2,
+        expectScrollState: 'has-more',
+      },
+    ],
+    [
+      'Second scroll: Remaining slots < MAX_TIME_SLOTS_PER_SCROLL'
+      + ', reached last page',
+      {
+        numOfAvailableSlots: MAX_TIME_SLOTS_PER_SCROLL * 2 - offset,
+        initTimeSlotsRenderOffset: MAX_TIME_SLOTS_PER_SCROLL,
+        initHasMoreTimeSlotsPages: false,
+        expectDispatchGetTimeSlots: false,
+        expectTimeSlotsRenderOffset: (MAX_TIME_SLOTS_PER_SCROLL * 2 - offset),
+        expectScrollState: 'completed',
+      },
+    ],
+    [
+      'Second scroll: Remaining slots > MAX_TIME_SLOTS_PER_SCROLL'
+      + ', reached last page',
+      {
+        numOfAvailableSlots: MAX_TIME_SLOTS_PER_SCROLL * 2 + offset,
+        initTimeSlotsRenderOffset: MAX_TIME_SLOTS_PER_SCROLL,
+        initHasMoreTimeSlotsPages: false,
+        expectDispatchGetTimeSlots: false,
+        expectTimeSlotsRenderOffset: MAX_TIME_SLOTS_PER_SCROLL * 2,
+        expectScrollState: 'has-more',
+      },
+    ],
+    [
+      'Second scroll: Remaining slots = MAX_TIME_SLOTS_PER_SCROLL'
+      + ', reached last page',
+      {
+        numOfAvailableSlots: MAX_TIME_SLOTS_PER_SCROLL * 2,
+        initTimeSlotsRenderOffset: MAX_TIME_SLOTS_PER_SCROLL,
+        initHasMoreTimeSlotsPages: false,
+        expectDispatchGetTimeSlots: false,
+        expectTimeSlotsRenderOffset: MAX_TIME_SLOTS_PER_SCROLL * 2,
+        expectScrollState: 'completed',
+      },
+    ],
+  ])('%s', async (_, params) => {
+    const {
+      numOfAvailableSlots,
+      initTimeSlotsRenderOffset,
+      initHasMoreTimeSlotsPages = true,
+      expectDispatchGetTimeSlots,
+      numOfSlotsInResponse,
+      hasNextPage,
+      expectTimeSlotsRenderOffset,
+      expectScrollState,
+    } = params;
     // arrange
-    const { store } = createStore({
+    const responseSlots = [];
+    for (let i = 0; i < numOfSlotsInResponse; i += 1) {
+      responseSlots.push(i);
+    }
+    const availableSlots = [];
+    for (let i = 0; i < numOfAvailableSlots; i += 1) {
+      availableSlots.push(i);
+    }
+
+    let store;
+    const getTimeSlots = jest.fn(() => {
+      store.commit({
+        type: 'timeSlots/setTimeSlots',
+        availableSlots: responseSlots,
+      });
+      return Promise.resolve(hasNextPage);
+    });
+
+    ({ store } = createStore({
       modules: {
         timeSlots: {
           initState() {
             return {
-              availableSlots: hasAvailableSlots ? [1] : [],
-              // [1] is to make length as 1, the element isn't important.
+              availableSlots,
             };
           },
           actions: {
-            getTimeSlots: () => (Promise.resolve(hasMore)),
+            getTimeSlots,
           },
         },
       },
-    });
+    }));
 
     const infiniteHandlerState = {
       complete: jest.fn(),
@@ -88,19 +354,38 @@ describe('if time slot start to load tests', () => {
       store,
     });
     wrapper.vm.$mount();
+    wrapper.vm.timeSlotsRenderOffset = initTimeSlotsRenderOffset;
+    wrapper.vm.hasMoreTimeSlotsPages = initHasMoreTimeSlotsPages;
     await wrapper.vm.infiniteHandler(infiniteHandlerState);
 
     // assert
-    expect(infiniteHandlerState.loaded)
-      .toHaveBeenCalledTimes(loadedCalledTimes);
-    expect(infiniteHandlerState.complete)
-      .toHaveBeenCalledTimes(completeCalledTimes);
+    expect(getTimeSlots).toHaveBeenCalledTimes(
+      expectDispatchGetTimeSlots ? 1 : 0,
+    );
+    if (expectDispatchGetTimeSlots) {
+      expect(wrapper.vm.hasMoreTimeSlotsPages).toBe(hasNextPage);
+    }
 
-    if (calledOrder) {
-      expect(infiniteHandlerState[calledOrder[0]])
-        .toHaveBeenCalledBefore(infiniteHandlerState[calledOrder[1]]);
-      expect(infiniteHandlerState[calledOrder[1]])
-        .toHaveBeenCalledAfter(infiniteHandlerState[calledOrder[0]]);
+    expect(wrapper.vm.timeSlotsRenderOffset).toBe(expectTimeSlotsRenderOffset);
+
+    switch (expectScrollState) {
+      case 'no-result':
+        expect(infiniteHandlerState.loaded).toHaveBeenCalledTimes(0);
+        expect(infiniteHandlerState.complete).toHaveBeenCalledTimes(1);
+        break;
+      case 'has-more':
+        expect(infiniteHandlerState.loaded).toHaveBeenCalledTimes(1);
+        expect(infiniteHandlerState.complete).toHaveBeenCalledTimes(0);
+        break;
+      case 'completed':
+        expect(infiniteHandlerState.loaded).toHaveBeenCalledTimes(1);
+        expect(infiniteHandlerState.complete).toHaveBeenCalledTimes(1);
+        expect(infiniteHandlerState.complete).toHaveBeenCalledAfter(
+          infiniteHandlerState.loaded,
+        );
+        break;
+      default:
+        throw new Error('expectScrollState is not a valid string');
     }
   });
 });

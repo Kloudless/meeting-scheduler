@@ -13,26 +13,8 @@ div
           v-container(grid-list-xs)
             v-layout(row wrap)
               v-flex(xs4, v-for="(slot, index) in slots", :key="index")
-                Button(v-if="timeSlots.selectedSlot === slot",
-                      :padding="false"
-                      @click="selectTimeSlot(slot, false)").hour-block
-                  v-layout(row, wrap, align-center, justify-center)
-                    v-flex(xs4)
-                      div.hour {{ formatDate('hour', slot.start) }}
-                      div.ampm.white--text.opacity-4
-                        | {{ formatDate('amPm', slot.start) }}
-                    v-flex(xs1)
-                      div.hour-to.white--text.opacity-4.pt-1 -
-                    v-flex(xs4)
-                      div.hour {{ formatDate('hour', slot.end) }}
-                      div.ampm.white--text.opacity-4
-                        | {{ formatDate('amPm', slot.end) }}
-                Button(v-else, :padding="false",
-                      :btnProps="{depressed: true, outline: true}",
-                      @click="selectTimeSlot(slot, true)").hour-block
-                  span.hour.pr-1 {{ formatDate('hour', slot.start) }}
-                  span.ampm.primary--text.opacity-4
-                    | {{ formatDate('amPm', slot.start) }}
+                TimeSlotBlock(:timeSlot="slot", :timeZone="timeZone",
+                              :formatDate="formatDate")
         InfiniteLoading(@infinite="infiniteHandler")
           div(slot="spinner")
             div.progress-container
