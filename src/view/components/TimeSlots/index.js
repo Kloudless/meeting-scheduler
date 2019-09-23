@@ -5,6 +5,8 @@ import { EVENTS } from 'constants';
 import { mapState } from 'vuex';
 import date from '../../utils/date';
 import TextInput from '../common/TextInput';
+import Textarea from '../common/Textarea';
+import InputLabel from '../common/InputLabel';
 import Title from '../common/Title';
 import Button from '../common/Button';
 
@@ -43,6 +45,8 @@ export default {
   components: {
     InfiniteLoading,
     TextInput,
+    Textarea,
+    InputLabel,
     Title,
     Button,
   },
@@ -81,6 +85,11 @@ export default {
       });
 
       return slotGroups;
+    },
+    isExtraDescriptionVisible: (state) => {
+      const { visible } = state.timeSlots;
+      const { allowEventMetadata } = state.meetingWindow;
+      return allowEventMetadata && visible.extraDescription;
     },
   }),
   beforeMount() {

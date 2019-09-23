@@ -2,7 +2,7 @@ div
   Title Meeting scheduled!
   div.mt-5.subheading A calendar invite will be sent to your email shortly.
   div.text-xs-left
-    div.mt-5.caption.accent--text.opacity-4 EVENT INFO
+    InputLabel.mt-5 EVENT INFO
     div.mb-4
       div.title.accent--text.opacity-9.font-weight-bold
         | {{ meetingWindow.title }}
@@ -16,6 +16,10 @@ div
         | ({{timeZone}} time)
       div.subheading.accent--text.opacity-9
         | {{ formatDate('date', timeSlots.selectedSlot.start) }}
+    Textarea(
+      v-if="meetingWindow.allowEventMetadata && timeSlots.extraDescription",
+      name="extraDescription" label="Note",
+      :value="timeSlots.extraDescription", :readonly="true")
   div.mt-5
     template(v-for="action in launchOptions.afterSchedule.actions")
       Button(

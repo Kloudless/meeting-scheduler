@@ -106,7 +106,6 @@ describe('if time slot start to load tests', () => {
 });
 
 describe('Recaptcha tests', () => {
-
   beforeAll(() => {
     // mock window.grecaptcha object
     window.grecaptcha = {
@@ -217,6 +216,106 @@ describe('Recaptcha tests', () => {
         expect(window.grecaptcha.execute).not.toHaveBeenCalled();
         expect(wrapper.vm.submit).toHaveBeenCalled();
       }
+    });
+  });
+});
+
+describe('extraDescription field visibility test', () => {
+  beforeAll(() => {
+    // disable making API requests when mounting TimeSlots view
+    TimeSlots.beforeMount = jest.fn();
+  });
+
+  afterAll(() => {
+    TimeSlots.beforeMount = beforeMount;
+  });
+  test.each([
+    [
+      'Should not show extraDescription if event metadata is not allowed',
+      false,
+      false,
+      false,
+    ],
+    [
+      'Should not show extraDescription if event metadata is not allowed',
+      true,
+      false,
+      false,
+    ],
+    [
+      'Should not show extraDescription if visible is not set',
+      false,
+      true,
+      false,
+    ],
+    [
+      'Should show extraDescription if event metadata is allowed and'
+        + 'visible is set',
+      true,
+      true,
+      true,
+    ],
+  ])('%s', async (_, setVisible, allowEventMetadata, expectFieldVisible) => {
+    const { store } = createStore({
+      state: {
+        launchOptions: {},
+      },
+      modules: {
+        meetingWindow: {
+          initState() {
+            return {
+              allowEventMetadata,
+            };
+          },
+        },
+      },
+    });
+
+    const launchOptions = {
+      schedule: {
+        meetingWindowId: 'meetingWindowId',
+        formOptions: {
+          extraDescription: { visible: setVisible },
+        },
+      },
+    };
+
+    await store.dispatch('initialize', {
+      launchOptions,
+    });
+
+    const wrapper = getWrapper(TimeSlots, {
+      store,
+    });
+
+    // test extraDescription input
+    wrapper.vm.step = 1;
+    let extraDescriptionInput = wrapper.findAll('[name=extraDescription]');
+    expect(extraDescriptionInput.length).toBe(expectFieldVisible ? 1 : 0);
+
+    // test if extraDescription preview is displayed before submit
+    store.commit({
+      type: 'timeSlots/selectTimeSlot',
+      selected: true,
+      slot: { },
+    });
+
+    wrapper.vm.step = 2;
+    const extraDescriptionValues = [''];
+    if (expectFieldVisible) {
+      extraDescriptionValues.push('extra_description');
+    }
+    extraDescriptionValues.forEach((extraDescription) => {
+      store.commit({
+        type: 'timeSlots/update',
+        name: 'extraDescription',
+        value: extraDescription,
+      });
+
+      extraDescriptionInput = wrapper.findAll('[name=extraDescription]');
+      expect(extraDescriptionInput.length).toBe(
+        expectFieldVisible && extraDescription ? 1 : 0,
+      );
     });
   });
 });
