@@ -899,7 +899,8 @@ for scheduling events with the Kloudless Calendar.
 | time_slot_interval | integer | Indicate the number of minutes of time between each time slots. Defaults to 30. | Yes | No | 
 | time_buffer_before | integer | Indicate the number of minutes of time buffer before each schedule event. Defaults to 0. | Yes | No | 
 | time_buffer_after | integer | Indicate the number of minutes of time buffer after each schedule event. Defaults to 0. | Yes | No | 
-| allow_event_metadata | boolean | Indicate if the created calendar event can be customized when scheduling events. See the [preSchedule](#preschedule) event for details. Defaults to false. | Yes | No | 
+| allow_event_metadata | boolean | Indicate if the created calendar event can be customized when scheduling events. See the [preSchedule](#preschedule) event for details. Defaults to false. | Yes | No |
+| default_event_metadata | object | The default event metadata to apply when scheduling events. Defaults to `{}`. See [Creating calendar event](https://developers.kloudless.com/docs/v1/calendar#events-create-an-event) for available attributes, except `id`, `name`, `description`, `location`, `start`, `end`, `start_time_zone`, `end_time_zone`, `all_day` and `recurrence`.  | Yes | No |
 
 
 
@@ -912,9 +913,9 @@ It is located within the [Meeting Window](#meeting-window-object) object.
 | --- | --- | --- | --- | --- |
 | end_repeat | string | A ISO 8601 date or `'NEVER'`. The available_time rules will be applied until this date. Defaults to `'NEVER'`, means the rules are applied forever. | Yes | No |
 | available_times | array | A list of available rules. | Yes | Yes |
-| available_times[].start | string | The ISO 8601 timestamp with offset indicating the time window's start time. | Yes | Yes |
-| available_times[].end | string | The ISO 8601 timestamp with offset indicating the time window's end time. | Yes | Yes |
-| available_times[].recurring | object | The recurring constraint for the available time. | Yes | No |
+| available_times[].start | string | The ISO 8601 time format in `hh:mm:ss` indicating the time window's start time. | Yes | Yes |
+| available_times[].end | string | The ISO 8601 time format in `hh:mm:ss` indicating the time window's end time. | Yes | Yes |
+| available_times[].recurring | object | The recurring constraint for the available time. | Yes | Yes |
 | available_times[].recurring.weekday | string | The weekdays for recurring available time. Accept 3 characters abbreviations. Comma as delimiter. ex: "MON, TUE" (available on every Monday and Tuesday) | Yes | Yes |
 | available_times[].recurring.month | string | Currently not support. | No | No |
 | available_times[].recurring.day | string | Currently not support. | No | No |
@@ -949,7 +950,7 @@ List the user's Meeting Windows. The user is identified by the bearer token.
   "page": 1,
   "objects": [
     {
-      "id": "ihfvxYPnUSwpQqc4jx3P",
+      "id": "azOd1NlAnDNKzscCYE4g",
       "booking_calendar_id": "faG9uZ2NoZW4uZGV2QGdtYWlsLmNvbQ==",
       "duration": 15,
       "title": "Wine Tasting Tour",
@@ -960,22 +961,25 @@ List the user's Meeting Windows. The user is identified by the bearer token.
         "end_repeat": "NEVER",
         "available_times": [
           {
-            "start": "2018-11-29T00:00:00-08:00",
-            "end": "2018-12-01T00:00:00-08:00",
+            "start": "09:00:00",
+            "end": "17:00:00",
             "recurring": {
-              "month": "*",
               "weekday": "MON, TUE, WED, THU, FRI, SAT, SUN",
+              "month": "*",
               "day": "*"
             }
           }
         ]
-      }, 
-      "time_zone": "America/Los_Angeles",
-      "availability_range": 60,
-      "time_slot_interval": 30,
+      },
       "time_buffer_before": 0,
       "time_buffer_after": 0,
-      "api": "meeting_scheduler"
+      "time_slot_interval": 30,
+      "availability_range": 60,
+      "public_choice_token": "V9x7YyrET7ekURSAxChBDVgoj9TJS3",
+      "time_zone": "America/Los_Angeles",
+      "api": "meeting_scheduler",
+      "allow_event_metadata": false,
+      "default_event_metadata": {}
     }
   ],
   "type": "object_list",
@@ -994,7 +998,7 @@ Retrieve the meeting window via meeting window ID.
 
 ```json
 {
-  "id": "ihfvxYPnUSwpQqc4jx3P",
+  "id": "azOd1NlAnDNKzscCYE4g",
   "booking_calendar_id": "faG9uZ2NoZW4uZGV2QGdtYWlsLmNvbQ==",
   "duration": 15,
   "title": "Wine Tasting Tour",
@@ -1005,22 +1009,25 @@ Retrieve the meeting window via meeting window ID.
     "end_repeat": "NEVER",
     "available_times": [
       {
-        "start": "2018-11-29T00:00:00-08:00",
-        "end": "2018-12-01T00:00:00-08:00",
+        "start": "09:00:00",
+        "end": "17:00:00",
         "recurring": {
-          "month": "*",
           "weekday": "MON, TUE, WED, THU, FRI, SAT, SUN",
+          "month": "*",
           "day": "*"
         }
       }
     ]
   },
-  "time_zone": "America/Los_Angeles",
-  "availability_range": 60,
-  "time_slot_interval": 30,
   "time_buffer_before": 0,
   "time_buffer_after": 0,
-  "api": "meeting_scheduler"
+  "time_slot_interval": 30,
+  "availability_range": 60,
+  "public_choice_token": "V9x7YyrET7ekURSAxChBDVgoj9TJS3",
+  "time_zone": "America/Los_Angeles",
+  "api": "meeting_scheduler",
+  "allow_event_metadata": false,
+  "default_event_metadata": {}
 }
 ```
 
@@ -1044,8 +1051,8 @@ Create a Meeting Window.
     "end_repeat": "NEVER",
     "available_times": [
       {
-        "start": "2018-11-29T00:00:00-08:00",
-        "end": "2018-12-01T00:00:00-08:00",
+        "start": "09:00:00",
+        "end": "17:00:00",
         "recurring": {
           "weekday": "MON, TUE, WED, THU, FRI, SAT, SUN",
         }
@@ -1067,7 +1074,7 @@ Create a Meeting Window.
 
 ```json
 {
-  "id": "ihfvxYPnUSwpQqc4jx3P",
+  "id": "azOd1NlAnDNKzscCYE4g",
   "booking_calendar_id": "faG9uZ2NoZW4uZGV2QGdtYWlsLmNvbQ==",
   "duration": 15,
   "title": "Wine Tasting Tour",
@@ -1078,20 +1085,25 @@ Create a Meeting Window.
     "end_repeat": "NEVER",
     "available_times": [
       {
-        "start": "2018-11-29T00:00:00-08:00",
-        "end": "2018-12-01T00:00:00-08:00",
+        "start": "09:00:00",
+        "end": "17:00:00",
         "recurring": {
           "weekday": "MON, TUE, WED, THU, FRI, SAT, SUN",
+          "month": "*",
+          "day": "*"
         }
       }
     ]
   },
-  "time_zone": "America/Los_Angeles",
-  "availability_range": 60,
-  "time_slot_interval": 30,
   "time_buffer_before": 0,
   "time_buffer_after": 0,
-  "api": "meeting_scheduler"
+  "time_slot_interval": 30,
+  "availability_range": 60,
+  "public_choice_token": "V9x7YyrET7ekURSAxChBDVgoj9TJS3",
+  "time_zone": "America/Los_Angeles",
+  "api": "meeting_scheduler",
+  "allow_event_metadata": false,
+  "default_event_metadata": {}
 }
 ```
 
@@ -1105,29 +1117,7 @@ Update the meeting window.
 
 ```json
 {
-  "booking_calendar_id": "faG9uZ2NoZW4uZGV2QGdtYWlsLmNvbQ==",
-  "duration": 15,
-  "title": "Wine Tasting Tour",
-  "organizer": "Peter",
-  "location": "Napa",
-  "description": "Wonderful wine tasting.",
-  "availability": {
-    "end_repeat": "NEVER",
-    "available_times": [
-      {
-        "start": "2018-11-29T00:00:00-08:00",
-        "end": "2018-12-01T00:00:00-08:00",
-        "recurring": {
-          "weekday": "MON, TUE, WED, THU, FRI, SAT, SUN",
-        }
-      }
-    ]
-  },
-  "time_zone": "America/Los_Angeles",
-  "availability_range": 60,
-  "time_slot_interval": 30,
-  "time_buffer_before": 0,
-  "time_buffer_after": 0
+  "description": "Only for Food&Wine Lovers",
 }
 ```
 
@@ -1137,31 +1127,36 @@ Update the meeting window.
      
 ```json
 {
-  "id": "ihfvxYPnUSwpQqc4jx3P",
+  "id": "rMAABzrAGXA3CMd9sMcg",
   "booking_calendar_id": "faG9uZ2NoZW4uZGV2QGdtYWlsLmNvbQ==",
   "duration": 15,
   "title": "Wine Tasting Tour",
   "organizer": "Peter",
   "location": "Napa",
-  "description": "Wonderful wine tasting.",
+  "description": "Only for Food&Wine Lovers",
   "availability": {
     "end_repeat": "NEVER",
     "available_times": [
       {
-        "start": "2018-11-29T00:00:00-08:00",
-        "end": "2018-12-01T00:00:00-08:00",
+        "start": "09:00:00",
+        "end": "17:00:00",
         "recurring": {
           "weekday": "MON, TUE, WED, THU, FRI, SAT, SUN",
+          "month": "*",
+          "day": "*"
         }
       }
     ]
   },
-  "time_zone": "America/Los_Angeles",
-  "availability_range": 60,
-  "time_slot_interval": 30,
   "time_buffer_before": 0,
   "time_buffer_after": 0,
-  "api": "meeting_scheduler"
+  "time_slot_interval": 30,
+  "availability_range": 60,
+  "public_choice_token": "C86cptTTP9OvLmWyHw3VmgUwFucUU8",
+  "time_zone": "America/Los_Angeles",
+  "api": "meeting_scheduler",
+  "allow_event_metadata": false,
+  "default_event_metadata": {}
 }
 ```
 
