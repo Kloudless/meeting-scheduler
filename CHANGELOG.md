@@ -7,12 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.6.0]
+
+### Added
+
+- New Note textarea in the Schedule View
+- New property `extraDescription` for launch option `schedule.formOptions`.
+  This is used to control the new Note textarea
+
 ## [1.5.0]
 
-- Added `formOptions` for the Schedule View
-- Changed `preSchedule` event to be able to customize title and description
+### Added
+
+- New launch option `formOptions` for the Schedule View
+- New launch option `authOptions` for the Setup View
+
+### Changed
+
+- Improved `preSchedule` event to be able to customize title and description
   for scheduled events
-- Added `authOptions` for the Setup View
 
 ## [1.4.2]
 
