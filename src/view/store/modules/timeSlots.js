@@ -12,6 +12,11 @@ function getJson(state, recaptchaToken) {
     }],
     recaptcha_token: recaptchaToken,
   };
+  if (state.extraDescription) {
+    json.event_metadata = {
+      extra_description: state.extraDescription,
+    };
+  }
   return json;
 }
 
@@ -24,6 +29,8 @@ export default {
       selectedSlot: null,
       name: '',
       email: '',
+      extraDescription: '',
+      visible: {},
     };
   },
   mutations: {
@@ -31,12 +38,12 @@ export default {
       state.selectedSlot = payload.selected ? payload.slot : null;
     },
     update: common.mutations.update,
+    setVisible: common.mutations.setVisible,
     setTimeSlots(state, payload) {
       state.meetingWindowProps = (
         Object.assign({}, payload.meetingWindow));
       state.availableSlots = (
         state.availableSlots.concat(payload.availableSlots));
-      state.selectedSlot = null;
       state.nextPage = payload.nextPage;
     },
   },
@@ -84,15 +91,15 @@ export default {
       let json = getJson(state, payload.recaptchaToken);
 
       const { meetingWindow } = rootState;
-      const jsonOverride = await dispatch('event', {
+      const jsonOverwrite = await dispatch('event', {
         event: EVENTS.PRE_SCHEDULE,
         wait: true,
         meetingWindow: getMeetingWindowJson(meetingWindow),
         schedule: JSON.parse(JSON.stringify(json)),
       }, { root: true });
 
-      if (jsonOverride) {
-        json = jsonOverride;
+      if (jsonOverwrite) {
+        json = jsonOverwrite;
       }
 
       const responseData = await dispatch({
@@ -104,6 +111,7 @@ export default {
           loading: 'timeSlots/submit',
         },
       }, { root: true });
+
       dispatch('event', {
         event: EVENTS.SCHEDULE,
         scheduledEvent: responseData,

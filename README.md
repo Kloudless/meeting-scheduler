@@ -693,6 +693,19 @@ An object containing the following keys:
         The default name of the attendee.
       - `email.default`: _Optional (default: '')_: String  
         The default email of the attendee.
+      - `extraDescription`: _Optional (default: '')_: Object  
+        - `default`: _Optional (default: '')_: String
+          The default notes to append to the created event's description.
+        - `visible`: _Optional (default: `false`)_: Boolean
+          Visibility of this field.
+        If the Meeting Window object has `allow_event_metadata` set
+        to `true` when created via the Setup process, it allows the
+        Schedule view to alter the title and description of the created calendar
+        event. This allows a user to add in additional notes to the calendar
+        event description via this field. Any original description configured
+        for the calendar event in the Setup view will not be overwritten and
+        will still be included in addition within the calendar event
+        description.
     - Example:
       ```javascript
       {
@@ -814,14 +827,21 @@ Return Value:
     attributes:
     - `name`: Overrides the calendar event's name
     - `extra_description`: Appends extra text to the calendar event's
-      description.
+      description.  
+      *Note*: Users can add their own extra notes via the launch option
+      `schedule.formOptions.extraDescription.visible`.
+      The input text will then be populated in this
+      `schedule.event_metadata.extra_description` property by default
+      when included in the event data provided for this event.
+      To still add additional text beyond the user's input, append it to
+      the existing value of this property.
 
     ```js
     scheduler.on('preSchedule', (eventData) => {
       const { meetingWindow, schedule } = eventData;
       schedule.event_metadata = {
-        'name': meetingWindow.title + ' - Custom',
-        'extra_description': 'Custom additional description.'
+        name: meetingWindow.title + ' - Custom',
+        extra_description: 'Custom additional description.'
       }
       return schedule;
     })

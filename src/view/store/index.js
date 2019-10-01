@@ -129,12 +129,14 @@ export const schema = {
     },
     setupFormOptions({ commit }, { formOptions, module }) {
       Object.keys(formOptions)
-        .filter(field => (
-          formOptions[field] && formOptions[field].default !== undefined
-          && formOptions[field].default !== null))
         .forEach((field) => {
-          const { [field]: { default: value } } = formOptions;
-          commit(`${module}/update`, { name: field, value });
+          const { [field]: { visible, default: value } } = formOptions;
+          if (value !== undefined && value !== null) {
+            commit(`${module}/update`, { name: field, value });
+          }
+          if (visible !== undefined) {
+            commit(`${module}/setVisible`, { name: field, visible });
+          }
         });
     },
   },

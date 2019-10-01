@@ -1,0 +1,5 @@
+InputField(:label="label")
+  v-textarea(
+    :name="name", :placeholder="placeholder", :value="value",
+    :readonly="readonly", :rules="rules", rows="2",
+    @input='$emit("update", {"name": name, "value": $event})')

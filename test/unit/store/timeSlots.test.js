@@ -80,4 +80,92 @@ describe('timeSlots module action tests', () => {
     );
     expect(store.state.timeSlots).toMatchObject(expected);
   });
+
+  describe('submit tests', () => {
+    test.each([
+      [
+        'Should use the default json if no return value from preSchedule event',
+        undefined,
+      ],
+      [
+        'Should use the returned json from preSchedule event',
+        { start: 'start2', end: 'end2' },
+      ],
+    ])('%s', async (_, preScheduleEventReturnValue) => {
+      const request = jest.fn();
+      const event = jest.fn(() => preScheduleEventReturnValue);
+      const selectedSlot = { start: 'start', end: 'end' };
+      const { store } = createStore({
+        modules: {
+          api: {
+            actions: {
+              request,
+            },
+          },
+          timeSlots: {
+            initState() {
+              return { selectedSlot };
+            },
+          },
+        },
+        actions: {
+          event,
+        },
+      });
+      await store.dispatch({
+        type: 'timeSlots/submit',
+        recaptchaToken: 'token',
+      });
+      const expected = preScheduleEventReturnValue || selectedSlot;
+      expect(request).toHaveBeenCalled();
+      const { options: { data: { start } } } = request.mock.calls[0][1];
+      expect(start).toBe(expected.start);
+    });
+  });
+});
+
+describe('timeSlots module request data tests', () => {
+  test('test request JSON schema', async () => {
+    const request = jest.fn();
+    const { store } = createStore({
+      modules: {
+        api: {
+          actions: {
+            request,
+          },
+        },
+        timeSlots: {
+          initState() {
+            const availableSlots = [
+              { start: '2010-01-01T00:00:00', end: '2010-01-01T01:00:00' },
+              { start: '2010-01-01T01:00:00', end: '2010-01-01T02:00:00' },
+            ];
+            return {
+              availableSlots,
+              selectedSlot: availableSlots[1],
+              name: 'name',
+              email: 'email',
+              extraDescription: 'extraDescription',
+            };
+          },
+        },
+      },
+    });
+    await store.dispatch('timeSlots/submit', { recaptchaToken: 'token' });
+    expect(request).toHaveBeenCalled();
+    expect(request.mock.calls[0][1].options.data).toMatchObject({
+      start: '2010-01-01T01:00:00',
+      end: '2010-01-01T02:00:00',
+      targets: [
+        {
+          name: 'name',
+          email: 'email',
+        },
+      ],
+      event_metadata: {
+        extra_description: 'extraDescription',
+      },
+      recaptcha_token: 'token',
+    });
+  });
 });

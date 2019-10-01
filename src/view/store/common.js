@@ -1,6 +1,7 @@
 /**
  * common functions used across Vuex modules
  */
+import Vue from 'vue';
 
 export default {
   /**
@@ -35,6 +36,10 @@ export default {
     update(state, payload) {
       const { name, value } = payload;
       state[name] = value;
+    },
+    setVisible(state, payload) {
+      const { name, visible } = payload;
+      Vue.set(state.visible, name, Boolean(visible));
     },
   },
 };

@@ -62,6 +62,10 @@ div
         TextInput(name="email" label="Email *", :value="timeSlots.email",
           required, type="email",
           placeholder="youremail@example.com", @update="updateInput")
+        Textarea(v-if="isExtraDescriptionVisible"
+          name="extraDescription" label="Note",
+          :value="timeSlots.extraDescription",
+          placeholder="Additional Information", @update="updateInput")
     v-container(grid-list-xs).px-0
       v-layout(row wrap, align-center)
         v-flex(xs6).text-xs-left
@@ -75,7 +79,7 @@ div
     div.timeslots-scroll-panel.text-xs-left
       div.headline.accent--text.font-weight-bold {{ meetingWindow.title }}
       div.mb-5.subheading {{ meetingWindow.location }}
-      div.mb-2.caption.accent--text.opacity-4 SCHEDULED TIME
+      InputLabel.mb-1 SCHEDULED TIME
       div.mb-4
         div.title.accent--text.opacity-9.font-weight-bold
           | {{ formatDate('fullHour', timeSlots.selectedSlot.start) }}
@@ -84,10 +88,13 @@ div
           | ({{timeZone}} time)
         div.subheading.accent--text.opacity-9
           | {{ formatDate('date', timeSlots.selectedSlot.start) }}
-      div.mb-2.caption.accent--text.opacity-4 CONTACT INFO
+      InputLabel.mb-1 CONTACT INFO
       div.mb-4
         div.title.accent--text.opacity-9.font-weight-bold {{ timeSlots.name }}
         div.subheading.accent--text.opacity-9 {{ timeSlots.email }}
+      Textarea(v-if="isExtraDescriptionVisible && timeSlots.extraDescription"
+               name="extraDescription" label="Note",
+               :value="timeSlots.extraDescription", :readonly="true")
     v-container(grid-list-xs).px-0
       v-layout(row wrap, align-center)
         v-flex(xs6).text-xs-left
