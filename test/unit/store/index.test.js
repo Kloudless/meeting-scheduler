@@ -43,7 +43,7 @@ describe('Event dispatch tests', () => {
   });
 });
 
-describe('checkLoaderTrusted should always set flag and be resolved', () => {
+describe('getAppConfig should always set flag and be resolved', () => {
   test.each([
     ['appId is not provided', { appId: null, expectLoaderTrusted: false }],
     ['No service response', { appId: 'appId', expectLoaderTrusted: false }],
@@ -53,8 +53,14 @@ describe('checkLoaderTrusted should always set flag and be resolved', () => {
     ['Loader is trusted', {
       appId: 'appId', hasResponse: true, expectLoaderTrusted: true,
     }],
-  ])('%s', (_, params) => {
-    const { states, store } = createStore({
+    ['Custom logo is not set for this app', {
+      appId: 'appId', hasResponse: true, expectHasLogo: false,
+    }],
+    ['Custom logo is set for this app', {
+      appId: 'appId', hasResponse: true, expectHasLogo: true,
+    }],
+  ])('%s', async (_, params) => {
+    const { store } = createStore({
       state: {
         launchOptions: {
           appId: params.appId,
@@ -66,17 +72,23 @@ describe('checkLoaderTrusted should always set flag and be resolved', () => {
             request: jest.fn(() => (
               params.hasResponse ?
                 Promise.resolve({
-                  user_data: { trusted: params.expectLoaderTrusted },
+                  user_data: {
+                    logo_url: params.expectHasLogo ? 'data:foo' : undefined,
+                    trusted: params.expectLoaderTrusted,
+                  },
                 }) : Promise.reject())),
           },
         },
       },
     });
-    const promise = store.dispatch('checkLoaderTrusted');
+    const promise = store.dispatch('getAppConfig');
+    await promise;
     expect(promise).resolves.toEqual(undefined);
-    promise.then(() => {
-      expect(states.root.loaderTrusted).toBe(params.expectLoaderTrusted);
-    });
+    if (typeof params.expectLoaderTrusted !== 'undefined') {
+      expect(store.state.loaderTrusted).toBe(params.expectLoaderTrusted);
+    } else {
+      expect(store.state.appHasLogo).toBe(params.expectHasLogo);
+    }
   });
 });
 
@@ -84,14 +96,14 @@ describe('initialize action tests', () => {
   /**
    * These tests have to be executed together to get correct result.
    */
-  const checkLoaderTrusted = jest.fn();
+  const getAppConfig = jest.fn();
   const { states, store } = createStore({
     state: {
       launchOptions: {},
       loaderTrusted: false,
     },
     actions: {
-      checkLoaderTrusted,
+      getAppConfig,
     },
   });
 
@@ -100,23 +112,23 @@ describe('initialize action tests', () => {
     setup: {},
   };
 
-  test('Should dispatch checkLoaderTrusted',
+  test('Should dispatch getAppConfig',
     async () => {
       await store.dispatch('initialize', { launchOptions });
-      expect(checkLoaderTrusted).toHaveBeenCalledTimes(1);
+      expect(getAppConfig).toHaveBeenCalledTimes(1);
     });
 
-  test('Should not dispatch checkLoaderTrusted with the same appId',
+  test('Should not dispatch getAppConfig with the same appId',
     async () => {
       await store.dispatch('initialize', { launchOptions });
-      expect(checkLoaderTrusted).toHaveBeenCalledTimes(1);
+      expect(getAppConfig).toHaveBeenCalledTimes(1);
     });
 
-  test('Should dispatch checkLoaderTrusted again if appId is changed',
+  test('Should dispatch getAppConfig again if appId is changed',
     async () => {
       launchOptions.appId = 'appId2';
       await store.dispatch('initialize', { launchOptions });
-      expect(checkLoaderTrusted).toHaveBeenCalledTimes(2);
+      expect(getAppConfig).toHaveBeenCalledTimes(2);
     });
 
   test('Should reset account if accountToken is changed',

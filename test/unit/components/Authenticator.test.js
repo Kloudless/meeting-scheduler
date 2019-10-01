@@ -34,8 +34,8 @@ describe('Test events', () => {
     ['Should not send token if loader is not in trusted domain', false],
   ])('%s', (_, loaderTrusted) => {
     store.commit({
-      type: 'setLoaderTrusted',
-      trusted: loaderTrusted,
+      type: 'setAppConfig',
+      config: { trusted: loaderTrusted },
     });
     try {
       const account = {
@@ -54,8 +54,8 @@ describe('Test events', () => {
       });
     } finally {
       store.commit({
-        type: 'setLoaderTrusted',
-        trusted: false,
+        type: 'setAppConfig',
+        config: { trusted: false },
       });
     }
   });

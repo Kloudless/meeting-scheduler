@@ -7,7 +7,7 @@ export default {
   props: [
   ],
   computed: mapState({
-    show: () => true,
+    show: state => !state.appHasLogo,
   }),
   methods: {
   },
