@@ -55,7 +55,7 @@ using our [zero-configuration embed script](#embed-the-widget), or
   - [Save the Connected Account's Access Token](#save-the-connected-accounts-access-token)
   - [Edit Meeting Window](#edit-meeting-window)
   - [Display Your Own Result Screen](#display-your-own-result-screen)
-  - [Autofill Form Fields](#autofill-form-fields)
+  - [Auto-fill Form Fields](#auto-fill-form-fields)
   - [And More...](#and-more)
 - [Methods](#methods)
   - [config(options)](#configoptions)
@@ -474,10 +474,10 @@ Refer to the [submitMeetingWindow](#submitmeetingwindow) and
 [schedule](#schedule) event for more details.
 
 
-### Autofill Form Fields
+### Auto-fill Form Fields
 
 The form in both views can be filled in automatically with values set in 
-launch options. We've included an example below to set the default field 
+the launch options. We've included an example below that sets default field
 values:
 
 - For Setup View:
@@ -592,27 +592,30 @@ An object containing the following keys:
         The default available weekdays.
         Possible values: `SUN`, `MON`, `TUE`, `WED`, `THU`, `FRI`, and `SAT`.
       - `startHour.default`: _Optional (default: '08:00:00')_: String  
-        The ISO 8601 timestamp without offset indicating the default available
+        An ISO 8601 timestamp without offset indicating the default availibility
         start time.
         Possible values: `00:00:00` – `23:00:00`.
       - `endHour.default`: _Optional (default: '17:00:00')_: String  
-        The ISO 8601 timestamp without offset indicating the default available
+        An ISO 8601 timestamp without offset indicating the default availability
         end time.
-        Possible values: `01:00:00` – `00:00:00`.
+        Possible values: `01:00:00`&ndash;`00:00:00`.
       - `timeSlotInterval.default`: _Optional (default: 30)_: Number  
-        The default minutes of time between each time slots.
+        The default number of minutes between each time slot.
         Possible values: 15, 30, 45, or 60.
       - `availabilityRange.default`: _Optional (default: 30)_: Number  
-        The default days from current point of time to show time slots.
-        Possible values: 1 – 99.
+        The default number of days from the current date to show time slots
+        for.
+        Possible values: 1&ndash;99.
       - `timeBufferBefore.default`: _Optional (default: 0)_: Number  
-        The default minutes of time buffer before each scheduled event.
-        Possible values: 0 – 99.
+        The default number of minutes to leave free before each scheduled
+        event.
+        Possible values: 0&ndash;99.
       - `timeBufferAfter.default`: _Optional (default: 0)_: Number  
-        The default minutes of time buffer after each scheduled event.
-        Possible values: 0 – 99.
+        The default number of minutes to leave free after each scheduled
+        event.
+        Possible values: 0&ndash;99.
       - `allowEventMetadata.default`: _Optional (default: false)_: Boolean  
-        Set this to true to allow changing the created calendar event details
+        Set this to `true` to allow changing the created calendar event details
         via a [preSchedule](#preschedule) event handler.
     - Example:
       ```javascript
@@ -894,14 +897,13 @@ for scheduling events with the Kloudless Calendar.
 | location | string | The event location. | Yes | No |
 | description | string | The event description. | Yes | No |
 | availability | string | A list of Availability objects. See [Availability](#availability) for details. | Yes | Yes | 
-| time_zone | string | The event IANA time_zone. ex: America/Los_Angeles | Yes | Yes | 
-| availability_range | integer | Indicate the number of days from the current point of time to show time slots. Defaults to 30. | Yes | No | 
-| time_slot_interval | integer | Indicate the number of minutes of time between each time slots. Defaults to 30. | Yes | No | 
-| time_buffer_before | integer | Indicate the number of minutes of time buffer before each schedule event. Defaults to 0. | Yes | No | 
-| time_buffer_after | integer | Indicate the number of minutes of time buffer after each schedule event. Defaults to 0. | Yes | No | 
-| allow_event_metadata | boolean | Indicate if the created calendar event can be customized when scheduling events. See the [preSchedule](#preschedule) event for details. Defaults to false. | Yes | No |
-| default_event_metadata | object | The default event metadata to apply when scheduling events. Defaults to `{}`. See [Creating calendar event](https://developers.kloudless.com/docs/v1/calendar#events-create-an-event) for available attributes, except `id`, `name`, `description`, `location`, `start`, `end`, `start_time_zone`, `end_time_zone`, `all_day` and `recurrence`.  | Yes | No |
-
+| time_zone | string | The event IANA time_zone. e.g. `America/Los_Angeles` | Yes | Yes | 
+| availability_range | integer | Indicates the number of days from the current point in time to show time slots. Defaults to `30`. | Yes | No | 
+| time_slot_interval | integer | Indicates the number of minutes of time between each time slots. Defaults to `30`. | Yes | No | 
+| time_buffer_before | integer | Indicates the number of minutes of buffer time before each scheduled event. Defaults to `0`. | Yes | No | 
+| time_buffer_after | integer | Indicates the number of minutes of buffer time after each scheduled event. Defaults to `0`. | Yes | No | 
+| allow_event_metadata | boolean | Indicates if the created calendar event can be customized when scheduling events. See the [preSchedule](#preschedule) event for details. Defaults to `false`. | Yes | No |
+| default_event_metadata | object | Additional calendar event metadata to set when scheduling events. Defaults to `{}`. See the [Event creation API endpoint](https://developers.kloudless.com/docs/v1/calendar#events-create-an-event) for available attributes. The following attributes are reserved and can't be set: `id`, `name`, `description`, `location`, `start`, `end`, `start_time_zone`, `end_time_zone`, `all_day`, and `recurrence`. | Yes | No |
 
 
 #### Availability 
@@ -911,14 +913,14 @@ It is located within the [Meeting Window](#meeting-window-object) object.
 
 | Property | Type | Description | Writable | Required |
 | --- | --- | --- | --- | --- |
-| end_repeat | string | A ISO 8601 date or `'NEVER'`. The available_time rules will be applied until this date. Defaults to `'NEVER'`, means the rules are applied forever. | Yes | No |
-| available_times | array | A list of available rules. | Yes | Yes |
-| available_times[].start | string | The ISO 8601 time format in `hh:mm:ss` indicating the time window's start time. | Yes | Yes |
-| available_times[].end | string | The ISO 8601 time format in `hh:mm:ss` indicating the time window's end time. | Yes | Yes |
-| available_times[].recurring | object | The recurring constraint for the available time. | Yes | Yes |
-| available_times[].recurring.weekday | string | The weekdays for recurring available time. Accept 3 characters abbreviations. Comma as delimiter. ex: "MON, TUE" (available on every Monday and Tuesday) | Yes | Yes |
-| available_times[].recurring.month | string | Currently not support. | No | No |
-| available_times[].recurring.day | string | Currently not support. | No | No |
+| available_times | array | A list of availability rules. | Yes | Yes |
+| available_times[].start | string | The ISO 8601 time format in `hh:mm:ss` that indicates the time window's start time. | Yes | Yes |
+| available_times[].end | string | The ISO 8601 time format in `hh:mm:ss` that indicates the time window's end time. | Yes | Yes |
+| available_times[].recurring | object | The recurrence constraint for the availability range. | Yes | Yes |
+| available_times[].recurring.weekday | string | The weekdays to include availability for. Accepts 3 characters abbreviations with a comma as delimiter. For example, `"MON, TUE"` means to show availability for Mondays and Tuesdays. | Yes | Yes |
+| available_times[].recurring.month | string | Currently not supported. | No | No |
+| available_times[].recurring.day | string | Currently not supported. | No | No |
+| end_repeat | string | An ISO 8601 date, or `'NEVER'`. The `available_times` rules will be applied until this date. Defaults to `'NEVER'`, which means time slots are generated for as many days as possible (subject to `availability_range`). | Yes | No |
 
 ### Authentication
 
@@ -1117,7 +1119,7 @@ Update the meeting window.
 
 ```json
 {
-  "description": "Only for Food&Wine Lovers",
+  "description": "Agenda: Wine tasting",
 }
 ```
 
@@ -1133,7 +1135,7 @@ Update the meeting window.
   "title": "Wine Tasting Tour",
   "organizer": "Peter",
   "location": "Napa",
-  "description": "Only for Food&Wine Lovers",
+  "description": "Agenda: Wine tasting",
   "availability": {
     "end_repeat": "NEVER",
     "available_times": [
