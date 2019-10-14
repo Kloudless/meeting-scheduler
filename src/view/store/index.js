@@ -14,6 +14,7 @@ export const schema = {
     launchOptions: {},
     scheduleUrl: '',
     loaderTrusted: false,
+    appHasLogo: false,
   },
   modules: {
     account,
@@ -31,14 +32,17 @@ export const schema = {
         'MEETING_WINDOW_ID', meetingWindowId,
       );
     },
-    setLoaderTrusted(state, payload) {
-      state.loaderTrusted = payload.trusted;
+    setAppConfig(state, payload) {
+      // eslint-disable-next-line camelcase
+      const { logo_url, trusted } = payload.config;
+      state.loaderTrusted = Boolean(trusted);
+      state.appHasLogo = Boolean(logo_url);
     },
   },
   actions: {
     async initialize({ state, commit, dispatch }, payload) {
       const { launchOptions: { setup, schedule } } = payload;
-      const shouldCheckLoaderOrigin
+      const shouldGetAppConfig
         = state.launchOptions.appId !== payload.launchOptions.appId;
 
       commit({
@@ -46,8 +50,8 @@ export const schema = {
         launchOptions: payload.launchOptions,
       });
 
-      if (shouldCheckLoaderOrigin) {
-        dispatch('checkLoaderTrusted');
+      if (shouldGetAppConfig) {
+        dispatch('getAppConfig');
       }
 
       commit('meetingWindow/reset');
@@ -90,12 +94,12 @@ export const schema = {
       // this.messenger is set in MeetingSchedulerView constructor
       return this.messenger.send(eventData);
     },
-    async checkLoaderTrusted({ dispatch, commit, state }) {
+    async getAppConfig({ dispatch, commit, state }) {
       const { launchOptions } = state;
       if (!launchOptions.appId) {
         commit({
-          type: 'setLoaderTrusted',
-          trusted: false,
+          type: 'setAppConfig',
+          config: { trusted: false },
         });
         return;
       }
@@ -111,19 +115,18 @@ export const schema = {
             },
           },
         });
-        const trusted =
+        const hasUserData =
             typeof responseData === 'object' &&
-            typeof responseData.user_data === 'object' &&
-            responseData.user_data.trusted === true;
+            typeof responseData.user_data === 'object';
 
         commit({
-          type: 'setLoaderTrusted',
-          trusted,
+          type: 'setAppConfig',
+          config: hasUserData ? responseData.user_data : {},
         });
       } catch {
         commit({
-          type: 'setLoaderTrusted',
-          trusted: false,
+          type: 'setAppConfig',
+          config: {},
         });
       }
     },

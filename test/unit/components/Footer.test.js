@@ -1,15 +1,19 @@
 import Footer from 'view/components/Footer';
-import { initStore } from 'view/store';
-import router from 'view/router';
-import { getWrapper } from '../jest/vue-utils';
+import { getWrapper, createStore } from '../jest/vue-utils';
 
 describe('Test Footer', () => {
-  const wrapper = getWrapper(Footer, {
-    store: initStore(),
-    router,
-  });
-  it('Footer image should be seen', () => {
-    expect(wrapper.vm.show).toBe(true);
-    expect(wrapper.contains('img')).toBe(true);
+  test.each([
+    ['Should show footer image when the app does not have logo', true, false],
+    ['Should hide footer image when the app has logo', false, true],
+  ])('%s', async (_, appHasLogo, expectShowFooterImage) => {
+    const { store } = createStore({
+      state: {
+        appHasLogo,
+      },
+    });
+    const wrapper = getWrapper(Footer, {
+      store,
+    });
+    expect(wrapper.contains('img')).toBe(expectShowFooterImage);
   });
 });
