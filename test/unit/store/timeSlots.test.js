@@ -169,3 +169,65 @@ describe('timeSlots module request data tests', () => {
     });
   });
 });
+
+describe('timeSlots module mutation tests', () => {
+  describe('selectTimeSlot tests', () => {
+    test.each([
+      [
+        'Should mark a slot as selected when the slot is clicked',
+        [0],
+        [true, false],
+      ],
+      [
+        'Should mark a slot as unselected when the selected slot is clicked',
+        [0, 0],
+        [false, false],
+      ],
+      [
+        'Should unmark previous selected slot and mark the new slot when a'
+        + 'different slot is clicked',
+        [0, 1],
+        [false, true],
+      ],
+    ])('%s', (_, clicks, expectedSelects) => {
+      const { store } = createStore();
+      const slots = [
+        {
+          start: '2010-01-01T00:00:00',
+          end: '2010-01-01T01:00:00',
+          selected: false,
+        },
+        {
+          start: '2010-01-01T01:00:00',
+          end: '2010-01-01T02:00:00',
+          selected: false,
+        },
+      ];
+      store.commit({
+        type: 'timeSlots/setTimeSlots',
+        availableSlots: slots,
+      });
+      clicks.forEach((slotIndex) => {
+        store.commit({
+          type: 'timeSlots/selectTimeSlot',
+          slot: slots[slotIndex],
+        });
+      });
+
+      const { selectedSlot } = store.state.timeSlots;
+      let hasSelected = false;
+      expectedSelects.forEach((selected, slotIndex) => {
+        const slot = slots[slotIndex];
+        expect(slot.selected).toBe(selected);
+        if (selected) {
+          hasSelected = true;
+          expect(selectedSlot).toBe(slot);
+        }
+      });
+
+      if (!hasSelected) {
+        expect(selectedSlot).toBe(null);
+      }
+    });
+  });
+});

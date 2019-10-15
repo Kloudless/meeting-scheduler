@@ -35,15 +35,22 @@ export default {
   },
   mutations: {
     selectTimeSlot(state, payload) {
-      state.selectedSlot = payload.selected ? payload.slot : null;
+      const { slot } = payload;
+      if (state.selectedSlot === slot) {
+        state.selectedSlot = null;
+        slot.selected = false;
+      } else {
+        if (state.selectedSlot) {
+          state.selectedSlot.selected = false;
+        }
+        slot.selected = true;
+        state.selectedSlot = slot;
+      }
     },
     update: common.mutations.update,
     setVisible: common.mutations.setVisible,
     setTimeSlots(state, payload) {
-      state.meetingWindowProps = (
-        Object.assign({}, payload.meetingWindow));
-      state.availableSlots = (
-        state.availableSlots.concat(payload.availableSlots));
+      payload.availableSlots.forEach(slot => state.availableSlots.push(slot));
       state.nextPage = payload.nextPage;
     },
   },
@@ -71,9 +78,11 @@ export default {
           },
         },
       }, { root: true });
+      const slotsList = timeSlots.time_slots || [];
+      slotsList.forEach((slot) => { slot.selected = false; });
       commit({
         type: 'setTimeSlots',
-        availableSlots: timeSlots.time_slots,
+        availableSlots: slotsList,
         nextPage: timeSlots.next_page,
       });
       return Boolean(timeSlots.next_page);
