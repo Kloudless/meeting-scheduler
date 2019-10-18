@@ -123,6 +123,22 @@ class MeetingScheduler {
           errors.push(`${prefix}${field}: should be boolean.`);
         }
       });
+    // check JSON field
+    ['defaultEventMetadata']
+      .filter(this._hasKey(formOptions, 'default'))
+      .forEach((field) => {
+        const { [field]: { default: value } } = formOptions;
+        try {
+          if (typeof value !== 'object') {
+            throw new Error();
+          }
+          JSON.stringify(value);
+        } catch (e) {
+          errors.push(
+            `setup.formOptions.${field}: should be valid JSON object.`,
+          );
+        }
+      });
     // check options: [<field>, <options>]
     [
       ['duration', DURATIONS],
@@ -220,6 +236,33 @@ class MeetingScheduler {
         scope: 'calendar:normal',
         ..._options.setup.authOptions,
       };
+
+      const { formOptions } = _options.setup;
+      if (typeof formOptions === 'object' && formOptions !== null) {
+        /**
+         * Wrap values for non-editable fields into { key: {default: value} }
+         * format so that they can be processed the same way as other
+         * editable fields.
+         */
+        const { defaultEventMetadata, allowEventMetadata } = formOptions;
+        if (defaultEventMetadata !== undefined) {
+          formOptions.defaultEventMetadata = {
+            default: defaultEventMetadata,
+          };
+        }
+        if (
+          allowEventMetadata !== undefined && allowEventMetadata !== null && !(
+            // b/c compatible with old option format, which already uses
+            // { default: value }
+            typeof allowEventMetadata === 'object'
+            && allowEventMetadata.default !== undefined
+          )
+        ) {
+          formOptions.allowEventMetadata = {
+            default: allowEventMetadata,
+          };
+        }
+      }
     } else if (_options.schedule) {
       _options.schedule.afterSchedule = {
         showResult: true,

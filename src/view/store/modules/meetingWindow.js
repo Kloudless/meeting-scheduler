@@ -39,6 +39,11 @@ export function getJson(state) {
     end_repeat: 'NEVER', // TODO: UI: support end_repeat
     available_times: availableTimes,
   };
+
+  if (state.defaultEventMetadata) {
+    json.default_event_metadata = state.defaultEventMetadata;
+  }
+
   return json;
 }
 
@@ -75,6 +80,7 @@ export default {
         timeSlotInterval: true,
         bookingCalendarId: true,
       },
+      defaultEventMetadata: null,
     };
   },
   mutations: {
@@ -99,6 +105,7 @@ export default {
           }),
         ),
         allowEventMetadata: meetingWindow.allow_event_metadata,
+        defaultEventMetadata: meetingWindow.default_event_metadata,
       };
       Object.assign(state, data);
     },
