@@ -5,10 +5,19 @@
     box-shadow: none;
     .v-btn {
       width: 82px;
+
+      @media screen and (max-width: 400px) {
+        width: auto;
+      }
     }
   }
 
+  .default-field {
+    flex: 0 0 300px;
+  }
+
   div.custom-field {
+    flex: 0 0 112px;
     padding: 0px;
     margin: 4px 0px;
     height: 72px;

@@ -366,6 +366,9 @@ class MeetingScheduler {
   _launchView() {
     // Only launch the view when view is full loaded and launch() is called
     if (this._launched && this._viewLoaded) {
+      if (this.options.mode === 'modal') {
+        document.body.classList.add('no-scroll');
+      }
       this.messenger.send({
         event: INTERNAL_EVENTS.VIEW_LAUNCH,
         options: {
@@ -429,6 +432,8 @@ class MeetingScheduler {
   }
 
   destroy() {
+    document.body.classList.remove('no-scroll');
+
     this._removeContainer();
     if (this._launched) {
       this.onMessage({ event: 'destroy' });

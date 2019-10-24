@@ -43,6 +43,7 @@ import Vuetify, {
   VListTileSubTitle,
   VTooltip,
 } from 'vuetify/lib';
+import 'view/less/global.css';
 
 Vue.config.productionTip = false;
 Vue.use(Vuetify, {

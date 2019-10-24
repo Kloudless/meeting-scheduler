@@ -13,10 +13,15 @@ export default {
       initViews: false,
     };
   },
-  computed: mapState({
-    launchOptions: state => state.launchOptions,
-    requestErrorMsg: state => state.api.errorMessage,
-  }),
+  computed: {
+    ...mapState({
+      launchOptions: state => state.launchOptions,
+      requestErrorMsg: state => state.api.errorMessage,
+    }),
+    isTimeSlotPage() {
+      return this.$route.path.includes('timeSlots');
+    },
+  },
   created() {
     const defaultRoute = this.launchOptions.setup ?
       '/meetingWindow/' : '/timeSlots/';
@@ -55,31 +60,15 @@ div.kloudless-meeting-scheduler
   v-app(id="")
     div(data-app="true")
     template(v-if="initViews")
-      template(v-if="launchOptions.mode === 'attach'")
-        div.app-padding
-          div.service-error-message.error(
-            :class="{'has-error': requestErrorMsg}")
-            div {{ requestErrorMsg }}
-          div.app-scroll-content(:class="{'has-error': requestErrorMsg}")
-            v-content
-              v-container.text-xs-center
-                router-view
-          Footer
-      template(v-else)
-        div.app-dialog-view
-          div.app-padding
-            div.header
-              div.text-xs-right
-                v-icon(color="primary", size="28", @click="closeDialog")
-                  | cancel
-            div.service-error-message.error(
-              :class="{'has-error': requestErrorMsg}")
-              div {{ requestErrorMsg }}
-            div.app-scroll-content(:class="{'has-error': requestErrorMsg}")
-              v-content
-                v-container.text-xs-center
-                  router-view
-            Footer 
-       
-
+      div.app-padding
+        div.app-padding__header(v-if="launchOptions.mode === 'modal'")
+          div.text-xs-right
+            v-icon(color="primary", size="28", @click="closeDialog")
+              | cancel
+        div.app-padding__error.error(:class="{'d-none': !requestErrorMsg}")
+          div {{ requestErrorMsg }}
+        div.app-padding__content.text-xs-center(:class=`{
+            'app-padding__content--fix': isTimeSlotPage}`)
+          router-view
+        Footer
 </template>
