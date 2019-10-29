@@ -243,28 +243,28 @@ export default {
 /* eslint-disable */
 </script>
 
-<style lang="scss">
-@import "./_variables.scss";
+<style lang="less">
+@import "./_variables.less";
 
-$scroll-panel-height: 420px;
+@scroll-panel-height: 420px;
 
 .timeslots-scroll-panel {
-  height: $scroll-panel-height;
+  height: @scroll-panel-height;
   overflow-y: auto;
   .container {
     padding-top: 12px;
   }
 }
 .has-error .timeslots-scroll-panel {
-  height: $scroll-panel-height - $error-height;
+  height: @scroll-panel-height - @error-height;
 }
 
 .v-dialog {
   .timeslots-scroll-panel {
-    height: $scroll-panel-height - $modal-header-height;
+    height: @scroll-panel-height - @modal-header-height;
   }
   .has-error .timeslots-scroll-panel {
-    height: $scroll-panel-height - $modal-header-height - $error-height;
+    height: @scroll-panel-height - @modal-header-height - @error-height;
   }
 }
 

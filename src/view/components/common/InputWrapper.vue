@@ -23,8 +23,8 @@ export default {
 /* eslint-disable */
 </script>
 
-<style lang="scss">
-@import '../_variables.scss';
+<style lang="less">
+@import '../_variables.less';
 
 .v-input.input-wrapper {
   .content {
@@ -33,13 +33,13 @@ export default {
   }
 
   &.error--text > .v-input__control > .v-input__slot > .content > .v-btn {
-    color: $error !important;
+    color: @error !important;
   }
 
   .v-messages > .v-messages__wrapper .v-messages__message {
     width: 100%;
     text-align: center;
-    color: $error;
+    color: @error;
   }
 }
 </style>

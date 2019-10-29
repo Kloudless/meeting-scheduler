@@ -58,23 +58,23 @@ export default {
 /* eslint-disable */
 </script>
 
-<style lang="scss">
-@import "../_variables.scss";
+<style lang="less">
+@import "../_variables.less";
 
 .v-input.v-text-field {
   padding-top: 0;
   .v-input__slot{
     &:hover::before {
-      border-color: $accent !important;
+      border-color: @accent !important;
       opacity: 0.5;
     }
     &::before {
-      border-color: $accent;
+      border-color: @accent;
       opacity: 0.05;
     }
     input::placeholder {
       font-style: italic;
-      color: $accent;
+      color: @accent;
       opacity: 0.25;
     }
   }

@@ -43,7 +43,7 @@ export default {
 /* eslint-disable */
 </script>
 
-<style lang="scss">
+<style lang="less">
 .hour-block {
   padding: 8px;
   width: 120px;

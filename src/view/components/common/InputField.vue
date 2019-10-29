@@ -21,7 +21,7 @@ export default {
 /* eslint-disable */
 </script>
 
-<style lang="scss">
+<style lang="less">
 div.input-field {
   margin-bottom: 12px;
 

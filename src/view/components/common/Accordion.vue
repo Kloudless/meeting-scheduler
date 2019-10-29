@@ -25,15 +25,15 @@ export default {
 /* eslint-disable */
 </script>
 
-<style lang="scss">
-@import "../_variables.scss";
+<style lang="less">
+@import "../_variables.less";
 
 .v-expansion-panel {
   box-shadow: none;
 
   /* arrow icon */
   & .v-expansion-panel__header__icon > .v-icon {
-    color: $primary !important;
+    color: @primary !important;
   }
 }
 
@@ -44,7 +44,7 @@ export default {
 
 .v-expansion-panel__header {
   padding: 0;
-  border-bottom: 1px solid #{$primary}33;
+  border-bottom: 1px solid ~"@{primary}33";
 }
 </style>
 

@@ -10,7 +10,7 @@ module.exports = {
   moduleDirectories: ['node_modules', 'src'],
   transform: {
     '.*\\.(vue)$': 'jest-vue-preprocessor',
-    '.*\\.(css|scss)$': '<rootDir>/test/unit/jest/null-transformer',
+    '.*\\.(css|less)$': '<rootDir>/test/unit/jest/null-transformer',
     '.*\\.(js)$': 'babel-jest',
   },
   transformIgnorePatterns: common.ignorePaths.map(regExp => regExp.source),

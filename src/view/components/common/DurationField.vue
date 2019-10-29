@@ -71,8 +71,8 @@ export default {
 /* eslint-disable */
 </script>
 
-<style lang="scss">
-@import "../_variables.scss";
+<style lang="less">
+@import "../_variables.less";
 
 .duration-field {
 
@@ -93,7 +93,7 @@ export default {
     .v-text-field--outline > .v-input__control > .v-input__slot {
       height: 70px;
       border-radius: 2px;
-      border: 1px solid $primary;
+      border: 1px solid @primary;
       font-weight: 700;
       margin: 0px;
       display: flex;
@@ -104,7 +104,7 @@ export default {
         display: block;
         text-align: center;
         > label {
-          color: $primary;
+          color: @primary;
           position: static !important;
           line-height: 24px;
         }
@@ -112,27 +112,27 @@ export default {
           line-height: 18px;
           text-align: center;
           padding: 0px;
-          color: $primary;
+          color: @primary;
           opacity: 0.4;
           position: static !important;
           margin: 0px;
 
           /* Edge */
           &::-webkit-input-placeholder {
-            color: $primary;
+            color: @primary;
             font-style: normal;
             opacity: 1;
           }
           
           /* Internet Explorer 10-11 */
           &:-ms-input-placeholder {
-            color: $primary;
+            color: @primary;
             font-style: normal;
             opacity: 1;
           }
           
           &::placeholder {
-            color: $primary;
+            color: @primary;
             font-style: normal;
             opacity: 1;
           }
@@ -140,7 +140,7 @@ export default {
       }
   
       &:hover {
-        border: 1px solid $primary !important;
+        border: 1px solid @primary !important;
         &::before {
           position: absolute;
           top: 0;
@@ -149,30 +149,30 @@ export default {
           width: 100%;
           content: "";
           opacity: 0.12;
-          background-color: $primary !important;
+          background-color: @primary !important;
           display: block !important;
         }
       }
     }
   
     &.active > .v-text-field--outline > .v-input__control > .v-input__slot {
-      background-color: $primary !important;
+      background-color: @primary !important;
       .v-text-field__slot > label {
-        color: $background !important;
+        color: @background !important;
       }
       .v-text-field__slot > input {
-        color: $white !important;
+        color: @white !important;
         opacity: 0.4;
         &::-webkit-input-placeholder { /* Edge */
-          color: $white;
+          color: @white;
         }
         
         &:-ms-input-placeholder { /* Internet Explorer 10-11 */
-          color: $white;
+          color: @white;
         }
         
         &::placeholder {
-          color: $white;
+          color: @white;
         }
       }
     }
@@ -182,7 +182,7 @@ export default {
 </style>
 
 <template lang="pug">
-//- toggle-buttons is defined in ToggleButtons/style.scss
+//- toggle-buttons is defined in ToggleButtons.vue
 InputField(:label="label").duration-field
   v-input(:value="finalValue", :rules="rules")
     v-layout.justify-space-between

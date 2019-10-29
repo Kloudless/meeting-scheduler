@@ -59,8 +59,7 @@ export default {
 /* eslint-disable */
 </script>
 
-<style lang="scss">
-@import "../_variables.scss";
+<style lang="less">
 
 .toggle-buttons {
   .v-btn-toggle {

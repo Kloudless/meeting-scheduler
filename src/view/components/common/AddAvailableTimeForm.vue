@@ -97,8 +97,8 @@ export default {
 /* eslint-disable */
 </script>
 
-<style lang="scss">
-@import "../_variables.scss";
+<style lang="less">
+@import "../_variables.less";
 
 .add-available-time-form {
   .hour-to {
@@ -106,7 +106,7 @@ export default {
     margin-bottom: 12px;
     padding-bottom: 0px;
     text-align: center;
-    color: $accent;
+    color: @accent;
   }
 }
 

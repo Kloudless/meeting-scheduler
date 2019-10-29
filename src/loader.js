@@ -3,7 +3,7 @@
  * loader script
  */
 /* eslint-disable no-console, class-methods-use-this */
-import './loader.scss';
+import './loader.less';
 import EventMessenger from 'event-messenger';
 import {
   ROLES,

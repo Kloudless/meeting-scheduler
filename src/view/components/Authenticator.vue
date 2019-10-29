@@ -104,7 +104,7 @@ export default {
 /* eslint-disable */
 </script>
 
-<style lang="scss">
+<style lang="less">
 .authenticator {
   .v-list__tile {
     padding-left: 0px;

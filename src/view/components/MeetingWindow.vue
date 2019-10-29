@@ -137,7 +137,7 @@ export default {
 /* eslint-disable */
 </script>
 
-<style lang="scss">
+<style lang="less">
 .hour-to {
   font-size: 16px;
   padding-bottom: 24px;

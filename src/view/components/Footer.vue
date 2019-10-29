@@ -17,7 +17,7 @@ export default {
 /* eslint-disable */
 </script>
 
-<style lang="scss">
+<style lang="less">
 .footer {
   height: 30px;
   background-color: #f5f7fa;

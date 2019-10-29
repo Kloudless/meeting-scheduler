@@ -103,8 +103,8 @@ export default {
 /* eslint-disable */
 </script>
 
-<style lang="scss">
-@import "../_variables.scss";
+<style lang="less">
+@import "../_variables.less";
 
 .availability-field {
   .v-list {
@@ -112,7 +112,7 @@ export default {
 
     .v-divider {
       opacity: 0.05;
-      border-color: $accent;
+      border-color: @accent;
     }
 
     .v-list__tile {
@@ -125,13 +125,13 @@ export default {
         opacity: 0.9;
         font-size: 16px;
         font-weight: bold;
-        color: $accent;
+        color: @accent;
       }
 
       .v-list__tile__sub-title {
         font-size: 12px;
         opacity: 0.9;
-        color: $accent;
+        color: @accent;
       }
     }
   }

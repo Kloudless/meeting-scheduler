@@ -77,8 +77,8 @@ function generateConfig(env = {}) {
           use: styleLoaders.concat(['stylus-loader']),
         },
         {
-          test: /\.scss$/,
-          loader: styleLoaders.concat(['sass-loader']),
+          test: /\.less$/,
+          loader: styleLoaders.concat(['less-loader']),
         },
         {
           test: /\.png$/,

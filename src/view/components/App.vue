@@ -50,42 +50,44 @@ export default {
 /* eslint-disable */
 </script>
 
-<style lang="scss">
-@import "./_variables.scss";
+<style lang="less">
+@import "./_variables.less";
 
 .primary--text {
-  color: $primary !important;
+  color: @primary !important;
 }
 .accent--text {
-  color: $accent !important;
+  color: @accent !important;
 }
 .success--text {
-  color: $success !important;
+  color: @success !important;
 }
 .error--text {
-  color: $error !important;
+  color: @error !important;
 }
 .primary {
-  color: $white;
-  background-color: $primary !important;
+  color: @white;
+  background-color: @primary !important;
 }
 .accent {
-  color: $white;
-  background-color: $accent !important;
+  color: @white;
+  background-color: @accent !important;
 }
 .success {
-  color: $white;
-  background-color: $success !important;
+  color: @white;
+  background-color: @success !important;
 }
 .error {
-  color: $white;
-  background-color: $error !important;
+  color: @white;
+  background-color: @error !important;
 }
 
-@for $i from 1 through 9 {
-  .opacity-#{$i} {
-    opacity: 0.1 * $i;
-  }
+// TODO: remove opacity classes
+.opacity-4 {
+  opacity: 0.4;
+}
+.opacity-9 {
+  opacity: 0.9;
 }
 
 // "html" will be transformed to MASTER_CLASS in bundle
@@ -97,25 +99,25 @@ html {
 
 .application {
   
-  width: $content-width + $widget-padding;
+  width: @content-width + @widget-padding;
   margin: auto;
   
   .app-padding {
-    height: $content-height + $footer-height + $widget-padding;
+    height: @content-height + @footer-height + @widget-padding;
     overflow: hidden;
-    background-color: $background;
-    padding: $widget-padding $widget-padding 0 $widget-padding;
+    background-color: @background;
+    padding: @widget-padding @widget-padding 0 @widget-padding;
     border-radius: 10px;
   }
 
   .app-scroll-content {
     width: 100%;
-    height: $content-height;
+    height: @content-height;
     overflow-y: auto !important;
     transition: height 1s;
     
     &.has-error {
-      height: $content-height - $error-height;
+      height: @content-height - @error-height;
     }
   }
   .service-error-message {
@@ -123,7 +125,7 @@ html {
     transition: height 1s;
     width: 100%;
     &.has-error {
-      height: $error-height;
+      height: @error-height;
       padding: 5px;
       overflow-y: auto;
     }
@@ -139,12 +141,12 @@ html {
 
   .app-dialog-view {
     .header {
-      height: $modal-header-height;
+      height: @modal-header-height;
     }
     .app-scroll-content {
-      height: $content-height - $modal-header-height;
+      height: @content-height - @modal-header-height;
       &.has-error {
-        height: $content-height - $modal-header-height - $error-height;
+        height: @content-height - @modal-header-height - @error-height;
       }
     }
   }

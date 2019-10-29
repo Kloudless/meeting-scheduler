@@ -89,15 +89,15 @@ export default {
 /* eslint-disable */
 </script>
 
-<style lang="scss">
-@import "../_variables.scss";
+<style lang="less">
+@import "../_variables.less";
 
 .weekday-picker {
   .v-chip {
-    background-color: $primary !important;
+    background-color: @primary !important;
     .v-chip__content {
       font-size: 14px;
-      color: $white;
+      color: @white;
       font-weight: 700;
     }
   }

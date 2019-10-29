@@ -33,8 +33,8 @@ export default {
 /* eslint-disable */
 </script>
 
-<style lang="scss">
-@import "../_variables.scss";
+<style lang="less">
+@import "../_variables.less";
 
 .btn {
   &.v-btn {
@@ -42,8 +42,8 @@ export default {
     height: 100%;
   }
   .theme--light.v-btn.v-btn--disabled:not(.v-btn--icon):not(.v-btn--flat) {
-    background-color: $primary !important;
-    color: $white !important;
+    background-color: @primary !important;
+    color: @white !important;
     opacity: 0.2;
   }
 }

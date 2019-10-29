@@ -12,12 +12,12 @@ export default {
 /* eslint-disable */
 </script>
 
-<style lang="scss">
+<style lang="less">
 
-@import "../_variables.scss";
+@import "../_variables.less";
 
 .page-title {
-  border-bottom: 5px solid $primary;
+  border-bottom: 5px solid @primary;
   color: #04214a;
 }
 </style>

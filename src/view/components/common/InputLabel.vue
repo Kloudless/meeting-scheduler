@@ -13,8 +13,8 @@ export default {
 /* eslint-disable */
 </script>
 
-<style lang="scss">
-@import "../_variables.scss";
+<style lang="less">
+@import "../_variables.less";
 
 .tooltip-container {
   right: 40px;
@@ -26,7 +26,7 @@ div.input-label {
   white-space: nowrap;
 
   .v-btn.v-btn--icon {
-    color: $success;
+    color: @success;
   }
 }
 

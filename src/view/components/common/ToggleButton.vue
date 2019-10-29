@@ -20,8 +20,8 @@ export default {
 /* eslint-disable */
 </script>
 
-<style lang="scss">
-@import "../_variables.scss";
+<style lang="less">
+@import "../_variables.less";
 
 .toggle-button.v-btn {
   flex: 1;
@@ -37,21 +37,21 @@ export default {
     }
   }
   &.v-btn--active {
-    background-color: $primary !important;
+    background-color: @primary !important;
     .text {
-      color: $background;
+      color: @background;
     }
     .caption {
-      color: $white;
+      color: @white;
     }
   }
   &:not(.v-btn--active) {
-    background-color: $background !important;
+    background-color: @background !important;
     .text {
-      color: $primary;
+      color: @primary;
     }
     .caption {
-      color: $primary;
+      color: @primary;
     }
     opacity: 1;
   }
