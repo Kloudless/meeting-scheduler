@@ -6,15 +6,14 @@
   "author": "Kloudless <hello@kloudless.com> (https://kloudless.com)",
   "scripts": {
     "vue-devtools": "vue-devtools",
-    "dev": "npm run vuize && SCHEDULER_PATH='http://localhost:8081/embed/index.html' node ./dev-server/dev-server.js",
+    "dev": "SCHEDULER_PATH='http://localhost:8081/embed/index.html' node ./dev-server/dev-server.js",
     "start": "npm run dev",
     "unit": "jest --config test/unit/jest/jest.conf.js --coverage",
-    "test": "npm run vuize && npm run unit",
+    "test": "npm run unit",
     "test-clean": "jest --clearCache",
     "lint": "eslint --ext .js,.vue src test/unit/specs",
-    "build": "rm -rf dist && npm run vuize && webpack --color --progress --config ./config/webpack.prod.conf.js",
-    "dist-test": "node ./test/dist-test-server.js",
-    "vuize": "node ./config/vuize"
+    "build": "rm -rf dist && webpack --color --progress --config ./config/webpack.prod.conf.js",
+    "dist-test": "node ./test/dist-test-server.js"
   },
   "dependencies": {},
   "devDependencies": {
