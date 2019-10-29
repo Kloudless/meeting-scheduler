@@ -34,7 +34,7 @@ export default {
 </script>
 
 <style lang="scss">
-@import "../../_variables.scss";
+@import "../_variables.scss";
 
 .btn {
   &.v-btn {

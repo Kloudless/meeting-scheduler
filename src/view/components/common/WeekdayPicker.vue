@@ -1,7 +1,7 @@
 <script>
 
 import { isRequired, isWeekdayEqual } from 'view/utils/form_validator';
-import InputField from '../InputField';
+import InputField from './InputField';
 
 export default {
   name: 'WeekdayPicker',
@@ -90,7 +90,7 @@ export default {
 </script>
 
 <style lang="scss">
-@import "../../_variables.scss";
+@import "../_variables.scss";
 
 .weekday-picker {
   .v-chip {

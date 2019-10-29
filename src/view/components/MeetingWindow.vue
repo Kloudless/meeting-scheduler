@@ -1,20 +1,20 @@
 <script>
 import { mapState } from 'vuex';
 import { SUBMIT_STATUS, EVENTS } from 'constants';
-import Authenticator from '../Authenticator';
-import Accordion from '../common/Accordion';
-import Title from '../common/Title';
-import TextInput from '../common/TextInput';
-import ToggleButtons from '../common/ToggleButtons';
-import Dropdown from '../common/Dropdown';
-import InputLabel from '../common/InputLabel';
-import Button from '../common/Button';
-import DurationField from '../common/DurationField';
-import NumberField from '../common/NumberField';
-import AvailabilityField from '../common/AvailabilityField';
+import Authenticator from './Authenticator';
+import Accordion from './common/Accordion';
+import Title from './common/Title';
+import TextInput from './common/TextInput';
+import ToggleButtons from './common/ToggleButtons';
+import Dropdown from './common/Dropdown';
+import InputLabel from './common/InputLabel';
+import Button from './common/Button';
+import DurationField from './common/DurationField';
+import NumberField from './common/NumberField';
+import AvailabilityField from './common/AvailabilityField';
 import {
   HOURS, TIME_SLOT_INTERVALS, DURATIONS, TIME_ZONES, WEEKDAYS, WEEKDAY_PRESETS,
-} from '../../utils/fixtures.js';
+} from '../utils/fixtures.js';
 
 export default {
   name: 'MeetingWindow',

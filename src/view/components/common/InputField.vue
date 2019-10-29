@@ -1,5 +1,5 @@
 <script>
-import InputLabel from '../InputLabel';
+import InputLabel from './InputLabel';
 
 export default {
   name: 'InputField',

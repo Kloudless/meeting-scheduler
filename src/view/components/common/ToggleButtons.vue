@@ -1,7 +1,7 @@
 <script>
 
-import InputField from '../InputField';
-import ToggleButton from '../ToggleButton';
+import InputField from './InputField';
+import ToggleButton from './ToggleButton';
 
 export default {
   name: 'ToggleButtons',
@@ -60,7 +60,7 @@ export default {
 </script>
 
 <style lang="scss">
-@import "../../_variables.scss";
+@import "../_variables.scss";
 
 .toggle-buttons {
   .v-btn-toggle {

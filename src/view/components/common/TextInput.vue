@@ -1,7 +1,7 @@
 <script>
 
-import InputField from '../InputField';
-import { isRequired, isEmail } from '../../../utils/form_validator';
+import InputField from './InputField';
+import { isRequired, isEmail } from '../../utils/form_validator';
 
 export default {
   name: 'TextField',
@@ -59,7 +59,7 @@ export default {
 </script>
 
 <style lang="scss">
-@import "../../_variables.scss";
+@import "../_variables.scss";
 
 .v-input.v-text-field {
   padding-top: 0;

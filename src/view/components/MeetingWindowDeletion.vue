@@ -2,8 +2,8 @@
 
 import { mapState } from 'vuex';
 import { SUBMIT_STATUS, EVENTS } from 'constants';
-import Title from '../common/Title';
-import Button from '../common/Button';
+import Title from './common/Title';
+import Button from './common/Button';
 
 export default {
   name: 'MeetingWindowDeletion',

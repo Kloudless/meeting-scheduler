@@ -14,7 +14,7 @@ export default {
 
 <style lang="scss">
 
-@import "../../_variables.scss";
+@import "../_variables.scss";
 
 .page-title {
   border-bottom: 5px solid $primary;

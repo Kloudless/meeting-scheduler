@@ -1,7 +1,7 @@
 <script>
-import InputField from '../InputField';
-import ToggleButton from '../ToggleButton';
-import { isRequired } from '../../../utils/form_validator';
+import InputField from './InputField';
+import ToggleButton from './ToggleButton';
+import { isRequired } from '../../utils/form_validator';
 
 export default {
   name: 'DurationField',
@@ -72,7 +72,7 @@ export default {
 </script>
 
 <style lang="scss">
-@import "../../_variables.scss";
+@import "../_variables.scss";
 
 .duration-field {
 

@@ -1,6 +1,6 @@
 <script>
-import InputField from '../InputField';
-import { isRequired } from '../../../utils/form_validator';
+import InputField from './InputField';
+import { isRequired } from '../../utils/form_validator';
 
 export default {
   name: 'Dropdown',

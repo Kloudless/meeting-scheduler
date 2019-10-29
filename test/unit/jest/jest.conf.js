@@ -7,6 +7,7 @@ module.exports = {
     'vue',
     'js',
   ],
+  moduleDirectories: ['node_modules', 'src'],
   transform: {
     '.*\\.(vue)$': 'jest-vue-preprocessor',
     '.*\\.(css|scss)$': '<rootDir>/test/unit/jest/null-transformer',

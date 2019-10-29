@@ -4,12 +4,12 @@ import moment from 'moment-timezone';
 import InfiniteLoading from 'vue-infinite-loading';
 import { MAX_TIME_SLOTS_PER_SCROLL, EVENTS } from 'constants';
 import { mapState } from 'vuex';
-import date from '../../utils/date';
-import TextInput from '../common/TextInput';
-import Textarea from '../common/Textarea';
-import InputLabel from '../common/InputLabel';
-import Title from '../common/Title';
-import Button from '../common/Button';
+import date from '../utils/date';
+import TextInput from './common/TextInput';
+import Textarea from './common/Textarea';
+import InputLabel from './common/InputLabel';
+import Title from './common/Title';
+import Button from './common/Button';
 import TimeSlotBlock from './TimeSlotBlock';
 
 
@@ -244,7 +244,7 @@ export default {
 </script>
 
 <style lang="scss">
-@import "../App/style.scss";
+@import "./_variables.scss";
 
 $scroll-panel-height: 420px;
 

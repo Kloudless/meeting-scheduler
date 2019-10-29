@@ -1,5 +1,5 @@
 <script>
-import Button from '../../common/Button';
+import Button from './common/Button';
 
 /**
  * Split out this button component so that when props in the timeSlot object

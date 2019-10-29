@@ -1,9 +1,9 @@
 <script>
-import AddAvailableTimeForm from '../AddAvailableTimeForm';
-import Button from '../Button';
-import InputField from '../InputField';
-import InputWrapper from '../InputWrapper';
-import { isRequired, isWeekdayEqual } from '../../../utils/form_validator';
+import AddAvailableTimeForm from './AddAvailableTimeForm';
+import Button from './Button';
+import InputField from './InputField';
+import InputWrapper from './InputWrapper';
+import { isRequired, isWeekdayEqual } from '../../utils/form_validator';
 
 export default {
   name: 'AvailabilityField',
@@ -104,7 +104,7 @@ export default {
 </script>
 
 <style lang="scss">
-@import "../../_variables.scss";
+@import "../_variables.scss";
 
 .availability-field {
   .v-list {

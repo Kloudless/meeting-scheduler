@@ -1,7 +1,7 @@
 <script>
 import { mapState } from 'vuex';
 import { EVENTS } from 'constants';
-import Footer from '../Footer';
+import Footer from './Footer';
 
 export default {
   name: 'App',
@@ -51,7 +51,7 @@ export default {
 </script>
 
 <style lang="scss">
-@import "../_variables.scss";
+@import "./_variables.scss";
 
 .primary--text {
   color: $primary !important;

@@ -30,6 +30,6 @@ export default {
 <template lang="pug">
 div.text-xs-center.footer.pt-2
   a(v-if="show", href="https://kloudless.com", target="_blank")
-    img(src="../../static/footer.png")
+    img(src="../static/footer.png")
 
 </template>

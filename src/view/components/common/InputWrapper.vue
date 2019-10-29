@@ -24,7 +24,7 @@ export default {
 </script>
 
 <style lang="scss">
-@import '../../variables';
+@import '../_variables.scss';
 
 .v-input.input-wrapper {
   .content {

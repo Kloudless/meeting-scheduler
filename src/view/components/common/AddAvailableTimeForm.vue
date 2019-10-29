@@ -1,10 +1,10 @@
 <script>
 
-import InputLabel from '../InputLabel';
-import WeekdayPicker from '../WeekdayPicker';
-import Dropdown from '../Dropdown';
-import Button from '../Button';
-import { notInAvailableTimes } from '../../../utils/form_validator';
+import InputLabel from './InputLabel';
+import WeekdayPicker from './WeekdayPicker';
+import Dropdown from './Dropdown';
+import Button from './Button';
+import { notInAvailableTimes } from '../../utils/form_validator';
 
 export default {
   name: 'AddAvailableTimeForm',
@@ -98,7 +98,7 @@ export default {
 </script>
 
 <style lang="scss">
-@import "../../_variables.scss";
+@import "../_variables.scss";
 
 .add-available-time-form {
   .hour-to {
