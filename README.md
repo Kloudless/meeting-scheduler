@@ -57,6 +57,7 @@ using our [zero-configuration embed script](#embed-the-widget), or
   - [Display Your Own Result Screen](#display-your-own-result-screen)
   - [Auto-fill Form Fields](#auto-fill-form-fields)
   - [Customize UI Styling](#customize-ui-styling)
+  - [Fix the Account and Calendar Used When Creating Meeting Window](#fix-the-account-and-calendar-used-when-creating-meeting-window)
   - [And More...](#and-more)
 - [Methods](#methods)
   - [config(options)](#configoptions)
@@ -572,6 +573,31 @@ Notes:
 * String properties such as the font family and font face URL require an
   **additional** set of quotes surrounding the text value.
 
+### Fix the Account and Calendar Used When Creating Meeting Window
+
+If you would like to fix the connected calendar and not allow users to edit it,
+you need to set the Bearer token of the calendar account and calendar ID.
+Be sure the calendar is accessible by the calendar account, otherwise, a
+validate error will show up.
+Calendar IDs can be obtained by [list calendar](https://developers.kloudless.com/docs/latest/calendar#calendars-list-calendars)
+endpoint.
+Also, set `setup.formOptions.bookingCalendarId.visible` to `false` to
+prevent users from changing connected calendar.
+
+  ```js
+  scheduler.launch({
+    appId: '<your_app_id>',
+    setup: {
+      accountToken: '<account_token>',
+      formOptions: {
+        bookingCalendarId: {
+          default: "<calendar_id>",
+          visible: false
+        },
+      }
+    }
+  });
+  ```
 
 ### And More...
 For more examples, please check the [launch(options)](#launch(options)) for a full
@@ -635,16 +661,28 @@ An object containing the following keys:
           this is not supported in the Edit Mode.
   - `formOptions`: _Optional (default: see below)_: Object  
     - An object to configure the form fields of the Setup View.
-      - `title.default`: _Optional (default: '')_: String  
-        The default event title.
-      - `description.default`: _Optional (default: '')_: String  
-        The default event description.
-      - `location.default`: _Optional (default: '')_: String  
-        The default event location.
-      - `duration.default`: _Optional (default: 15)_: Number  
-        The default event duration.
-      - `organizer.default`: _Optional (default: '')_: String  
-        The default name of the event organizer.
+      - `title`: _Optional (default: {visible: true, default: ''})_: Object
+        Configure the default value and visibility of event title.
+        - `default`: _Optional (default: '')_: String
+        - `visible`: _Optional (default: true)_: Boolean
+          `title.default` cannot be empty if this is `false`.
+      - `description`: _Optional (default: {visible: true, default: ''})_: Object
+        Configure the default value and visibility of event description.
+        - `default`: _Optional (default: '')_: String
+        - `visible`: _Optional (default: true)_: Boolean
+      - `location`: _Optional (default: {visible: true, default: ''})_: Object
+        Configure the default value and visibility of event location.
+        - `default`: _Optional (default: '')_: String
+        - `visible`: _Optional (default: true)_: Boolean
+      - `duration`: _Optional (default: {visible: true, default: 15})_: Object
+        Configure the default value and visibility of event duration.
+        - `default`: _Optional (default: 15)_: Number
+        - `visible`: _Optional (default: true)_: Boolean
+      - `organizer`: _Optional (default: {visible: true, default: ''})_: Object
+        Configure the default value and visibility of event organizer.
+        - `default`: _Optional (default: '')_: String
+        - `visible`: _Optional (default: true)_: Boolean
+          `organizer.default` cannot be empty if this is `false`.
       - `weekday.default`: _Optional (default: [])_: Array  
         The default available weekdays.
         Possible values: `SUN`, `MON`, `TUE`, `WED`, `THU`, `FRI`, and `SAT`.
@@ -656,21 +694,34 @@ An object containing the following keys:
         An ISO 8601 timestamp without offset indicating the default availability
         end time.
         Possible values: `01:00:00`&ndash;`00:00:00`.
-      - `timeSlotInterval.default`: _Optional (default: 30)_: Number  
-        The default number of minutes between each time slot.
+      - `timeSlotInterval`: _Optional (default: {visible: true, default: 30})_: Object
+        The number of minutes between each time slot.
+        - `default`: _Optional (default: 30)_: Number
         Possible values: 15, 30, 45, or 60.
-      - `availabilityRange.default`: _Optional (default: 30)_: Number  
-        The default number of days from the current date to show time slots
-        for.
-        Possible values: 1&ndash;99.
-      - `timeBufferBefore.default`: _Optional (default: 0)_: Number  
-        The default number of minutes to leave free before each scheduled
-        event.
-        Possible values: 0&ndash;99.
-      - `timeBufferAfter.default`: _Optional (default: 0)_: Number  
-        The default number of minutes to leave free after each scheduled
-        event.
-        Possible values: 0&ndash;99.
+        - `visible`: _Optional (default: true)_: Boolean
+      - `availabilityRange`: _Optional (default: {visible: true, default: 30})_: Object
+        The number of days from the current date to show time slots for.
+        - `default`: _Optional (default: 30)_: Number
+          Possible values: 1&ndash;99.
+        - `visible`: _Optional (default: true)_: Boolean
+      - `timeBufferBefore`: _Optional (default: {visible: true, default: 0})_: Object
+        The number of minutes to leave free before each scheduled event.
+        - `default`: _Optional (default: 0)_: Number
+          Possible values: 0&ndash;99.
+        - `visible`: _Optional (default: true)_: Boolean
+      - `timeBufferAfter`: _Optional (default: {visible: true, default: 0})_: Object
+        The number of minutes to leave free after each scheduled event.
+        - `default`: _Optional (default: 0)_: Number
+          Possible values: 0&ndash;99.
+        - `visible`: _Optional (default: true)_: Boolean
+      - `bookingCalendarId`: _Optional (default: {visible: true, default: ''})_: Object
+        Configure the default value and visibility of selected calendar ID.
+        - `default`: _Optional (default: <The 1st calendar's ID return from [Calendar List API](https://developers.kloudless.com/docs/latest/calendar#calendars-list-calendars)>)_: String
+          This requires `setup.accountToken` to be set. Also, please make sure
+          the calendar is accessible by that account.
+          Can use `primary` as an alias for the id of the primary calendar.
+        - `visible`: _Optional (default: true)_: Boolean
+          `bookingCalendarId.default` must be set if this is `false`.
       - `allowEventMetadata.default`: _Optional (default: false)_: Boolean  
         Set this to `true` to allow changing the created calendar event details
         via a [preSchedule](#preschedule) event handler.
@@ -688,7 +739,8 @@ An object containing the following keys:
         timeSlotInterval: { default: 30 },  // 15, 30, 45, 60
         availabilityRange: { default: 30 }, // 1 – 90
         timeBufferBefore: { default: 0 },   // 0 – 99
-        timeBufferAfter: { default: 0 }     // 0 – 99
+        timeBufferAfter: { default: 0 },     // 0 – 99
+        bookingCalendarId: { default: "primary" }
       }
       ```
   - `authOptions`: _Optional (default: see below)_: Object
@@ -749,10 +801,16 @@ An object containing the following keys:
         - `'close'`: Close and destroy the scheduler.
   - `formOptions`: _Optional (default: see below)_: Object  
     - An object to configure the form fields of the Setup View.
-      - `name.default`: _Optional (default: '')_: String  
-        The default name of the attendee.
-      - `email.default`: _Optional (default: '')_: String  
-        The default email of the attendee.
+      - `name`: _Optional (default: {default: '', visible: true})_: Object
+        Configure the default value and visibility of the attendee's name.
+        - `default`: _Optional (default: '')_: String
+        - `visible`: _Optional (default: true)_: Boolean
+          `name.default` cannot be empty if this is `false`.
+      - `email`: _Optional (default: {default: '', visible: true})_: Object
+        Configure the default value and visibility of the attendee's email.
+        - `default`: _Optional (default: '')_: String
+        - `visible`: _Optional (default: true)_: Boolean
+          `email.default` cannot be empty if this is `false`.
       - `extraDescription`: _Optional (default: '')_: Object  
         - `default`: _Optional (default: '')_: String
           The default notes to append to the created event's description.

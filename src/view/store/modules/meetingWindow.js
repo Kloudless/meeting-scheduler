@@ -63,10 +63,23 @@ export default {
       availabilityRange: 30,
       timeSlotInterval: 30,
       allowEventMetadata: false,
+      visible: {
+        title: true,
+        duration: true,
+        organizer: true,
+        location: true,
+        description: true,
+        timeBufferBefore: true,
+        timeBufferAfter: true,
+        availabilityRange: true,
+        timeSlotInterval: true,
+        bookingCalendarId: true,
+      },
     };
   },
   mutations: {
     update: common.mutations.update,
+    setVisible: common.mutations.setVisible,
     setMeetingWindow(state, payload) {
       const { meetingWindow } = payload;
       const data = {

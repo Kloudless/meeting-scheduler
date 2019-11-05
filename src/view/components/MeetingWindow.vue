@@ -46,7 +46,6 @@ export default {
     };
   },
   beforeMount() {
-
     const { accountToken, meetingWindowId } = this.launchOptions;
     const promises = [];
 
@@ -63,16 +62,12 @@ export default {
       }));
     }
 
-    if (this.isEditMode) {
-      // edit mode can only be launched if account token is valid
-      // and the window exists
-      Promise.all(promises).then(() => {
-        this.canRenderView = true;
-      }).catch(() => {});
-    } else {
-      // for create mode, we don't care if the token is invalid or not
+    // Do not render view if there are errors
+    return Promise.all(promises).then(() => {
       this.canRenderView = true;
-    }
+    }).catch(() => {
+      // pass
+    });
   },
   computed: {
     ...mapState({
@@ -139,23 +134,29 @@ export default {
 
 <template lang="pug">
 div.meeting-window
-  div(v-if="loading.meetingWindow")
+  div(v-if="loading.meetingWindow || !canRenderView")
     Title Retrieving Event Details...
     v-progress-circular(size="70", color="primary", indeterminate)
   div(v-else-if="canRenderView")
     Title Set Up Event
     v-form(ref="form", v-model="isFormValid", lazy-validation)
       Accordion(title="1. Fill In Event Details")
-        TextInput(name="title" label="Event Name *",
+        TextInput(v-if="meetingWindow.visible.title",
+                  name="title", label="Event Name *",
                   :value="meetingWindow.title", required,
                   placeholder="e.g. Sonoma Wine Tour", @update="updateInput")
-        TextInput(name="location" label="Location",
+        TextInput(
+          v-if="meetingWindow.visible.location",
+          name="location", label="Location",
           :value="meetingWindow.location",
           placeholder="e.g. 3124 Sonoma Way, Napa, CA 94558",
           @update="updateInput")
-        TextInput(name="description" label="Description", @update="updateInput",
+        TextInput(
+          v-if="meetingWindow.visible.description",
+          name="description", label="Description", @update="updateInput",
           :value="meetingWindow.description", placeholder=" ")
         DurationField(
+          v-if="meetingWindow.visible.duration",
           required, label="Event Duration *" name="duration",
           :durations="options.durations", :value="meetingWindow.duration",
           @change="updateInput")
@@ -171,14 +172,14 @@ div.meeting-window
           :endHour="meetingWindow.endHour", @change="updateInput")
 
         Accordion(title="Advanced Settings" :expanded="false", small)
-          v-layout(row)
+          v-layout(row, v-if="meetingWindow.visible.timeSlotInterval")
             ToggleButtons(
               required, label="Time Slot Increments *" name="timeSlotInterval",
               tooltip="Show time slots every 15, 30, 45, or 60 minutes.",
               :options="options.timeSlotIntervals",
               :value="meetingWindow.timeSlotInterval",
               @click="updateInput")
-          v-layout(row)
+          v-layout(row, v-if="meetingWindow.visible.availabilityRange")
             .availability-range-field
               NumberField(
                 required, name="availabilityRange" label="Availability Range *",
@@ -186,15 +187,18 @@ div.meeting-window
                 placeholder="30",
                 :value="meetingWindow.availabilityRange", :min=1, :max=90,
                 suffix="days", @change="updateInput")
-          v-layout(row, wrap)
-            .time-buffer-field.mr-5
+          v-layout(
+              row, wrap,
+              v-if="meetingWindow.visible.timeBufferBefore || meetingWindow.visible.timeBufferAfter")
+            .time-buffer-field.mr-5(v-if="meetingWindow.visible.timeBufferBefore")
               NumberField(
                 required, name="timeBufferBefore" label="Buffer Before *",
                 tooltip="Preserve 0-99 minutes buffer before each scheduled event.",
                 placeholder="0",
                 :value="meetingWindow.timeBufferBefore", :min=0, :max=99,
                 suffix="mins", @change="updateInput")
-            .time-buffer-field
+            .hour-to(v-if="meetingWindow.visible.timeBufferBefore")
+            .time-buffer-field(v-if="meetingWindow.visible.timeBufferAfter")
               NumberField(
                 required, name="timeBufferAfter" label="Buffer After *",
                 tooltip="Preserve 0-99 minutes buffer after each scheduled event."
@@ -203,10 +207,14 @@ div.meeting-window
                 suffix="mins", @change="updateInput")
 
       Accordion(:title="calendarSectionTitle")
-        Authenticator(:isEditMode="isEditMode")
-        TextInput(name="organizer" label="Organizer *", required,
-                  :value="meetingWindow.organizer",
-                  placeholder="Johnny Appleseed", @update="updateInput")
+        Authenticator(
+          v-if="meetingWindow.visible.bookingCalendarId",
+          :isEditMode="isEditMode")
+        TextInput(
+          v-if="meetingWindow.visible.organizer",
+          name="organizer", label="Organizer *", required,
+          :value="meetingWindow.organizer",
+          placeholder="Johnny Appleseed", @update="updateInput")
         Dropdown(
           required, label="Time Zone *", name="timeZone", :value="meetingWindow.timeZone",
           :options="options.timeZones", @update="updateInput")

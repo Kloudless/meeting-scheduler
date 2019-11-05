@@ -1,6 +1,6 @@
 /* global SCHEDULE_URL */
 import MeetingScheduler from 'loader';
-import { SETUP_FORM_OPTIONS } from '../jest/constants';
+import { SETUP_FORM_OPTIONS, SCHEDULE_FORM_OPTIONS } from '../jest/constants';
 
 let scheduler;
 
@@ -179,9 +179,49 @@ describe('loader._verifyOptions tests', () => {
   });
 });
 
-describe('loader._verifyFormOptions tests', () => {
+describe('loader._verifySetupFormOptions negative tests', () => {
+  test.each([
+    ['title.default is required if title.visible is false',
+      { title: { visible: false, default: '' } }, 'token'],
+    ['organizer.default is required if organizer.visible is false',
+      { organizer: { visible: false } }, 'token'],
+    [
+      'bookingCalendarId.default is required if bookingCalendarId.visible is' +
+      'false',
+      { bookingCalendarId: { visible: false } }, 'token'],
+    ['bookingCalendarId',
+      { bookingCalendarId: { visible: false, default: 'primary' } }, null],
+  ])('%s', (_, formOptions, accountToken) => {
+    const errors = scheduler._verifySetupFormOptions(formOptions, accountToken);
+    expect(errors).toHaveLength(1);
+  });
+});
+
+describe('loader._verifyScheduleFormOptions negative tests', () => {
+  test.each([
+    ['name.default is required if name.visible is false',
+      { name: { visible: false, default: '' } }],
+    ['email.default is required if email.visible is false',
+      { email: { visible: false } }],
+  ])('%s', (_, formOptions) => {
+    const errors = scheduler._verifyScheduleFormOptions(formOptions);
+    expect(errors).toHaveLength(1);
+  });
+});
+
+describe('loader._verifySetupFormOptions tests', () => {
   test('success', () => {
-    const errors = scheduler._verifyFormOptions(SETUP_FORM_OPTIONS);
+    const fakeAccountToken = 'token';
+    const errors = scheduler._verifySetupFormOptions(
+      SETUP_FORM_OPTIONS, fakeAccountToken,
+    );
+    expect(errors).toEqual([]);
+  });
+});
+
+describe('loader._verifyScheduleFormOptions tests', () => {
+  test('success', () => {
+    const errors = scheduler._verifyScheduleFormOptions(SCHEDULE_FORM_OPTIONS);
     expect(errors).toEqual([]);
   });
 });

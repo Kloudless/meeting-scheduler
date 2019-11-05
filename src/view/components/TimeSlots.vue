@@ -91,6 +91,7 @@ export default {
 
       return slotGroups;
     },
+    visible: state => state.timeSlots.visible,
     isExtraDescriptionVisible: (state) => {
       const { visible } = state.timeSlots;
       const { allowEventMetadata } = state.meetingWindow;
@@ -279,10 +280,14 @@ v-layout(column).time-slots
   template(v-if="step === 1")
     div.timeslots-scroll-panel
       v-form(ref="form", v-model="isTargetFormValid", lazy-validation)
-        TextInput(name="name" label="Name *", :value="timeSlots.name",
+        TextInput(
+          v-if="visible.name",
+          name="name", label="Name *", :value="timeSlots.name",
           required,
           placeholder="Johnny Appleseed", @update="updateInput")
-        TextInput(name="email" label="Email *", :value="timeSlots.email",
+        TextInput(
+          v-if="visible.email",
+          name="email", label="Email *", :value="timeSlots.email",
           required, type="email",
           placeholder="youremail@example.com", @update="updateInput")
         Textarea(v-if="isExtraDescriptionVisible"
