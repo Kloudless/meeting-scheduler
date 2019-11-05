@@ -1,0 +1,27 @@
+.toggle-button.v-btn {
+  flex: 1;
+  height: 100%;
+  & > .v-btn__content {
+    text-transform: none;
+    height: 100%;
+  }
+  &.v-btn--active {
+    background-color: @primary !important;
+    ._text {
+      color: @onPrimaryVariant;
+    }
+    ._caption {
+      color: @onSecondaryVariant;
+    }
+  }
+  &:not(.v-btn--active) {
+    background-color: @background !important;
+    ._text {
+      color: @primary;
+    }
+    ._caption {
+      color: @onSecondary;
+    }
+    opacity: 1;
+  }
+}

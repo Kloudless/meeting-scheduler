@@ -63,7 +63,7 @@ export default {
       const { hourOptions } = this.$props;
       const startHour = hourOptions.find(h => h.value === start);
       const endHour = hourOptions.find(h => h.value === end);
-      return `${startHour.text} - ${endHour.text}`;
+      return `${startHour.text} — ${endHour.text}`;
     },
     weekdayText(weekdays) {
       const { weekdayOptions, weekdayPresets } = this.$props;
@@ -102,41 +102,6 @@ export default {
 
 /* eslint-disable */
 </script>
-
-<style lang="less">
-@import "../_variables.less";
-
-.availability-field {
-  .v-list {
-    background: unset;
-
-    .v-divider {
-      opacity: 0.05;
-      border-color: @accent;
-    }
-
-    .v-list__tile {
-      padding-left: 0px;
-      padding-top: 12px;
-      padding-bottom: 4px;
-      height: auto;
-
-      .v-list__tile__title {
-        opacity: 0.9;
-        font-size: 16px;
-        font-weight: bold;
-        color: @accent;
-      }
-
-      .v-list__tile__sub-title {
-        font-size: 12px;
-        opacity: 0.9;
-        color: @accent;
-      }
-    }
-  }
-}
-</style>
 
 <template lang="pug">
 InputField(

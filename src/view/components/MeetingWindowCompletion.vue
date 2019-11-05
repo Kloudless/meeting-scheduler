@@ -75,21 +75,14 @@ export default {
 /* eslint-disable */
 </script>
 
-<style lang="less">
-.capitalize {
-  text-transform: capitalize;
-}
-
-</style>
-
 <template lang="pug">
 div
   Title.capitalize Event {{ action }}
-  div.headline.mb-3.text-xs-left
+  div.font-size--subtitle.mb-3.text-xs-left.on-primary--text
     | You have successfully {{ action }} the event 
-    span.success--text {{ meetingWindow.title }}
+    span.surface--text {{ meetingWindow.title }}
   template(v-if="!isDeleted")
-    div.mt-5.mb-3.subheading.text-xs-left.accent--text.opacity-4
+    div.mt-5.mb-3.font-size--md.text-xs-left.secondary--text
       | SHARE YOUR EVENT
     TextInput(label=" ", readonly, :value="scheduleUrl").mb-5
   div.mt-5

@@ -52,7 +52,7 @@ export default {
 </script>
 
 <template lang="pug">
-InputField(:label="label")
+InputField(:label="label").textarea
   v-textarea(
     :name="name", :placeholder="placeholder", :value="value",
     :readonly="readonly", :rules="rules", rows="2",

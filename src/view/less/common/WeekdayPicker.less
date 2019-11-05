@@ -1,0 +1,17 @@
+.weekday-picker {
+  .input();
+  .v-chip {
+    background-color: @primary !important;
+    .v-chip__content {
+      color: @onPrimaryVariant;
+      font-size: @FONT_SIZE_SM;
+      font-weight: 700;
+    }
+  }
+}
+
+// When highlighting selected presets, the checkbox should use the same color
+// as the text.
+.v-list__tile--link:hover > .v-list__tile__action.weekdays-preset .theme--light.v-icon {
+  color: @onPrimaryVariant !important;
+}

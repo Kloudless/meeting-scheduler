@@ -59,18 +59,6 @@ export default {
 /* eslint-disable */
 </script>
 
-<style lang="less">
-
-.toggle-buttons {
-  .v-btn-toggle {
-    height: 72px;
-    box-shadow: none;
-    width: 100%;
-  }
-}
-
-</style>
-
 <template lang="pug">
 InputField(:label="label", :tooltip="tooltip").toggle-buttons
   v-btn-toggle(v-model="selected", :mandatory="required").my-1

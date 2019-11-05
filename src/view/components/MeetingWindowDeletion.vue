@@ -45,9 +45,9 @@ export default {
 <template lang="pug">
 div
   Title Delete Event
-  div.mt-5.headline
+  div.mt-5.font-size--subtitle.on-primary--text
     | Are you sure you want to delete 
-    span.success--text {{ meetingWindow.title }}
+    span.surface--text {{ meetingWindow.title }}
     | ?
   div.mt-5
     p

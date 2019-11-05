@@ -1,0 +1,24 @@
+.btn {
+  &.v-btn {
+    border-radius: 5px;
+    height: 100%;
+  }
+  &:not(.error--text):not(.v-btn--disabled) {
+    & .v-btn__content, & .v-btn__loading {
+      color: @onPrimaryVariant;
+    }
+  }
+  &:not(.error--text):not(.v-btn--disabled).v-btn--outline {
+    & .v-btn__content, & .v-btn__loading {
+      color: @primary;
+    }
+  }
+  &.theme--light.v-btn.v-btn--disabled:not(.v-btn--icon):not(.v-btn--flat) {
+    background-color: @disabled !important;
+    color: @onPrimaryVariant !important;
+    opacity: 0.5;
+  }
+  &.theme--light.v-btn.v-btn--disabled.v-btn--outline {
+    border-color: transparent;
+  }
+}

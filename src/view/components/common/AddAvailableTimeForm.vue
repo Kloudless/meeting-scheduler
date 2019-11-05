@@ -97,21 +97,6 @@ export default {
 /* eslint-disable */
 </script>
 
-<style lang="less">
-@import "../_variables.less";
-
-.add-available-time-form {
-  .hour-to {
-    font-size: 16px;
-    margin-bottom: 12px;
-    padding-bottom: 0px;
-    text-align: center;
-    color: @accent;
-  }
-}
-
-</style>
-
 <template lang="pug">
 v-form.add-available-time-form(ref="form", v-model="isFormValid",
                                lazy-validation)
@@ -129,7 +114,7 @@ v-form.add-available-time-form(ref="form", v-model="isFormValid",
             :options="startHourOptions", :value="availableTime.startHour",
             @update="update")
         v-flex(xs3)
-          div.hour-to.opacity-4 TO
+          div.hour-to.on-secondary--text TO
         v-flex(xs4)
           Dropdown(
             required, label="", name="endHour", :hideDetails="true",

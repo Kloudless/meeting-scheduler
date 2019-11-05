@@ -56,7 +56,7 @@ module.exports = {
       },
       {
         test: /\.css$/,
-        use: styleLoaders.concat([]),
+        use: styleLoaders.slice(),
       },
       // Vuetify components import styl files for component styles
       {

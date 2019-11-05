@@ -1,0 +1,118 @@
+@import './variables.less';
+@import './constants.less';
+@import './common/input.less';
+@import './common/Accordion.less';
+@import './common/AddAvailableTimeForm.less';
+@import './common/AvailabilityField.less';
+@import './common/Button.less';
+@import './common/Dropdown.less';
+@import './common/DurationField.less';
+@import './common/InputField.less';
+@import './common/InputLabel.less';
+@import './common/InputWrapper.less';
+@import './common/NumberField.less';
+@import './common/Textarea.less';
+@import './common/TextInput.less';
+@import './common/Title.less';
+@import './common/ToggleButton.less';
+@import './common/ToggleButtons.less';
+@import './common/WeekdayPicker.less';
+@import './App.less';
+@import './Authenticator.less';
+@import './Footer.less';
+@import './TimeSlotBlock.less';
+@import './TimeSlots.less';
+
+@font-face {
+  font-family: @fontFaceName;
+  src: url('@{fontFacePath}') format('@{fontFaceFormat}');
+}
+
+.application {
+  font-family: @fontFamily;
+  color: @onPrimary;
+  .v-icon {
+    color: @onPrimary;
+  }
+ }
+
+// overwrite background in Vuetify styles
+.theme--light {
+  &.application {
+    background-color: @background;
+  }
+}
+
+.primary--text {
+  color: @primary !important;
+}
+.secondary--text {
+  color: @secondary !important;
+}
+
+// this is used by Vuetify
+.accent--text {
+  color: @secondary !important;
+}
+
+.surface--text {
+  color: @surface !important;
+}
+.error--text {
+  color: @error !important;
+}
+.on-primary--text {
+  color: @onPrimary !important;
+}
+
+.on-secondary--text {
+  color: @onSecondary !important;
+}
+
+.on-primary-variant--text {
+  color: @onPrimaryVariant !important;
+}
+
+.on-secondary-variant--text {
+  color: @onSecondaryVariant !important;
+}
+
+.primary {
+  color: @onPrimaryVariant;
+  background-color: @primary !important;
+}
+.secondary {
+  color: @onPrimaryVariant;
+  background-color: @secondary !important;
+}
+.secondary {
+  color: @onPrimaryVariant;
+  background-color: @surface !important;
+}
+.error {
+  color: @onPrimaryVariant;
+  background-color: @error !important;
+}
+
+.font-size--title {
+  font-size: @FONT_SIZE_TITLE;
+  line-height: 40px;
+}
+
+.font-size--subtitle {
+  font-size: @FONT_SIZE_SUBTITLE;
+  line-height: 32px;
+}
+
+.font-size--lg {
+  font-size: @FONT_SIZE_LG;
+  line-height: 1;
+}
+
+.font-size--md {
+  font-size: @FONT_SIZE_MD;
+}
+
+.font-size--sm {
+  font-size: @FONT_SIZE_SM;
+}

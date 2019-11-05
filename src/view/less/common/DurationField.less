@@ -1,0 +1,81 @@
+.duration-field {
+
+  .v-btn-toggle {
+    height: 72px;
+    box-shadow: none;
+    .v-btn {
+      width: 82px;
+    }
+  }
+
+  div.custom-field {
+    padding: 0px;
+    margin: 4px 0px;
+    height: 72px;
+    width: 112px;
+  
+    .v-text-field--outline > .v-input__control > .v-input__slot {
+      height: 70px;
+      border-radius: 2px;
+      border: 1px solid @primary;
+      font-weight: 700;
+      margin: 0px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+  
+      .v-text-field__slot {
+        display: block;
+        text-align: center;
+        > label {
+          color: @primary;
+          position: static !important;
+          line-height: 24px;
+        }
+        > input {
+          color: @onSecondary;
+          line-height: 18px;
+          text-align: center;
+          padding: 0px;
+          position: static !important;
+          margin: 0px;
+
+          &::placeholder {
+            font-style: normal;
+            color: @onSecondary;
+          }
+        }
+      }
+  
+      &:hover {
+        border: 1px solid @primary !important;
+        &::before {
+          background-color: @primary;
+          position: absolute;
+          top: 0;
+          left: 0;
+          height: 100%;
+          width: 100%;
+          content: "";
+          opacity: 0.12;
+          display: block !important;
+        }
+      }
+    }
+
+    &.active > .v-text-field--outline > .v-input__control > .v-input__slot {
+      background-color: @primary !important;
+      .v-text-field__slot {
+        > label {
+          color: @onPrimaryVariant !important;
+        }
+        > input {
+          color: @onSecondaryVariant !important;
+          &::placeholder {
+            color: @onSecondaryVariant;
+          }
+        }
+      }
+    }
+  }  
+}

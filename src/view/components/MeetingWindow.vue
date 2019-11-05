@@ -137,14 +137,6 @@ export default {
 /* eslint-disable */
 </script>
 
-<style lang="less">
-.hour-to {
-  font-size: 16px;
-  padding-bottom: 24px;
-}
-
-</style>
-
 <template lang="pug">
 div
   div(v-if="loading.meetingWindow")

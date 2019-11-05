@@ -9,6 +9,8 @@
  * (App's styles come before base styles).
  * issue: https://github.com/webpack-contrib/mini-css-extract-plugin/issues/188
  */
+import Vue from 'vue';
+import 'material-design-icons-iconfont/dist/material-design-icons.css';
 
 // Vuetify base stylesheet, required
 import 'vuetify/src/stylus/app.styl';
@@ -41,11 +43,6 @@ import Vuetify, {
   VListTileSubTitle,
   VTooltip,
 } from 'vuetify/lib';
-import Vue from 'vue';
-
-// // font styles
-import 'view/css/roboto.css';
-import 'material-design-icons-iconfont/dist/material-design-icons.css';
 
 Vue.config.productionTip = false;
 Vue.use(Vuetify, {

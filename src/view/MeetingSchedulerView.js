@@ -1,7 +1,11 @@
 import './vue-setup';
+
 import Vue from 'vue';
 import router from 'view/router';
+
 import App from 'view/components/App';
+import './less/index.less';
+
 import { initStore } from 'view/store';
 import { ROLES, INTERNAL_EVENTS } from 'constants';
 import EventMessenger from 'event-messenger';

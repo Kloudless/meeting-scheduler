@@ -89,22 +89,6 @@ export default {
 /* eslint-disable */
 </script>
 
-<style lang="less">
-@import "../_variables.less";
-
-.weekday-picker {
-  .v-chip {
-    background-color: @primary !important;
-    .v-chip__content {
-      font-size: 14px;
-      color: @white;
-      font-weight: 700;
-    }
-  }
-}
-
-</style>
-
 <template lang="pug">
 InputField(:label="label").weekday-picker
   v-autocomplete(v-model="selectedWeekdays", placeholder="Select Days",
@@ -113,7 +97,7 @@ InputField(:label="label").weekday-picker
     template(v-slot:prepend-item="")
       template(v-for="preset in presets")
         v-list-tile(ripple, @click='togglePreset(preset)')
-          v-list-tile-action
+          v-list-tile-action.weekdays-preset
             v-icon(:color="selectedPreset === preset.value ? 'primary' : ''")
               | {{ selectedPreset === preset.value ? 'check_box' : 'check_box_outline_blank'}}
           v-list-tile-content

@@ -43,40 +43,26 @@ export default {
 /* eslint-disable */
 </script>
 
-<style lang="less">
-.hour-block {
-  padding: 8px;
-  width: 120px;
-  height: 55px !important;
-  .hour {
-    font-size: 16px;
-    font-weight: bold;
-  }
-  .ampm {
-    font-size: 12px;
-  }
-}
-
-</style>
-
 <template lang="pug">
 Button(:padding="false"
        :btnProps="{depressed: !timeSlot.selected, outline: !timeSlot.selected}",
        @click="selectSlot").hour-block
   v-layout(v-if="timeSlot.selected", row, wrap, align-center, justify-center)
     v-flex(xs4)
-      div.hour {{ formatDate('hour', timeSlot.start) }}
-      div.ampm.white--text.opacity-4
+      div.hour.on-primary-variant--text {{ formatDate('hour', timeSlot.start) }}
+      div.ampm.on-secondary-variant--text
         | {{ formatDate('amPm', timeSlot.start) }}
-    v-flex(xs1)
-      div.hour-to.white--text.opacity-4.pt-1 —
+    v-flex(xs2)
+      div.hour-to.on-secondary-variant--text.pt-1 —
+      //- required for en-dash to align with hours
+      div.ampm.on-secondary-variant--text &nbsp;
     v-flex(xs4)
-      div.hour {{ formatDate('hour', timeSlot.end) }}
-      div.ampm.white--text.opacity-4
+      div.hour.on-primary-variant--text {{ formatDate('hour', timeSlot.end) }}
+      div.ampm.on-secondary-variant--text
         | {{ formatDate('amPm', timeSlot.end) }}
   template(v-else)
-    span.hour.pr-1 {{ formatDate('hour', timeSlot.start) }}
-    span.ampm.primary--text.opacity-4
+    span.hour.pr-1.primary--text {{ formatDate('hour', timeSlot.start) }}
+    span.ampm.on-secondary-variant--text
       | {{ formatDate('amPm', timeSlot.start) }}
 
 </template>

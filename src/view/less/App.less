@@ -1,0 +1,62 @@
+html {
+  // do not show scroll bar in attach mode
+  overflow-y: hidden;
+}
+
+.application {
+  font-size: @FONT_SIZE_SM;
+  width: @CONTENT_WIDTH + @WIDGET_PADDING;
+  margin: auto;
+
+  .capitalize {
+    text-transform: capitalize;
+  }
+  
+  .app-padding {
+    height: @CONTENT_HEIGHT + @FOOTER_HEIGHT + @WIDGET_PADDING;
+    overflow: hidden;
+    padding: @WIDGET_PADDING @WIDGET_PADDING 0 @WIDGET_PADDING;
+    border-radius: 10px;
+  }
+
+  .app-scroll-content {
+    width: 100%;
+    height: @CONTENT_HEIGHT;
+    overflow-y: auto !important;
+    transition: height 1s;
+    
+    &.has-error {
+      height: @CONTENT_HEIGHT - @ERROR_HEIGHT;
+    }
+  }
+  .service-error-message {
+    height: 0;
+    transition: height 1s;
+    width: 100%;
+    &.has-error {
+      height: @ERROR_HEIGHT;
+      padding: 5px;
+      overflow-y: auto;
+    }
+    
+  }
+  .v-content__wrap > .container {
+    padding: 10px;
+  }
+  .application--wrap {
+    // remove unwanted white spaces
+    min-height: 0;
+  }
+
+  .app-dialog-view {
+    .header {
+      height: @MODAL_HEADER_HEIGHT;
+    }
+    .app-scroll-content {
+      height: @CONTENT_HEIGHT - @MODAL_HEADER_HEIGHT;
+      &.has-error {
+        height: @CONTENT_HEIGHT - @MODAL_HEADER_HEIGHT - @ERROR_HEIGHT;
+      }
+    }
+  }
+}

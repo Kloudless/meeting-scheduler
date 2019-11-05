@@ -1,0 +1,19 @@
+.v-input.input-wrapper {
+  .content {
+    width: 100%;
+    text-align: center;
+  }
+
+  &.error--text > .v-input__control > .v-input__slot > .content > .v-btn {
+    color: @error !important;
+    .v-btn__content {
+      color: @error !important;
+    }
+  }
+
+  .v-messages > .v-messages__wrapper .v-messages__message {
+    color: @error;
+    width: 100%;
+    text-align: center;
+  }
+}

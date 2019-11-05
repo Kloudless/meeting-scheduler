@@ -1,0 +1,25 @@
+@scroll-panel-height: 420px;
+
+.timeslots-scroll-panel {
+  height: @scroll-panel-height;
+  overflow-y: auto;
+  .container {
+    padding-top: 12px;
+  }
+}
+.has-error .timeslots-scroll-panel {
+  height: @scroll-panel-height - @ERROR_HEIGHT;
+}
+
+.v-dialog {
+  .timeslots-scroll-panel {
+    height: @scroll-panel-height - @MODAL_HEADER_HEIGHT;
+  }
+  .has-error .timeslots-scroll-panel {
+    height: @scroll-panel-height - @MODAL_HEADER_HEIGHT - @ERROR_HEIGHT;
+  }
+}
+
+.progress-container {
+  height: 90px;
+}
