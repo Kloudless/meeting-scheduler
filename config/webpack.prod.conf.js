@@ -1,8 +1,8 @@
 const path = require('path');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
-const generateConfig = require('./webpack.base.conf.js');
+const baseConfig = require('./webpack.base.conf.js');
+const merge = require('./merge-strategy');
 
 const distPath = path.resolve(__dirname, '../dist/');
 const scripts = {
@@ -19,42 +19,33 @@ const loaderOutputConfig = {
   libraryExport: 'default',
 };
 
-const prodBaseConfig = {
+const prodConfig = merge(baseConfig, {
   mode: 'production',
-  plugins: [
-    new MiniCssExtractPlugin({
-      filename: '[name].css',
-    }),
-  ],
   optimization: {
     minimize: false,
   },
-};
+});
 
-const prodConfig = generateConfig(prodBaseConfig);
-
-const minProdConfig = generateConfig(Object.assign({}, prodBaseConfig, {
+const prodMinifiedConfig = merge(prodConfig, {
   optimization: {
     minimize: true,
   },
-}));
+});
 
 const builds = [
   // loader
-  {
-    ...prodConfig,
+  merge(prodConfig, {
     entry: {
       'meeting-scheduler': scripts.loader,
     },
     output: loaderOutputConfig,
-  },
+  }),
   // loader, minimized
-  {
-    ...minProdConfig,
+  merge(prodMinifiedConfig, {
     entry: {
       'meeting-scheduler.min': scripts.loader,
     },
-    plugins: minProdConfig.plugins.concat([
+    plugins: [
       // output the test page to dist/test/ for `npm run dist-test` command
       new HtmlWebpackPlugin({
         filename: '../test/dist/index.html',
@@ -65,22 +56,20 @@ const builds = [
         // chunks need to be manually inserted in ejs template for dist-test
         chunks: [],
       }),
-    ]),
+    ],
     output: loaderOutputConfig,
-  },
+  }),
   // embed page, minimized
-  {
-    ...minProdConfig,
+  merge(prodMinifiedConfig, {
     module: {
       rules: [
-        ...minProdConfig.module.rules,
         {
           test: path.resolve(__dirname, '../node_modules/@vue/devtools'),
           use: 'null-loader',
         },
       ],
     },
-    plugins: minProdConfig.plugins.concat([
+    plugins: [
       new HtmlWebpackPlugin({
         filename: 'index.html',
         template: path.resolve(__dirname, '../src/embed/index.html'),
@@ -93,7 +82,7 @@ const builds = [
           useShortDoctype: true,
         },
       }),
-    ]),
+    ],
     entry: {
       index: scripts.embed,
     },
@@ -102,10 +91,9 @@ const builds = [
       filename: '[name].js',
       publicPath: './',
     },
-  },
+  }),
   // test_launch.js for dist-test
-  {
-    ...minProdConfig,
+  merge(prodMinifiedConfig, {
     entry: {
       test_launch: path.resolve(__dirname, '../dev-server/test_launch.js'),
     },
@@ -114,7 +102,7 @@ const builds = [
       filename: '[name].js',
       publicPath: './',
     },
-  },
+  }),
 ];
 
 module.exports = builds;

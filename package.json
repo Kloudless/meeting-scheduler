@@ -6,13 +6,13 @@
   "author": "Kloudless <hello@kloudless.com> (https://kloudless.com)",
   "scripts": {
     "vue-devtools": "vue-devtools",
-    "dev": "SCHEDULER_PATH='http://localhost:8081/embed/index.html' node ./dev-server/dev-server.js",
+    "dev": "NODE_ENV=development SCHEDULER_PATH='http://localhost:8081/embed/index.html' node ./dev-server/dev-server.js",
     "start": "npm run dev",
     "unit": "jest --config test/unit/jest/jest.conf.js --coverage",
     "test": "npm run unit",
     "test-clean": "jest --clearCache",
     "lint": "eslint --ext .js,.vue src test/unit/specs",
-    "build": "rm -rf dist && webpack --color --progress --config ./config/webpack.prod.conf.js",
+    "build": "NODE_ENV=production rm -rf dist && webpack --color --progress --config ./config/webpack.prod.conf.js",
     "dist-test": "node ./test/dist-test-server.js"
   },
   "dependencies": {},
@@ -81,7 +81,8 @@
     "webpack-bundle-analyzer": "3.3.2",
     "webpack-cli": "3.1.2",
     "webpack-dev-middleware": "3.7.0",
-    "webpack-hot-middleware": "2.25.0"
+    "webpack-hot-middleware": "2.25.0",
+    "webpack-merge": "4.2.2"
   },
   "engines": {
     "node": ">= 10.0.0",
