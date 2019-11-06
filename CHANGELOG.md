@@ -7,12 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.6.1]
+
+### Changed
+
+- Improved performance for the Schedule view
+
+### Fixed
+
+- Selected slot was removed after scrolling for more slots in the Schedule View
+
+
 ## [1.6.0]
 
 ### Added
 
 - New Note textarea in the Schedule View
-- New property `extraDescription` for launch option `schedule.formOptions`.
+- New property `extraDescription` for launch option `schedule.formOptions`
   This is used to control the new Note textarea
 
 ## [1.5.0]
