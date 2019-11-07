@@ -142,3 +142,36 @@ describe('meetingWindow module action tests', () => {
     expect(store.state.meetingWindow).toMatchObject(expected);
   });
 });
+
+describe('meetingWindow module mutation tests', () => {
+  describe('setMeetingWindow tests', () => {
+    test.each([
+      ['test parsing availability time format', {
+        start: '08:00:00',
+        end: '17:00:00',
+      }],
+      ['test parsing legacy availability time format', {
+        start: '2019-05-10T08:00:00+08:00',
+        end: '2019-05-10T17:00:00+08:00',
+      }],
+    ])('%s', async (_, { start, end }) => {
+      const meetingWindow = {
+        availability: {
+          available_times: [{
+            start,
+            end,
+            recurring: { month: '*', weekday: 'MON', day: '*' },
+          }],
+        },
+      };
+      const { store } = createStore();
+      store.commit({
+        type: 'meetingWindow/setMeetingWindow',
+        meetingWindow,
+      });
+      const [availability] = store.state.meetingWindow.availableTimes;
+      expect(availability.startHour).toBe('08:00:00');
+      expect(availability.endHour).toBe('17:00:00');
+    });
+  });
+});
