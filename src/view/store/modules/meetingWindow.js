@@ -24,11 +24,9 @@ export function getJson(state) {
     // if state.endHour is '24:00:00', the time will be recorded as `00:00:00`
     // and the date will be added 1
     const { startHour, endHour, weekday } = availableTime;
-    const start = moment.tz(startHour, 'HH:mm:ss', state.timeZone);
-    const end = moment.tz(endHour, 'HH:mm:ss', state.timeZone);
     return {
-      start: start.format(),
-      end: end.format(),
+      start: startHour,
+      end: endHour,
       recurring: {
         month: '*',
         day: '*',
@@ -83,8 +81,8 @@ export default {
         availableTimes: meetingWindow.availability.available_times.map(
           ({ recurring, start, end }) => ({
             weekday: recurring.weekday.split(',').map(w => w.trim()),
-            startHour: start.substr(11, 8),
-            endHour: end.substr(11, 8),
+            startHour: start.substr(11, 8) || start,
+            endHour: end.substr(11, 8) || end,
           }),
         ),
         allowEventMetadata: meetingWindow.allow_event_metadata,
