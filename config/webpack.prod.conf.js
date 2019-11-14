@@ -1,5 +1,6 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 const baseConfig = require('./webpack.base.conf.js');
 const merge = require('./merge-strategy');
@@ -82,6 +83,22 @@ const builds = [
           useShortDoctype: true,
         },
       }),
+      new CopyWebpackPlugin([
+        {
+          from: path.resolve(
+            __dirname, '../node_modules/less/dist/less.min.js',
+          ),
+          to: path.resolve(distPath, './scheduler/less.js'),
+        },
+      ]),
+      new CopyWebpackPlugin([
+        {
+          from: path.resolve(
+            __dirname, '../node_modules/less/dist/less.min.js.map',
+          ),
+          to: path.resolve(distPath, './scheduler/'),
+        },
+      ]),
     ],
     entry: {
       index: scripts.embed,

@@ -56,6 +56,7 @@ using our [zero-configuration embed script](#embed-the-widget), or
   - [Edit Meeting Window](#edit-meeting-window)
   - [Display Your Own Result Screen](#display-your-own-result-screen)
   - [Auto-fill Form Fields](#auto-fill-form-fields)
+  - [Customize Widget Styles](#customize-widget-styles)
   - [And More...](#and-more)
 - [Methods](#methods)
   - [config(options)](#configoptions)
@@ -519,6 +520,50 @@ values:
 
 Refer to [options](#options) for details.
 
+### Customize Widget Styles
+
+You can customize how the Meeting Scheduler looks by utilizing `customStyleVars`
+option, for example:
+
+<p align="center">
+  <img src="img/custom_style_example.png" height="500" />
+</p>
+
+In the above example, the Meeting Scheduler is customized with a dark theme
+and the primary text font is changed to
+[Calistoga](https://fonts.google.com/specimen/Calistoga):
+
+```js
+{
+  scheduler.launch({
+    appId:
+    customStyleVars: {
+      primary: "#FFEE58",
+      background: "#37474F",
+      secondary: "#FFCA28",
+      surface: "#26C6DA",
+      error: "#EF5350",
+      onPrimary: "white",
+      onSecondary: "#BDBDBD",
+      onPrimaryVariant: "black",
+      onSecondaryVariant: "#78909C",
+      disabled: "#dcdcdc",
+      fontFaceName: "'Calistoga'",
+      fontFacePath: "'https://fonts.gstatic.com/s/calistoga/v1/6NUU8F2OJg6MeR7l4e0fs8wB49dJfg.woff2'",
+      fontFaceFormat: "'woff2'",
+      fontFamily: "'Calistoga', 'sans-serif'"
+    },
+    setup: {}
+  });
+}
+```
+
+Please refer to the [source code](src/view/less/variables.less) to see available
+variables and their purposes. Note that you do not need to write `@` when
+specifying variable names, and you need to add extra quotes for string
+properties such as font family and font face url.
+
+
 ### And More...
 For more examples, please check the [launch(options)](#launch(options)) for a full
 list of available options and their usage.
@@ -545,7 +590,10 @@ An object containing the following keys:
   [document.querySelector](https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelector).
   This option is ignored if `mode` is `modal`.
   - Example: [Launch with attach mode](#launch-with-attach-mode)
-
+- `customStyleVars`: _Optional (default: undefined)_: object  
+  An object to specify custom style variables. The object format is
+  `{[variableName]: value}`. See the example for details.
+  - Example: [Customize widget styles](#customize-widget-styles)
 - `setup`: _Required for the Setup View_: Object  
   Options to launch Setup View, available options:
   - `accountToken`: _Optional (default: null)_: String  

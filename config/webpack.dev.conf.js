@@ -1,5 +1,6 @@
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 const path = require('path');
 
 const baseConfig = require('./webpack.base.conf.js');
@@ -14,8 +15,8 @@ const devWebpackConfig = merge(baseConfig, {
       'webpack-hot-middleware/client?reload=true&quiet=true',
       path.resolve(devServerContentPath, 'index.js'),
     ],
-    // build this embed page from src but hosted it on dev-server/embed
-    'embed/index': [
+    // build this embed page from src but hosted it on dev-server/scheduler
+    'scheduler/index': [
       'webpack-hot-middleware/client?reload=true&quiet=true',
       path.resolve(__dirname, '../src/embed/index.js'),
     ],
@@ -30,9 +31,9 @@ const devWebpackConfig = merge(baseConfig, {
   plugins: [
     new webpack.HotModuleReplacementPlugin(),
     new HtmlWebpackPlugin({
-      filename: 'embed/index.html',
+      filename: 'scheduler/index.html',
       template: path.resolve(__dirname, '../src/embed/index.html'),
-      chunks: ['embed/index'],
+      chunks: ['scheduler/index'],
     }),
     new HtmlWebpackPlugin({
       filename: 'index.html',
@@ -42,6 +43,18 @@ const devWebpackConfig = merge(baseConfig, {
       },
       chunks: ['index'],
     }),
+    new CopyWebpackPlugin([
+      {
+        from: path.resolve(devServerContentPath, '_index.less'),
+        to: path.resolve(devServerContentPath, 'scheduler/index.less'),
+      },
+    ]),
+    new CopyWebpackPlugin([
+      {
+        from: path.resolve(__dirname, '../node_modules/less/dist/less.js'),
+        to: path.resolve(devServerContentPath, 'scheduler/less.js'),
+      },
+    ]),
   ],
 });
 

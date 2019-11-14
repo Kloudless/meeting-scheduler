@@ -9,6 +9,7 @@ import './less/index.less';
 import { initStore } from 'view/store';
 import { ROLES, INTERNAL_EVENTS } from 'constants';
 import EventMessenger from 'event-messenger';
+import buildCustomStyle from './custom-style';
 
 class MeetingSchedulerView {
   constructor(options) {
@@ -58,11 +59,17 @@ class MeetingSchedulerView {
   onMessage(message) {
     switch (message.event) {
       case INTERNAL_EVENTS.VIEW_LAUNCH: {
-        this.launch(Object.assign(
-          {},
-          message.options,
-          { element: document.getElementById('kloudless-meeting-scheduler') },
-        ));
+        const { options } = message;
+        (async () => {
+          if (options.customStyleVars) {
+            await buildCustomStyle(options.customStyleVars);
+          }
+          this.launch(Object.assign(
+            {},
+            options,
+            { element: document.getElementById('kloudless-meeting-scheduler') },
+          ));
+        })();
         break;
       }
       default:

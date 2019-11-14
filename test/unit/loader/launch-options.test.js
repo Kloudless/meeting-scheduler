@@ -150,6 +150,18 @@ describe('loader._verifyOptions tests', () => {
       },
       valid: true,
     }],
+    ['customStyleVars is not object', {
+      options: { appId: 'appId', customStyleVars: 1, setup: {} },
+      valid: false,
+    }],
+    ['customStyleVars is null', {
+      options: { appId: 'appId', customStyleVars: null, setup: {} },
+      valid: false,
+    }],
+    ['customStyleVars is object', {
+      options: { appId: 'appId', customStyleVars: {}, setup: {} },
+      valid: true,
+    }],
   ])('%s', (_, params) => {
     // attach a valid element by default to prevent from copy pasting
     // document.createElement multiple times
