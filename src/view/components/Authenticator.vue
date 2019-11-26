@@ -126,7 +126,8 @@ div.mb-4.authenticator
         v-list-tile-title(v-else) {{ account.account }}
       v-list-tile-action
         v-btn(icon="", ripple="")
-          v-icon(color="error", @click="removeAccount") cancel
+          v-icon(v-if="!isEditMode", color="error", @click="removeAccount")
+            | cancel
     v-layout(v-if="!isEditMode", row, wrap, align-center).mt-4
       v-flex(xs12)
         Dropdown(required, label="Calendar *", name="calendarId",
