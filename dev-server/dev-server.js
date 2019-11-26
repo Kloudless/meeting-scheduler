@@ -5,8 +5,6 @@ const webpackDevMiddleware = require('webpack-dev-middleware');
 const webpackHotMiddleware = require('webpack-hot-middleware');
 
 const webpackDevConfig = require('../config/webpack.dev.conf');
-const vuize = require('../config/vuize');
-
 
 const app = express();
 const compiler = webpack(webpackDevConfig);
@@ -33,6 +31,4 @@ console.log('Starting Dev server...');
     console.log('Dev server running on http://localhost:8080');
     console.log('Webpack bundles are compiling...');
   });
-
-  vuize.watch();
 }());

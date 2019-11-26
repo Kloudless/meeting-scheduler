@@ -79,7 +79,7 @@ Vue.use(Vuetify, {
   /**
    * Disable Vuetify's theme options because we need to customize
    * colors for components that don't support or have limited support of
-   * color APIs. Hence, define and manage all colors in scss instead.
+   * color APIs. Hence, define and manage all colors in less instead.
    *
    * Specify theme: false is required, otherwise it would insert default theme
    * styles and interfere with our styles

@@ -2,8 +2,8 @@
 
 module.exports = {
   root: true,
-  parser: 'babel-eslint',
   parserOptions: {
+    parser: 'babel-eslint',
     sourceType: 'module',
   },
   env: {
@@ -11,7 +11,7 @@ module.exports = {
     jest: true,
   },
   extends: [
-    // https://github.com/airbnb/javascript
+    'plugin:vue/essential',
     'airbnb-base',
   ],
   // add your custom rules here
