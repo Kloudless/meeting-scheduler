@@ -1,13 +1,13 @@
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-
 const webpack = require('webpack');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
 
-const generateConfig = require('./webpack.base.conf.js');
+const baseConfig = require('./webpack.base.conf.js');
+const merge = require('./merge-strategy');
 
 const devServerContentPath = path.resolve(__dirname, '../dev-server/');
 
-const devWebpackConfig = generateConfig({
+const devWebpackConfig = merge(baseConfig, {
   mode: 'development',
   entry: {
     index: [

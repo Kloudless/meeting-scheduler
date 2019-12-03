@@ -54,21 +54,22 @@ export default {
 <template lang="pug">
 div
   Title Meeting scheduled!
-  div.mt-5.subheading A calendar invite will be sent to your email shortly.
+  div.mt-5.font-size--md.on-primary--text
+    | A calendar invite will be sent to your email shortly.
   div.text-xs-left
     InputLabel.mt-5 EVENT INFO
     div.mb-4
-      div.title.accent--text.opacity-9.font-weight-bold
+      div.font-size--lg.secondary--text.font-weight-bold
         | {{ meetingWindow.title }}
-      div.subheading.accent--text.opacity-9
+      div.font-size--md.secondary--text
         | {{ meetingWindow.location }}
     div.mb-4
-      div.title.accent--text.opacity-9.font-weight-bold
+      div.font-size--lg.secondary--text.font-weight-bold
         | {{ formatDate('fullHour', timeSlots.selectedSlot.start) }}
         | -
         | {{ formatDate('fullHour', timeSlots.selectedSlot.end) }}
         | ({{timeZone}} time)
-      div.subheading.accent--text.opacity-9
+      div.font-size--md.secondary--text
         | {{ formatDate('date', timeSlots.selectedSlot.start) }}
     Textarea(
       v-if="meetingWindow.allowEventMetadata && timeSlots.extraDescription",

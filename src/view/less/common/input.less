@@ -1,0 +1,45 @@
+.input() {
+  .v-input.v-text-field {
+    padding-top: 0;
+    .v-input__slot{
+      &:hover::before {
+        border-color: @secondary !important;
+        opacity: 1;
+      }
+      &::before {
+        opacity: 0.05;
+      }
+      input, textarea {
+        color: @onPrimary;
+        &::placeholder {
+          color: @onSecondary !important;
+          font-style: italic;
+        }
+      }
+    }
+  }
+}
+
+// v-autocomplete item styles
+.theme--light {
+  &.v-card, &.v-list {
+    background-color: @background;
+  }
+}
+
+.application {
+  .v-list__tile--link {
+    color: @onPrimary;
+    &:hover {
+      color: @onPrimaryVariant;
+      background-color: @primary !important;
+    }
+    // Override primary--text when hovering on selected items,
+    // because background color is already the primary color
+    &.v-list__tile--active:hover {
+      &.primary--text, .primary--text {
+        color: @onPrimaryVariant !important;
+      }
+    }
+  }
+}

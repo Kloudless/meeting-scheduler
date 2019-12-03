@@ -88,7 +88,7 @@ export default {
 
 <template lang="pug">
 
-InputField(:label="label")
+InputField(:label="label").dropdown
   v-autocomplete(
     v-model="selected", :items="options", :rules="rules",
     item-text="text", :label="placeholder", :loading="loading"

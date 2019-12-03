@@ -75,14 +75,6 @@ export default {
 /* eslint-disable */
 </script>
 
-<style lang="less">
-.number-field {
-  input {
-    text-align: center;
-  }
-}
-</style>
-
 <template lang="pug">
 InputField(:label="label", :tooltip="tooltip").number-field
   v-text-field(

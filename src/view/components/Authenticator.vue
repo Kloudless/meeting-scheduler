@@ -104,26 +104,17 @@ export default {
 /* eslint-disable */
 </script>
 
-<style lang="less">
-.authenticator {
-  .v-list__tile {
-    padding-left: 0px;
-  }
-}
-
-</style>
-
 <template lang="pug">
 div.mb-4.authenticator
   div(v-if="account.token")
     v-list-tile(avatar="")
       v-list-tile-avatar
-        v-icon(color="accent", large) account_circle
+        v-icon(color="accent").font-size--title account_circle
       v-list-tile-content
         v-list-tile-title(v-if="loading.account")
           div.text-xs-center
             v-progress-circular(indeterminate, size="20", color="primary")
-        v-list-tile-title(v-else) {{ account.account }}
+        v-list-tile-title.on-primary--text(v-else) {{ account.account }}
       v-list-tile-action
         v-btn(icon="", ripple="")
           v-icon(v-if="!isEditMode", color="error", @click="removeAccount")

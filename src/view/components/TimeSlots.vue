@@ -243,37 +243,6 @@ export default {
 /* eslint-disable */
 </script>
 
-<style lang="less">
-@import "./_variables.less";
-
-@scroll-panel-height: 420px;
-
-.timeslots-scroll-panel {
-  height: @scroll-panel-height;
-  overflow-y: auto;
-  .container {
-    padding-top: 12px;
-  }
-}
-.has-error .timeslots-scroll-panel {
-  height: @scroll-panel-height - @error-height;
-}
-
-.v-dialog {
-  .timeslots-scroll-panel {
-    height: @scroll-panel-height - @modal-header-height;
-  }
-  .has-error .timeslots-scroll-panel {
-    height: @scroll-panel-height - @modal-header-height - @error-height;
-  }
-}
-
-.progress-container {
-  height: 90px;
-}
-
-</style>
-
 <template lang="pug">
 div
   div(v-if="loading.meetingWindow")
@@ -285,7 +254,7 @@ div
     div.timeslots-scroll-panel
       template(v-if="meetingWindow.id")
         div(v-for="(slots, date) in slotGroups", :key="date")
-          div.text-xs-left.headline.accent--text.opacity-9.font-weight-medium
+          div.text-xs-left.font-size--subtitle.secondary--text.font-weight-medium
             | {{ formatDate('date', date) }}
           v-container(grid-list-xs)
             v-layout(row wrap)
@@ -296,16 +265,14 @@ div
           div(slot="spinner")
             div.progress-container
               v-progress-circular(size="70", color="primary", indeterminate)
-          div(slot="no-more")
-            .headline.accent--text
+          div(slot="no-more").font-size--subtitle.secondary--text
             | No more time slots.
-          div(slot='no-results')
-            .headline.accent--text
+          div(slot='no-results').font-size--subtitle.secondary--text
             | Sorry. There are no available times for this event.
     v-container(grid-list-xs).px-0
       v-layout(row wrap)
         v-flex(xs8)
-          div.text-xs-left.subheading.success--text
+          div.text-xs-left.subheading.surface--text
             | All times are in {{timeZone}} time
         v-flex(xs4)
           div.text-xs-right
@@ -336,21 +303,21 @@ div
 
   template(v-if="step === 2")
     div.timeslots-scroll-panel.text-xs-left
-      div.headline.accent--text.font-weight-bold {{ meetingWindow.title }}
-      div.mb-5.subheading {{ meetingWindow.location }}
+      div.font-size--subtitle.secondary--text.font-weight-bold {{ meetingWindow.title }}
+      div.mb-5.on-primary--text.font-size--md {{ meetingWindow.location }}
       InputLabel.mb-1 SCHEDULED TIME
       div.mb-4
-        div.title.accent--text.opacity-9.font-weight-bold
+        div.font-size--lg.secondary--text.font-weight-bold
           | {{ formatDate('fullHour', timeSlots.selectedSlot.start) }}
           | -
           | {{ formatDate('fullHour', timeSlots.selectedSlot.end) }}
           | ({{timeZone}} time)
-        div.subheading.accent--text.opacity-9
+        div.font-size--md.secondary--text
           | {{ formatDate('date', timeSlots.selectedSlot.start) }}
       InputLabel.mb-1 CONTACT INFO
       div.mb-4
-        div.title.accent--text.opacity-9.font-weight-bold {{ timeSlots.name }}
-        div.subheading.accent--text.opacity-9 {{ timeSlots.email }}
+        div.font-size--lg.secondary--text.font-weight-bold {{ timeSlots.name }}
+        div.font-size--md.secondary--text {{ timeSlots.email }}
       Textarea(v-if="isExtraDescriptionVisible && timeSlots.extraDescription"
                name="extraDescription" label="Note",
                :value="timeSlots.extraDescription", :readonly="true")
