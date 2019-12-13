@@ -47,16 +47,15 @@ export default {
 Button(:padding="false"
        :btnProps="{depressed: !timeSlot.selected, outline: !timeSlot.selected}",
        @click="selectSlot").hour-block
-  v-layout(v-if="timeSlot.selected", row, wrap, align-center, justify-center)
-    v-flex(xs4)
+  v-layout(v-if="timeSlot.selected", row, wrap, align-center, justify-space-around)
+    v-flex
       div.hour.on-primary-variant--text {{ formatDate('hour', timeSlot.start) }}
       div.ampm.on-secondary-variant--text
         | {{ formatDate('amPm', timeSlot.start) }}
-    v-flex(xs2)
+    v-flex
       div.hour-to.on-secondary-variant--text.pt-1 —
       //- required for en-dash to align with hours
-      div.ampm.on-secondary-variant--text &nbsp;
-    v-flex(xs4)
+    v-flex
       div.hour.on-primary-variant--text {{ formatDate('hour', timeSlot.end) }}
       div.ampm.on-secondary-variant--text
         | {{ formatDate('amPm', timeSlot.end) }}

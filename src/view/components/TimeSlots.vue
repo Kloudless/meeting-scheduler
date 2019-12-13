@@ -271,7 +271,7 @@ v-layout(column).time-slots
             | Sorry. There are no available times for this event.
     div.pt-3.pb-4
       v-layout(row, justify-space-between)
-        div.text-xs-left.subheading.success--text
+        div.text-xs-left.subheading.surface--text
           | All times are in {{timeZone}} time
         Button(@click="moveStep(1)", :disabled="!timeSlots.selectedSlot").ma-0
           | Next

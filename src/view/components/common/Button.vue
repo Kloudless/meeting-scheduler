@@ -34,7 +34,7 @@ export default {
 </script>
 
 <template lang="pug">
-v-btn.font-weight-bold.btn.font-size--md(
+v-btn.font-weight-bold.btn.font-size--md.pa-0(
   v-bind="btnProps", :loading="loading", :color="color", depressed,
   @click="$emit('click', $event)", :disabled="disabled")
   v-layout(row, align-center, justify-center, :class="{'pa-3': padding}")
