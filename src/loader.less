@@ -1,6 +1,11 @@
 @import './view/less/constants.less';
 
+.no-scroll {
+  overflow: hidden;
+}
+
 div.kloudless-meeting-scheduler {
+
   div.kloudless-meeting-scheduler-container {
     width: @CONTENT_WIDTH + @WIDGET_PADDING;
     margin: 0 auto;
@@ -17,6 +22,10 @@ div.kloudless-meeting-scheduler {
       width: 100%;
       height: 100%;
     }
+
+    @media screen and (max-width: @CONTENT_WIDTH + @WIDGET_PADDING) {
+      width: 100%;
+    }
   }
 
   div.kloudless-meeting-scheduler-modal {
@@ -30,17 +39,19 @@ div.kloudless-meeting-scheduler {
       opacity: .46;
       z-index: 999;
     }
+    overflow: hidden;
     position: fixed;
     z-index: 9999;
-    width: 100%;
-    height: 100%;
+    width: 100vw;
+    height: 100vh;
     left: 0;
     top: 0;
     background: transparent;
     & > div.kloudless-meeting-scheduler-container {
       position: relative;
       margin: 0 auto;
-      top: 24px;
+      height: 95%;
+      top: 2.5%;
       z-index: 1000;
     }
   }

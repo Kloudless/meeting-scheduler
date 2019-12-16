@@ -1,25 +1,20 @@
 @scroll-panel-height: 420px;
 
-.timeslots-scroll-panel {
-  height: @scroll-panel-height;
-  overflow-y: auto;
-  .container {
-    padding-top: 12px;
-  }
-}
-.has-error .timeslots-scroll-panel {
-  height: @scroll-panel-height - @ERROR_HEIGHT;
+.time-slots {
+  height: 100%;
+  overflow: hidden;
+  padding-right: 10px;
 }
 
-.v-dialog {
-  .timeslots-scroll-panel {
-    height: @scroll-panel-height - @MODAL_HEADER_HEIGHT;
-  }
-  .has-error .timeslots-scroll-panel {
-    height: @scroll-panel-height - @MODAL_HEADER_HEIGHT - @ERROR_HEIGHT;
-  }
+.timeslots-scroll-panel {
+  flex: 1 1 auto;
+  overflow-y: auto;
 }
 
 .progress-container {
   height: 90px;
+}
+
+.time-slot-block {
+  flex: 0 0 118px;
 }

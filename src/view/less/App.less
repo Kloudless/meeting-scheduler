@@ -3,9 +3,13 @@ html {
   overflow-y: hidden;
 }
 
+.kloudless-meeting-scheduler {
+  height: 100%;
+}
+
 .application {
-  font-size: @FONT_SIZE_SM;
-  width: @CONTENT_WIDTH + @WIDGET_PADDING;
+  height: 100%;
+  width: 100%;
   margin: auto;
 
   .capitalize {
@@ -13,50 +17,37 @@ html {
   }
   
   .app-padding {
-    height: @CONTENT_HEIGHT + @FOOTER_HEIGHT + @WIDGET_PADDING;
-    overflow: hidden;
+    height: 100%;
     padding: @WIDGET_PADDING @WIDGET_PADDING 0 @WIDGET_PADDING;
     border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
   }
 
-  .app-scroll-content {
-    width: 100%;
-    height: @CONTENT_HEIGHT;
-    overflow-y: auto !important;
-    transition: height 1s;
-    
-    &.has-error {
-      height: @CONTENT_HEIGHT - @ERROR_HEIGHT;
-    }
+  .app-padding__header {
+    flex: 0 0 @MODAL_HEADER_HEIGHT;
+    height: @MODAL_HEADER_HEIGHT;
   }
-  .service-error-message {
-    height: 0;
-    transition: height 1s;
-    width: 100%;
-    &.has-error {
-      height: @ERROR_HEIGHT;
-      padding: 5px;
-      overflow-y: auto;
-    }
-    
-  }
-  .v-content__wrap > .container {
-    padding: 10px;
-  }
-  .application--wrap {
-    // remove unwanted white spaces
+
+  .app-padding__content {
+    flex: 1 1 auto;
     min-height: 0;
+    width: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding: 10px 0 10px 10px;
   }
 
-  .app-dialog-view {
-    .header {
-      height: @MODAL_HEADER_HEIGHT;
-    }
-    .app-scroll-content {
-      height: @CONTENT_HEIGHT - @MODAL_HEADER_HEIGHT;
-      &.has-error {
-        height: @CONTENT_HEIGHT - @MODAL_HEADER_HEIGHT - @ERROR_HEIGHT;
-      }
-    }
+  .app-padding__content--fix {
+    overflow-y: hidden;
+    height: 100%;
   }
+
+  .app-padding__error {
+    width: 100%;
+    flex: 0 0 @ERROR_HEIGHT;
+    padding: 5px;
+    overflow-y: auto;
+  }  
 }

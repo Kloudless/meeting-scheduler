@@ -108,6 +108,7 @@ export default {
           loadRecaptchaScript().then(() => {
             const lang = 'en';
             this.recaptchaId = grecaptcha.render('recaptcha', {
+              badge: 'bottomleft',
               sitekey: this.meetingWindow.recaptchaSiteKey,
               size: 'invisible',
               callback: this.onRecaptchaVerify,
@@ -244,7 +245,7 @@ export default {
 </script>
 
 <template lang="pug">
-div
+v-layout(column).time-slots
   div(v-if="loading.meetingWindow")
     Title Retrieving Event Details...
   div(v-else)
@@ -256,11 +257,10 @@ div
         div(v-for="(slots, date) in slotGroups", :key="date")
           div.text-xs-left.font-size--subtitle.secondary--text.font-weight-medium
             | {{ formatDate('date', date) }}
-          v-container(grid-list-xs)
-            v-layout(row wrap)
-              v-flex(xs4, v-for="(slot, index) in slots", :key="index")
-                TimeSlotBlock(:timeSlot="slot", :timeZone="timeZone",
-                              :formatDate="formatDate")
+          v-layout(row, wrap, pa-3)
+            .time-slot-block(v-for="(slot, index) in slots", :key="index")
+              TimeSlotBlock(:timeSlot="slot", :timeZone="timeZone",
+                            :formatDate="formatDate")
         InfiniteLoading(@infinite="infiniteHandler")
           div(slot="spinner")
             div.progress-container
@@ -269,15 +269,12 @@ div
             | No more time slots.
           div(slot='no-results').font-size--subtitle.secondary--text
             | Sorry. There are no available times for this event.
-    v-container(grid-list-xs).px-0
-      v-layout(row wrap)
-        v-flex(xs8)
-          div.text-xs-left.subheading.surface--text
-            | All times are in {{timeZone}} time
-        v-flex(xs4)
-          div.text-xs-right
-            Button(@click="moveStep(1)",
-                  :disabled="!timeSlots.selectedSlot").mx-0 Next
+    div.pt-3.pb-4
+      v-layout(row, justify-space-between)
+        div.text-xs-left.subheading.surface--text
+          | All times are in {{timeZone}} time
+        Button(@click="moveStep(1)", :disabled="!timeSlots.selectedSlot").ma-0
+          | Next
 
   template(v-if="step === 1")
     div.timeslots-scroll-panel
@@ -292,14 +289,12 @@ div
           name="extraDescription" label="Note",
           :value="timeSlots.extraDescription",
           placeholder="Additional Information", @update="updateInput")
-    v-container(grid-list-xs).px-0
-      v-layout(row wrap, align-center)
-        v-flex(xs6).text-xs-left
-          Button(@click="moveStep(-1)").mx-0 Back
-        v-flex(xs6)
-          div.text-xs-right
-            Button(@click="validateForm",
-                  :disabled="!isTargetFormValid").mx-0 Next
+    div.pt-3.pb-4
+      v-layout(row, wrap, justify-space-between)
+        Button(@click="moveStep(-1)").ma-0
+          | Back
+        Button(@click="validateForm", :disabled="!isTargetFormValid").ma-0
+          | Next
 
   template(v-if="step === 2")
     div.timeslots-scroll-panel.text-xs-left
@@ -321,13 +316,10 @@ div
       Textarea(v-if="isExtraDescriptionVisible && timeSlots.extraDescription"
                name="extraDescription" label="Note",
                :value="timeSlots.extraDescription", :readonly="true")
-    v-container(grid-list-xs).px-0
-      v-layout(row wrap, align-center)
-        v-flex(xs6).text-xs-left
-          Button(@click="moveStep(-1)").mx-0 Back
-        v-flex(xs6).text-xs-right
-          Button(@click="executeRecaptcha" :loading="loading.submit").mx-0
-            | Schedule Meeting
+    div.pt-3.pb-4
+      v-layout(row, wrap, justify-space-between)
+        Button(@click="moveStep(-1)").ma-0 Back
+        Button(@click="executeRecaptcha" :loading="loading.submit").ma-0
+          | Schedule Meeting
   div#recaptcha
-
 </template>

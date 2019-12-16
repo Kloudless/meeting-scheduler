@@ -73,18 +73,18 @@ export default {
 
 
 <template lang="pug">
-//- toggle-buttons is defined in ToggleButtons.vue
+//- toggle-buttons is defined in ToggleButtons.less
 InputField(:label="label").duration-field
   v-input(:value="finalValue", :rules="rules")
-    v-layout.justify-space-between
-      v-btn-toggle(v-model="selectedValue", :mandatory="!custom").my-1
-        template(v-for="duration in durations")
-          ToggleButton(
-            :value="duration.value", :text="duration.text", 
-            :caption="duration.caption", @click="switchCustom(false)")
-      div(:class="{active: custom}").custom-field
-        v-text-field(label="Custom", placeholder="Enter Time", outline,
+    v-layout(wrap, justify-space-between)
+        .my-1.default-field
+          v-btn-toggle(v-model="selectedValue", :mandatory="!custom")
+            template(v-for="duration in durations")
+              ToggleButton(
+                :value="duration.value", :text="duration.text",
+                :caption="duration.caption", @click="switchCustom(false)")
+        div(:class="{active: custom}").custom-field
+          v-text-field(label="Custom", placeholder="Enter Time", outline,
                      v-model="customValue", mask="###",
                      @click="switchCustom(true)", @focus="switchCustom(true)")
-
 </template>

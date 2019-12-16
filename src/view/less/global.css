@@ -1,0 +1,20 @@
+/* styles apply to src/embed/index.html */
+
+html {
+  height: 100%;
+}
+
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+#kloudless-meeting-scheduler {
+  height: 100%;
+}
+
+#loading .v-progress-circular {
+  height: 70px;
+  width: 70px;
+}

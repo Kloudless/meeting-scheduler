@@ -1,8 +1,24 @@
 .toggle-buttons {
+  width: 100%;
+
   .v-btn-toggle {
-    height: 72px;
+    display: flex;
+    flex-wrap: wrap;
     box-shadow: none;
     width: 100%;
+  }
+
+  .toggle-button {
+    flex: 0 0 90px;
+    border: 0;
+    height: 72px;
+    // use shadow mimic collapsed border
+    box-shadow: 
+      1px 0 0 0 @primary, 
+      0 1px 0 0 @primary, 
+      1px 1px 0 0 @primary,
+      1px 0 0 0 @primary inset, 
+      0 1px 0 0 @primary inset;
   }
 }
 

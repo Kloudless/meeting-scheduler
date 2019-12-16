@@ -138,7 +138,7 @@ export default {
 </script>
 
 <template lang="pug">
-div
+div.meeting-window
   div(v-if="loading.meetingWindow")
     Title Retrieving Event Details...
     v-progress-circular(size="70", color="primary", indeterminate)
@@ -171,16 +171,15 @@ div
           :endHour="meetingWindow.endHour", @change="updateInput")
 
         Accordion(title="Advanced Settings" :expanded="false", small)
-          v-layout(row, wrap)
-            v-flex(xs-12)
-              ToggleButtons(
-                required, label="Time Slot Increments *" name="timeSlotInterval",
-                tooltip="Show time slots every 15, 30, 45, or 60 minutes.",
-                :options="options.timeSlotIntervals",
-                :value="meetingWindow.timeSlotInterval",
-                @click="updateInput")
           v-layout(row)
-            v-flex(xs5)
+            ToggleButtons(
+              required, label="Time Slot Increments *" name="timeSlotInterval",
+              tooltip="Show time slots every 15, 30, 45, or 60 minutes.",
+              :options="options.timeSlotIntervals",
+              :value="meetingWindow.timeSlotInterval",
+              @click="updateInput")
+          v-layout(row)
+            .availability-range-field
               NumberField(
                 required, name="availabilityRange" label="Availability Range *",
                 tooltip="Time slots are shown up to the next 1–90 days.",
@@ -188,15 +187,14 @@ div
                 :value="meetingWindow.availabilityRange", :min=1, :max=90,
                 suffix="days", @change="updateInput")
           v-layout(row, wrap)
-            v-flex(xs5)
+            .time-buffer-field.mr-5
               NumberField(
                 required, name="timeBufferBefore" label="Buffer Before *",
                 tooltip="Preserve 0-99 minutes buffer before each scheduled event.",
                 placeholder="0",
                 :value="meetingWindow.timeBufferBefore", :min=0, :max=99,
                 suffix="mins", @change="updateInput")
-            v-flex(xs1)
-            v-flex(xs5)
+            .time-buffer-field
               NumberField(
                 required, name="timeBufferAfter" label="Buffer After *",
                 tooltip="Preserve 0-99 minutes buffer after each scheduled event."
@@ -219,6 +217,4 @@ div
         Button.action-delete(
             v-if="isEditMode" @click="deleteWindow", color="error")
           | Delete Event
-
-
 </template>
