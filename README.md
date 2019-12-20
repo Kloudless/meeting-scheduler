@@ -56,7 +56,7 @@ using our [zero-configuration embed script](#embed-the-widget), or
   - [Edit Meeting Window](#edit-meeting-window)
   - [Display Your Own Result Screen](#display-your-own-result-screen)
   - [Auto-fill Form Fields](#auto-fill-form-fields)
-  - [Customize Widget Styles](#customize-widget-styles)
+  - [Customize UI Styling](#customize-ui-styling)
   - [And More...](#and-more)
 - [Methods](#methods)
   - [config(options)](#configoptions)
@@ -520,18 +520,25 @@ values:
 
 Refer to [options](#options) for details.
 
-### Customize Widget Styles
+### Customize UI Styling
 
-You can customize how the Meeting Scheduler looks by utilizing `customStyleVars`
-option, for example:
+You can customize how the Meeting Scheduler looks by utilizing the 
+`customStyleVars` configuration option. This attribute should contain an object
+of the format `{[variableName]: value}`, where `[variableName]` refers to a
+LESS variable listed in the
+[variables.less file in the source code](src/view/less/variables.less). The
+`variables.less` file also includes notes on the purpose of each variable.
+
+Here is an example where the Meeting Scheduler uses a dark theme
+with the primary text font changed to
+[Calistoga](https://fonts.google.com/specimen/Calistoga):
 
 <p align="center">
   <img src="img/custom_style_example.png" height="500" />
 </p>
 
-In the above example, the Meeting Scheduler is customized with a dark theme
-and the primary text font is changed to
-[Calistoga](https://fonts.google.com/specimen/Calistoga):
+Here is the corresponding JS configuration with the custom LESS variables used
+to alter the color scheme and font:
 
 ```js
 {
@@ -558,10 +565,12 @@ and the primary text font is changed to
 }
 ```
 
-Please refer to the [source code](src/view/less/variables.less) to see available
-variables and their purposes. Note that you do not need to write `@` when
-specifying variable names, and you need to add extra quotes for string
-properties such as font family and font face url.
+Notes:
+* It is unnecessary to include the `@` symbol usually prefixed to LESS
+  variable names when specifying the variable names as attributes in the 
+  `customStyleVars` object.
+* String properties such as the font family and font face URL require an
+  **additional** set of quotes surrounding the text value.
 
 
 ### And More...
@@ -591,9 +600,9 @@ An object containing the following keys:
   This option is ignored if `mode` is `modal`.
   - Example: [Launch with attach mode](#launch-with-attach-mode)
 - `customStyleVars`: _Optional (default: undefined)_: object  
-  An object to specify custom style variables. The object format is
-  `{[variableName]: value}`. See the example for details.
-  - Example: [Customize widget styles](#customize-widget-styles)
+  An object to specify LESS variables for custom UI styling. The object format
+  is `{[variableName]: value}`. See [here](#customize-ui-styling) for more
+  details.
 - `setup`: _Required for the Setup View_: Object  
   Options to launch Setup View, available options:
   - `accountToken`: _Optional (default: null)_: String  
