@@ -23,7 +23,9 @@ const getPostCssPlugins = require('./post-css-plugins');
 
 const LESS_FOLDER_PATH = path.resolve(__dirname, '../src/view/less/');
 const LESS_INDEX_PATH = path.resolve(LESS_FOLDER_PATH, 'index.less');
-const IS_PRODUCTION = process.env.NODE_ENV === 'production';
+
+// TODO: minimize breaks font variables, disable it for now
+const IS_PRODUCTION = false; // process.env.NODE_ENV === 'production';
 
 /**
  * Read a less file and handle "@import" syntax to read more less files.
@@ -92,7 +94,7 @@ const lessBuilder = {
       await fs.promises.unlink(filePath);
       console.log(`Deleted: ${filePath}`);
     } catch (e) {
-      // ignore errors
+      // It's fine if there is no previous build
     }
   },
   /**

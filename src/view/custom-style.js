@@ -48,9 +48,6 @@ export default async (customStyleVars) => {
       script.setAttribute('type', 'text/javascript');
       script.setAttribute('src', './less.js');
       document.body.append(script);
-    }).catch((e) => {
-      displayError('Failed to load less.js:');
-      throw e;
     });
   }
   try {
