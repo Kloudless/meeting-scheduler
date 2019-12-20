@@ -218,7 +218,17 @@ class MeetingScheduler {
   _verifyOptions(options) {
     const errors = [];
     const warns = [];
-    const { appId, setup, schedule } = options;
+    const {
+      appId,
+      setup,
+      schedule,
+      customStyleVars,
+    } = options;
+
+    if (typeof customStyleVars !== 'undefined' && (
+      customStyleVars === null || typeof customStyleVars !== 'object')) {
+      errors.push('customStyleVars must be an object.');
+    }
 
     // TODO: enhance options check for any new feature
     if (!setup && !schedule) {

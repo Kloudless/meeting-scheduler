@@ -28,6 +28,10 @@ Object.keys(buildEnvVarDefaults).forEach((varName) => {
     = process.env[varName] || buildEnvVarDefaults[varName];
 });
 
+const vueEsModuleAlias = {
+  vue: 'vue/dist/vue.esm.js',
+};
+
 module.exports = {
   presets: [
     [
@@ -50,14 +54,26 @@ module.exports = {
   ],
   ignore: common.ignorePaths,
   env: {
+    /**
+     * vue alias should not be applied when env is "test",
+     * otherwise, Jest will be failed with syntax errors.
+     */
     development: {
       plugins: [
         [
           'module-resolver', {
             root: common.resolvePaths,
-            alias: {
-              vue: 'vue/dist/vue.esm.js',
-            },
+            alias: vueEsModuleAlias,
+          },
+        ],
+      ],
+    },
+    production: {
+      plugins: [
+        [
+          'module-resolver', {
+            root: common.resolvePaths,
+            alias: vueEsModuleAlias,
           },
         ],
       ],

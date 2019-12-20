@@ -1,17 +1,43 @@
 /* Colors */
-@primary: #7566ff;
+// Background color
 @background: #f5f7fa;
+
+// Primary and secondary UI colors
+@primary: #7566ff;
 @secondary: #062c61;
+
+// Color for emphasized texts and the tooltip icon
 @surface: #24c9a3;
+
+// Background color for error messages and the cross icon
 @error: #F17880;
+
+// Primary and secondary text colors on non-highlighted elements
 @onPrimary: black;
 @onSecondary: #94A4BC;
+
+// Primary and secondary text colors on highlighted elements
 @onPrimaryVariant: white;
 @onSecondaryVariant: #C1BCFC;
+
+// Color for disabled elements such as disabled buttons
 @disabled: #dcdcdc;
 
 /* Font */
+/*
+  To customize the font, all four properties below must be specified with
+  custom values:
+  * fontFaceName
+  * fontFacePath
+  * fontFaceFormat
+  * fontFaceFamily
+*/
+
+// Custom font name, URL, and font file format.
+@fontFaceName: "Roboto";
 @fontFacePath: "../fonts/Roboto-Regular.woff";
 @fontFaceFormat: "woff";
-@fontFaceName: "Roboto";
+
+// Font family used in the widget.
+// We recommend also specifying fallback font families like 'sans-serif'.
 @fontFamily: "Roboto", "sans-serif";

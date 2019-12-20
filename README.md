@@ -56,6 +56,7 @@ using our [zero-configuration embed script](#embed-the-widget), or
   - [Edit Meeting Window](#edit-meeting-window)
   - [Display Your Own Result Screen](#display-your-own-result-screen)
   - [Auto-fill Form Fields](#auto-fill-form-fields)
+  - [Customize UI Styling](#customize-ui-styling)
   - [And More...](#and-more)
 - [Methods](#methods)
   - [config(options)](#configoptions)
@@ -519,6 +520,59 @@ values:
 
 Refer to [options](#options) for details.
 
+### Customize UI Styling
+
+You can customize how the Meeting Scheduler looks by utilizing the 
+`customStyleVars` configuration option. This attribute should contain an object
+of the format `{[variableName]: value}`, where `[variableName]` refers to a
+LESS variable listed in the
+[variables.less file in the source code](src/view/less/variables.less). The
+`variables.less` file also includes notes on the purpose of each variable.
+
+Here is an example where the Meeting Scheduler uses a dark theme
+with the primary text font changed to
+[Calistoga](https://fonts.google.com/specimen/Calistoga):
+
+<p align="center">
+  <img src="img/custom_style_example.png" height="500" />
+</p>
+
+Here is the corresponding JS configuration with the custom LESS variables used
+to alter the color scheme and font:
+
+```js
+{
+  scheduler.launch({
+    appId:
+    customStyleVars: {
+      primary: "#FFEE58",
+      background: "#37474F",
+      secondary: "#FFCA28",
+      surface: "#26C6DA",
+      error: "#EF5350",
+      onPrimary: "white",
+      onSecondary: "#BDBDBD",
+      onPrimaryVariant: "black",
+      onSecondaryVariant: "#78909C",
+      disabled: "#dcdcdc",
+      fontFaceName: "'Calistoga'",
+      fontFacePath: "'https://fonts.gstatic.com/s/calistoga/v1/6NUU8F2OJg6MeR7l4e0fs8wB49dJfg.woff2'",
+      fontFaceFormat: "'woff2'",
+      fontFamily: "'Calistoga', 'sans-serif'"
+    },
+    setup: {}
+  });
+}
+```
+
+Notes:
+* It is unnecessary to include the `@` symbol usually prefixed to LESS
+  variable names when specifying the variable names as attributes in the 
+  `customStyleVars` object.
+* String properties such as the font family and font face URL require an
+  **additional** set of quotes surrounding the text value.
+
+
 ### And More...
 For more examples, please check the [launch(options)](#launch(options)) for a full
 list of available options and their usage.
@@ -545,7 +599,10 @@ An object containing the following keys:
   [document.querySelector](https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelector).
   This option is ignored if `mode` is `modal`.
   - Example: [Launch with attach mode](#launch-with-attach-mode)
-
+- `customStyleVars`: _Optional (default: undefined)_: object  
+  An object to specify LESS variables for custom UI styling. The object format
+  is `{[variableName]: value}`. See [here](#customize-ui-styling) for more
+  details.
 - `setup`: _Required for the Setup View_: Object  
   Options to launch Setup View, available options:
   - `accountToken`: _Optional (default: null)_: String  
