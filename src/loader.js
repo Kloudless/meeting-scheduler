@@ -47,31 +47,80 @@ class MeetingScheduler {
     console[level](`Meeting Scheduler: ${message}`);
   }
 
-  _hasDefault(formOptions) {
+  _hasKey(formOptions, key) {
     return field => (
-      formOptions[field] && formOptions[field].default !== undefined
-      && formOptions[field].default !== null
+      formOptions[field] && formOptions[field][key] !== undefined
+      && formOptions[field][key] !== null
     );
   }
 
-  _verifyFormOptions(formOptions) {
+  _verifyScheduleFormOptions(formOptions) {
     const errors = [];
+    const prefix = 'schedule.formOptions.';
+    ['name', 'email']
+      .filter(this._hasKey(formOptions, 'visible'))
+      .forEach((field) => {
+        const { [field]: { visible, default: value } } = formOptions;
+        if (visible === false && !value) {
+          errors.push(
+            `${prefix}${field}.default cannot be empty if ` +
+            `${prefix}${field}.visible is false.`,
+          );
+        }
+      });
     // check text field
-    ['title', 'location', 'description', 'organizer']
-      .filter(this._hasDefault(formOptions))
+    ['name', 'email', 'extraDescription']
+      .filter(this._hasKey(formOptions, 'default'))
       .forEach((field) => {
         const { [field]: { default: value } } = formOptions;
         if (typeof value !== 'string') {
-          errors.push(`setup.formOptions.${field}: should be string.`);
+          errors.push(`${prefix}${field}: should be string.`);
         }
       });
+    return errors;
+  }
+
+  _verifySetupFormOptions(formOptions, accountToken) {
+    const errors = [];
+    const prefix = 'setup.formOptions.';
+    ['title', 'organizer', 'bookingCalendarId']
+      .filter(this._hasKey(formOptions, 'visible'))
+      .forEach((field) => {
+        const { [field]: { visible, default: value } } = formOptions;
+        if (visible === false && !value) {
+          errors.push(
+            `${prefix}${field}.default cannot be empty if ` +
+            `${prefix}${field}.visible is false.`,
+          );
+        }
+      });
+
+    if (this._hasKey(formOptions, 'default')('bookingCalendarId')) {
+      if (formOptions.bookingCalendarId.default && !accountToken) {
+        errors.push(
+          `${prefix}bookingCalendarId.default requires setup.accountToken ` +
+          'to be set.',
+        );
+      }
+    }
+
+    // check text field
+    ['title', 'location', 'description', 'organizer']
+      .filter(this._hasKey(formOptions, 'default'))
+      .forEach((field) => {
+        const { [field]: { default: value } } = formOptions;
+        if (typeof value !== 'string') {
+          errors.push(`${prefix}${field}: should be string.`);
+        }
+      });
+
     // check boolean field
     ['allowEventMetadata']
-      .filter(this._hasDefault(formOptions))
+      .filter(this._hasKey(formOptions, 'default'))
       .forEach((field) => {
         const { [field]: { default: value } } = formOptions;
         if (typeof value !== 'boolean') {
-          errors.push(`setup.formOptions.${field}: should be boolean.`);
+          errors.push(`${prefix}${field}: should be boolean.`);
         }
       });
     // check options: [<field>, <options>]
@@ -83,25 +132,23 @@ class MeetingScheduler {
       ['startHour', HOURS.slice(0, HOURS.length - 1)],
       // endHour cannot be the first one.
       ['endHour', HOURS.slice(1)],
-    ].filter(([field]) => this._hasDefault(formOptions)(field))
+    ].filter(([field]) => this._hasKey(formOptions, 'default')(field))
       .forEach(([field, options]) => {
         const { [field]: { default: value } } = formOptions;
         if (!options.some(o => o.value === value)) {
-          errors.push(`setup.formOptions.${field}: invalid value.`);
+          errors.push(`${prefix}${field}: invalid value.`);
         }
       });
 
     // check startHour and endHour
-    if (this._hasDefault(formOptions)('startHour')
-        && this._hasDefault(formOptions)('endHour')) {
+    if (this._hasKey(formOptions, 'default')('startHour')
+        && this._hasKey(formOptions, 'default')('endHour')) {
       const startHour = formOptions.startHour.default;
       const endHour = formOptions.endHour.default;
       const startHourIndex = HOURS.findIndex(h => h.value === startHour);
       const endHourIndex = HOURS.findIndex(h => h.value === endHour);
       if (startHourIndex >= endHourIndex) {
-        errors.push(
-          'setup.formOptions.startHour should before setup.formOptions.endHour',
-        );
+        errors.push(`${prefix}startHour should before ${prefix}endHour`);
       }
     }
 
@@ -110,18 +157,16 @@ class MeetingScheduler {
       ['timeBufferBefore', 0, 99],
       ['timeBufferAfter', 0, 99],
       ['availabilityRange', 1, 90],
-    ].filter(([field]) => this._hasDefault(formOptions)(field))
+    ].filter(([field]) => this._hasKey(formOptions, 'default')(field))
       .forEach(([field, min, max]) => {
         const { [field]: { default: value } } = formOptions;
         if (!Number.isInteger(value) || inRangeOf(min, max)(value) !== true) {
-          errors.push(
-            `setup.formOptions.${field}: should be number. (${min}–${max})`,
-          );
+          errors.push(`${prefix}${field}: should be number. (${min}–${max})`);
         }
       });
 
     // check weekday
-    if (this._hasDefault(formOptions)('weekday')) {
+    if (this._hasKey(formOptions, 'default')('weekday')) {
       const { weekday: { default: values } } = formOptions;
       if (!Array.isArray(values)
           || !values.every(v => WEEKDAYS.some(o => o.value === v))) {
@@ -261,7 +306,14 @@ class MeetingScheduler {
       );
     }
     if (setup && setup.formOptions) {
-      errors.push(...this._verifyFormOptions(setup.formOptions));
+      errors.push(
+        ...this._verifySetupFormOptions(setup.formOptions, setup.accountToken),
+      );
+    }
+    if (schedule && schedule.formOptions) {
+      errors.push(
+        ...this._verifyScheduleFormOptions(schedule.formOptions),
+      );
     }
     const result = {
       valid: errors.length === 0,

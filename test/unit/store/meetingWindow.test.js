@@ -132,7 +132,9 @@ describe('meetingWindow module action tests', () => {
   test('setupFormOptions test', async () => {
     const { store } = createStore();
     const expected = Object.keys(SETUP_FORM_OPTIONS).reduce((result, field) => {
-      result[field] = SETUP_FORM_OPTIONS[field].default;
+      if (field !== 'bookingCalendarId') {
+        result[field] = SETUP_FORM_OPTIONS[field].default;
+      }
       return result;
     }, {});
     await store.dispatch(

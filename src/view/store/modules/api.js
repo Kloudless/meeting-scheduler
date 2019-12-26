@@ -51,6 +51,38 @@ export default {
         type: 'setErrorMessage',
       });
     },
+    getAccount({ dispatch }) {
+      return dispatch('request', {
+        options: {
+          api: 'account',
+          uri: '',
+          loading: 'account/account',
+          tokenType: 'account',
+          resetErrorMessage: false,
+        },
+      });
+    },
+    listCalendars({ dispatch }) {
+      return dispatch('request', {
+        options: {
+          api: 'account',
+          uri: 'cal/calendars',
+          loading: 'account/calendar',
+          tokenType: 'account',
+        },
+      });
+    },
+    getCalendar({ dispatch }, payload) {
+      const { calendarId } = payload;
+      return dispatch('request', {
+        options: {
+          api: 'account',
+          uri: `cal/calendars/${calendarId}`,
+          loading: 'account/calendar',
+          tokenType: 'account',
+        },
+      });
+    },
     request({ rootState, commit, dispatch }, payload) {
       /** payload.options
        * uri, method, data, params, api, onSuccess, onError, loading

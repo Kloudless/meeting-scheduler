@@ -135,7 +135,11 @@ export const schema = {
         .forEach((field) => {
           const { [field]: { visible, default: value } } = formOptions;
           if (value !== undefined && value !== null) {
-            commit(`${module}/update`, { name: field, value });
+            if (field === 'bookingCalendarId') {
+              commit('account/setCalendarId', { calendarId: value });
+            } else {
+              commit(`${module}/update`, { name: field, value });
+            }
           }
           if (visible !== undefined) {
             commit(`${module}/setVisible`, { name: field, visible });

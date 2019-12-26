@@ -86,24 +86,62 @@ describe('Mode check test', () => {
   });
 
   test.each([
-    ['getMeetingWindow and setAccount failed, should not launch view', {
-      getMeetingWindow: false, setAccount: false, shouldLaunchView: false,
-    }],
-    ['getMeetingWindow succeed, setAccount failed, should not launch view', {
-      getMeetingWindow: true, setAccount: false, shouldLaunchView: false,
-    }],
-    ['getMeetingWindow failed, setAccount succeed, should not launch view', {
-      getMeetingWindow: false, setAccount: true, shouldLaunchView: false,
-    }],
-    ['getMeetingWindow succeed, setAccount succeed, should launch view', {
-      getMeetingWindow: true, setAccount: true, shouldLaunchView: true,
-    }],
-  ])('Edit Mode: %s', async (_, params) => {
+    [
+      'edit mode, meetingWindow/getMeetingWindow success, ' +
+      'account/setAccount success',
+      {
+        editMode: true,
+        getMeetingWindow: true,
+        setAccount: true,
+        canRenderView: true,
+      },
+    ],
+    [
+      'edit mode, meetingWindow/getMeetingWindow fail, ' +
+      'account/setAccount success',
+      {
+        editMode: true,
+        getMeetingWindow: false,
+        setAccount: true,
+        canRenderView: false,
+      },
+    ],
+    [
+      'edit mode, meetingWindow/getMeetingWindow success, ' +
+      'account/setAccount fail',
+      {
+        editMode: true,
+        getMeetingWindow: true,
+        setAccount: false,
+        canRenderView: false,
+      },
+    ],
+    [
+      'create mode, account/setAccount success',
+      { editMode: false, setAccount: true, canRenderView: true },
+    ],
+    [
+      'create mode, account/setAccount fail',
+      { editMode: false, setAccount: false, canRenderView: false },
+    ],
+  ])('test canRenderView: %s', async (_, params) => {
+    const {
+      editMode, setAccount, getMeetingWindow, canRenderView,
+    } = params;
+
+    // mock action functions
+    const mockGetMeetingWindow = jest.fn().mockReturnValue(
+      getMeetingWindow ? Promise.resolve() : Promise.reject(),
+    );
+    const mockSetAccount = jest.fn().mockReturnValue(
+      setAccount ? Promise.resolve() : Promise.reject(),
+    );
+
     const { store } = createStore({
       state: {
         launchOptions: {
           setup: {
-            meetingWindowId: 'windowId',
+            meetingWindowId: editMode ? 'fakeWindowId' : null,
             accountToken: 'token',
           },
         },
@@ -111,37 +149,31 @@ describe('Mode check test', () => {
       modules: {
         meetingWindow: {
           actions: {
-            getMeetingWindow: () => (
-              params.getMeetingWindow ? Promise.resolve() : Promise.reject()
-            ),
+            getMeetingWindow: mockGetMeetingWindow,
           },
         },
         account: {
           actions: {
-            setAccount: () => (
-              params.setAccount ? Promise.resolve() : Promise.reject()
-            ),
-          },
-        },
-        api: {
-          actions: {
-            request: () => (Promise.resolve('')),
+            setAccount: mockSetAccount,
           },
         },
       },
     });
 
-    const wrapper = getWrapper(MeetingWindow, {
-      store,
-    });
+    const wrapper = getWrapper(MeetingWindow, { store });
     // initially the view should be launched with just loading screen
     expect(wrapper.findAll(TextInput).length).toBe(0);
     await wrapper.vm.$nextTick();
-    if (params.shouldLaunchView) {
+
+    expect(mockSetAccount).toHaveBeenCalledTimes(1);
+    expect(mockGetMeetingWindow).toHaveBeenCalledTimes(editMode ? 1 : 0);
+
+    if (canRenderView) {
       // should render TextInputs if view is expected to be launched
       expect(wrapper.findAll(TextInput).length > 0).toBe(true);
     } else {
-      // should not render any TextInput if view is expected to be not launched
+      // should not render any TextInput if view is expected to be not
+      // launched
       expect(wrapper.findAll(TextInput).length).toBe(0);
     }
   });

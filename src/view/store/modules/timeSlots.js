@@ -30,7 +30,11 @@ export default {
       name: '',
       email: '',
       extraDescription: '',
-      visible: {},
+      visible: {
+        name: true,
+        email: true,
+        extraDescription: false,
+      },
     };
   },
   mutations: {

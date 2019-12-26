@@ -1,6 +1,10 @@
 import EventMessenger from 'event-messenger';
 import { ROLES } from 'constants';
 
+function isObject(val) {
+  return typeof val === 'object' && val !== null;
+}
+
 /**
  * Modified from deepMerge() in axios/lib/utils.js, but also handle Arrays.
  * Similar to Object.assign but will recursively do merges for objects under
@@ -18,9 +22,9 @@ export function deepMerge(...objs) {
       const val = obj[key];
       if (val instanceof Array) {
         result[key] = [...val];
-      } else if (typeof result[key] === 'object' && typeof val === 'object') {
+      } else if (isObject(result[key]) && isObject(val)) {
         result[key] = deepMerge(result[key], val);
-      } else if (typeof val === 'object') {
+      } else if (isObject(val)) {
         result[key] = deepMerge({}, val);
       } else {
         result[key] = val;
