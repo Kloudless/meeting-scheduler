@@ -16,6 +16,7 @@ export const SETUP_FORM_OPTIONS = {
   organizer: { default: 'shirley@kloudless.com', visible: false },
   bookingCalendarId: { default: 'primary', visible: false },
   allowEventMetadata: { default: true },
+  defaultEventMetadata: { default: { transparent: true } },
 };
 
 export const SCHEDULE_FORM_OPTIONS = {

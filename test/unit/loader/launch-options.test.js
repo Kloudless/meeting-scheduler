@@ -74,6 +74,57 @@ describe('loader._applyDefaultOptions tests', () => {
       parentElement.remove();
     }
   });
+
+  describe('setup.formOptions transformations for non-editable fields', () => {
+    test.each([
+      [
+        'should convert defaultEventMetadata to internal format',
+        {
+          formOptions: { defaultEventMetadata: { transparent: true } },
+          expected: {
+            defaultEventMetadata: { default: { transparent: true } },
+          },
+        },
+      ],
+      [
+        'should convert allowEventMetadata to internal format',
+        {
+          formOptions: { allowEventMetadata: true },
+          expected: { allowEventMetadata: { default: true } },
+        },
+      ],
+      [
+        'should not convert allowEventMetadata again when old option format'
+        + ' is used',
+        {
+          formOptions: { allowEventMetadata: { default: true } },
+          expected: { allowEventMetadata: { default: true } },
+        },
+      ],
+      [
+        'should avoid processing allowEventMetadata if it is null',
+        {
+          formOptions: { allowEventMetadata: null },
+          expected: { allowEventMetadata: null },
+        },
+      ],
+      [
+        'should avoid accessing fromOptions if it is null',
+        {
+          formOptions: null,
+          expected: null,
+        },
+      ],
+    ])('%s', (_, testOptions) => {
+      const { formOptions, expected } = testOptions;
+      const result = scheduler._applyDefaultOptions({ setup: { formOptions } });
+      if (expected !== null) {
+        expect(result.setup.formOptions).toMatchObject(expected);
+      } else {
+        expect(result.setup.formOptions).toBeNull();
+      }
+    });
+  });
 });
 
 describe('loader._convertOptions tests', () => {

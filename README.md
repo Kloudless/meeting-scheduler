@@ -58,6 +58,9 @@ using our [zero-configuration embed script](#embed-the-widget), or
   - [Auto-fill Form Fields](#auto-fill-form-fields)
   - [Customize UI Styling](#customize-ui-styling)
   - [Fix the Account and Calendar Used When Creating Meeting Window](#fix-the-account-and-calendar-used-when-creating-meeting-window)
+  - [Customizing Scheduled Events](#customizing-scheduled-events)
+    - [Customizing During Meeting Window Setup](#customizing-during-meeting-window-setup)
+    - [Customizing During Scheduling](#customizing-during-scheduling)
   - [And More...](#and-more)
 - [Methods](#methods)
   - [config(options)](#configoptions)
@@ -598,6 +601,73 @@ prevent users from changing connected calendar.
     }
   });
   ```
+### Customizing Scheduled Events
+
+By default, each event scheduled will be created based on its Meeting Window
+object. However, it's possible to configure additional metadata to include or
+override in scheduled events, using the approaches below.
+
+#### Customizing During Meeting Window Setup
+
+When launching the Setup View, apps can configure launch options that include
+default calendar event metadata to apply to all scheduled events:
+
+```js
+  scheduler.launch({
+    appId: '<your_app_id>',
+    setup: {
+      formOptions: {
+        defaultEventMetadata: { transparent: true },
+      }
+    }
+  });
+```
+
+After the Meeting Window is created, all calendar events created from the
+Meeting Window above will have the `transparent` property set to `true`.
+
+Note that not all event properties are customizable. Please refer to the
+API[MeetingWindow.default_event_metadata](#meeting-window-object) docs for
+available properties.
+
+#### Customizing During Scheduling
+
+It's also possible to customize the event metadata on a per-event basis during
+the scheduling process instead.
+
+Since this potentially exposes the calendar 
+event to customization via client-side JS by a skilled user, Kloudless requires 
+the `allowEventMetadata` flag to be set to `true` during the setup process for
+the Scheduler's configuration to take effect, as shown below:
+
+```js
+  scheduler.launch({
+    appId: '<your_app_id>',
+    setup: {
+      formOptions: {
+        allowEventMetadata: true,
+      }
+    }
+  });
+```
+
+In the Schedule view, customize calendar event metadata before creation
+by listening for the [preSchedule](#preSchedule) JS event:
+
+```js
+scheduler.on('preSchedule', (eventData) => {
+  const { meetingWindow, schedule } = eventData;
+  schedule.event_metadata = {
+    extra_description: schedule.targets[0].name
+  }
+  return schedule;
+});
+```
+
+By setting `event_metadata.extra_description`, each scheduled event will have
+the attendee's name in the event description. Please refer to the
+[preSchedule event docs](#preSchedule) for more details and available
+attributes.
 
 ### And More...
 For more examples, please check the [launch(options)](#launch(options)) for a full
@@ -722,9 +792,14 @@ An object containing the following keys:
           Can use `primary` as an alias for the id of the primary calendar.
         - `visible`: _Optional (default: true)_: Boolean
           `bookingCalendarId.default` must be set if this is `false`.
-      - `allowEventMetadata.default`: _Optional (default: false)_: Boolean  
+      - `allowEventMetadata`: _Optional (default: false)_: Boolean  
         Set this to `true` to allow changing the created calendar event details
         via a [preSchedule](#preschedule) event handler.
+      - `defaultEventMetadata`: _Optional (default: null)_: JSON Object  
+        Additional event metadata to set for any calendar event created with
+        this Meeting Window. See the
+        [MeetingWindow.default_event_metadata](#meeting-window-object)
+        docs for properties available to include in this object.
     - Example:
       ```javascript
       {
