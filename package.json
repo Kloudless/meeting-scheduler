@@ -1,6 +1,6 @@
 {
   "name": "@kloudless/meeting-scheduler",
-  "version": "1.7.0",
+  "version": "1.8.0",
   "main": "dist/meeting-scheduler.min.js",
   "description": "The Kloudless Meeting Scheduler allows organizers to schedule a time that works for all participants in a meeting or event.",
   "author": "Kloudless <hello@kloudless.com> (https://kloudless.com)",
