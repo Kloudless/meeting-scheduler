@@ -12,7 +12,9 @@
     "test": "npm run unit",
     "test-clean": "jest --clearCache",
     "lint": "eslint --ext .js,.vue src test/unit/specs",
-    "build": "rm -rf dist && export NODE_ENV=production && webpack --color --progress --config ./config/webpack.prod.conf.js && node config/less-builder.js dist/scheduler/index.less",
+    "_build": "rm -rf dist && export NODE_ENV=production && eval \"webpack --color --config ./config/webpack.prod.conf.js $FLAGS\" && node config/less-builder.js dist/scheduler/index.less",
+    "build": "FLAGS='--progress' npm run _build",
+    "build:silent": "npm run _build",
     "dist-test": "node ./test/dist-test-server.js"
   },
   "dependencies": {},
