@@ -16,3 +16,5 @@ jsconfig.json
 *.ntvs*
 *.njsproj
 *.sln
+
+.env

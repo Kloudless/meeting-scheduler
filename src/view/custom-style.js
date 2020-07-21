@@ -5,18 +5,62 @@
  * The function should always be resolved, regardless of the error, to guarantee
  * that the view page will still be fully loaded.
  */
+const LINK_TAG_ID = 'custom-style-vars';
+let customStyleTask = Promise.resolve();
 
-let loadLessScriptTask = null;
-let customStyleTask = null;
-let script = null;
-const CUSTOM_STYLE_TAG_ID = 'custom-style';
-
-const displayError = (message) => {
+const displayError = (...args) => {
   // eslint-disable-next-line no-console
-  console.error(message);
+  console.error(...args);
 };
 
-export default async (customStyleVars) => {
+const loadLessScript = () => {
+  // Create script tag:
+  // <script type="text/javascript" src="./less.js" />.
+  const script = document.createElement('script');
+  return new Promise((resolve, reject) => {
+    script.onload = resolve;
+    script.onreadystatechange = resolve; // for IE
+    script.onerror = reject;
+    script.setAttribute('type', 'text/javascript');
+    script.setAttribute('src', './less.js');
+    document.body.append(script);
+  }).catch((err) => {
+    displayError('Loading less script fails.');
+    displayError(err);
+    script.remove();
+    throw new Error('Loading less script fails.');
+  });
+};
+
+const loadLessStyleAndCompile = async (customStyleVars) => {
+  // Create <link> tag if not exists:
+  // <link id="LINK_TAG_ID"
+  //       rel="stylesheet/less" type="text/css" href="index.less" />.
+  let linkElement = document.getElementById(LINK_TAG_ID);
+  if (!linkElement) {
+    linkElement = document.createElement('link');
+    linkElement.id = LINK_TAG_ID;
+    linkElement.href = 'index.less';
+    linkElement.type = 'text/css';
+    linkElement.rel = 'stylesheet/less';
+    document.head.append(linkElement);
+  }
+  try {
+    // Load <link> tag. The method is not on LESS official document.
+    // Check it at node_modules/less/dist/less.js L14165.
+    window.less.registerStylesheetsImmediately();
+    await window.less.modifyVars(customStyleVars);
+  } catch (err) {
+    displayError('Less build fails:', customStyleVars);
+    displayError(err);
+    if (linkElement) {
+      linkElement.remove();
+    }
+    throw Error('Less build fails.');
+  }
+};
+
+export default (customStyleVars) => {
   /** Set font-face related vars to null by default,
    * because we embed default fonts into the view CSS,
    * and adding style for the same font again would cause default fonts
@@ -38,79 +82,19 @@ export default async (customStyleVars) => {
       delete customStyleVars[key];
     }
   });
-  if (loadLessScriptTask === null) {
-    // only need to load less.js once
-    loadLessScriptTask = new Promise((resolve, reject) => {
-      script = document.createElement('script');
-      script.onload = resolve;
-      script.onreadystatechange = resolve; // for IE
-      script.onerror = reject;
-      script.setAttribute('type', 'text/javascript');
-      script.setAttribute('src', './less.js');
-      document.body.append(script);
-    });
-  }
-  try {
-    await loadLessScriptTask;
-  } catch (e) {
-    displayError('load less script failed');
-    // try again next time
-    if (script) {
-      script.remove();
-      script = null;
-    }
-    loadLessScriptTask = null;
-    return Promise.resolve();
-  }
 
-  // wait until the previous less build finishes, if any
-  if (customStyleTask) {
-    await customStyleTask;
-  }
-
-  const oldStyleElement = document.getElementById(CUSTOM_STYLE_TAG_ID);
-
-  // this promise will always be resolved even if less build fails
-  customStyleTask = new Promise((resolve) => {
-    if (!window.less) {
-      displayError('window.less is not defined.');
-      resolve();
-      return;
-    }
-    // create style tag
-    const id = CUSTOM_STYLE_TAG_ID;
-    const styleElement = document.createElement('style');
-    styleElement.setAttribute('id', id);
-    // setting type will make less to use this tag as input source
-    styleElement.setAttribute('type', 'text/less');
-    styleElement.textContent = '@import "index.less";';
-    document.head.append(styleElement);
-    (async () => {
-      try {
-        const lessTask = window.less.modifyVars(customStyleVars);
-        if (!(lessTask instanceof Promise)) {
-          throw new Error('window.less.modifyVars() does not return Promise');
-        }
-        await lessTask;
-        // the modifyVars promise resolves before styles are actually inserted
-        // into DOM, so add an extra wait
-        const interval = setInterval(() => {
-          // less inserts compiled styles by updating input source tag
-          if (styleElement.getAttribute('type') === 'text/css') {
-            clearInterval(interval);
-            if (oldStyleElement) {
-              oldStyleElement.remove();
-            }
-            resolve();
-          }
-        }, 300);
-      } catch (e) {
-        displayError('less build failed:');
-        displayError(e);
-        styleElement.remove();
-        resolve();
+  // Chain the current task behind the previous task to ensure they are
+  // processed in order.
+  customStyleTask = customStyleTask.then(async () => {
+    try {
+      if (!window.less) {
+        // Only load less script if not exist.
+        await loadLessScript();
       }
-    })();
+      await loadLessStyleAndCompile(customStyleVars);
+    } catch (err) {
+      displayError(err);
+    }
   });
   return customStyleTask;
 };
