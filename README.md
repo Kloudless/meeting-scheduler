@@ -110,6 +110,7 @@ using our [zero-configuration embed script](#embed-the-widget), or
 - Google Chrome 70.0+
 - Mozilla Firefox 63.0+
 - Microsoft Edge
+- Safari 11.1.2+
 
 ## Terminology
 
