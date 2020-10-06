@@ -1,8 +1,11 @@
 import TimeSlots from 'view/components/TimeSlots';
 import { MAX_TIME_SLOTS_PER_SCROLL, EVENTS } from 'constants';
+import { TIME_ZONES } from 'view/utils/fixtures';
 import { getWrapper, createStore } from '../jest/vue-utils';
+import { MOCK_BROWSER_TIMEZONE } from '../jest/constants';
 
 const { beforeMount } = TimeSlots;
+const MOCK_MEETING_WINDOW_TIMEZONE = 'Europe/London';
 
 describe('afterSchedule config tests', () => {
   beforeAll(() => {
@@ -423,6 +426,7 @@ describe('Recaptcha tests', () => {
             initState() {
               return {
                 recaptchaSiteKey: hasSiteKey ? 'siteKey' : null,
+                timeZone: MOCK_MEETING_WINDOW_TIMEZONE,
               };
             },
             actions: {
@@ -472,6 +476,7 @@ describe('Recaptcha tests', () => {
             initState() {
               return {
                 recaptchaSiteKey: hasSiteKey ? 'siteKey' : null,
+                timeZone: MOCK_MEETING_WINDOW_TIMEZONE,
               };
             },
             actions: {
@@ -550,6 +555,7 @@ describe('extraDescription field visibility test', () => {
           initState() {
             return {
               allowEventMetadata,
+              timeZone: MOCK_MEETING_WINDOW_TIMEZONE,
             };
           },
         },
@@ -603,4 +609,179 @@ describe('extraDescription field visibility test', () => {
       );
     });
   });
+});
+
+describe('timeZone launch option and dropdown tests', () => {
+
+  beforeAll(() => {
+    /**
+     * The following tests expect the mocked browser timezone and
+     * the mocked meeting window timezone is different
+     */
+    expect(MOCK_BROWSER_TIMEZONE).not.toEqual(MOCK_MEETING_WINDOW_TIMEZONE);
+  });
+
+
+  test.each([
+    ['No value', undefined, MOCK_BROWSER_TIMEZONE],
+    ['organizer', 'organizer', MOCK_MEETING_WINDOW_TIMEZONE],
+    ['Valid IANA string', 'America/Los_Angeles', 'America/Los_Angeles'],
+    ['Invalid IANA string', 'foo', MOCK_BROWSER_TIMEZONE],
+  ])(
+    'Test default timeZone on launch: %s', async (
+      _, timeZoneOption, expectedTimeZone,
+    ) => {
+      const { store } = createStore({
+        state: {
+          launchOptions: {
+            schedule: {
+              meetingWindowId: 'meetingWindowId',
+              timeZone: timeZoneOption,
+            },
+          },
+        },
+        modules: {
+          meetingWindow: {
+            initState() {
+              return {
+                id: 'id',
+                timeZone: MOCK_MEETING_WINDOW_TIMEZONE,
+              };
+            },
+          },
+        },
+      });
+
+      const wrapper = getWrapper(TimeSlots, {
+        store,
+      });
+      expect(wrapper.vm.timeZone).toBe(expectedTimeZone);
+    },
+  );
+
+  test.each([
+    [
+      'Browser and Meeting Window are in different timezones',
+      MOCK_MEETING_WINDOW_TIMEZONE,
+      [MOCK_BROWSER_TIMEZONE, MOCK_MEETING_WINDOW_TIMEZONE, 'divider']],
+    [
+      'Browser and Meeting Window are in the same timezone',
+      MOCK_BROWSER_TIMEZONE,
+      [MOCK_BROWSER_TIMEZONE, 'divider'],
+    ],
+  ])(
+    'Test timeZone dropdown: %s', async (
+      _, meetingWindowTimeZone, expectedDropdownItems,
+    ) => {
+      const { store } = createStore({
+        state: {
+          launchOptions: {
+            schedule: {
+              meetingWindowId: 'meetingWindowId',
+            },
+          },
+        },
+        modules: {
+          meetingWindow: {
+            initState() {
+              return {
+                id: 'id',
+                timeZone: meetingWindowTimeZone,
+              };
+            },
+          },
+        },
+      });
+
+      const wrapper = getWrapper(TimeSlots, {
+        store,
+      });
+      await wrapper.vm.$nextTick();
+      expect(wrapper.vm.timeZones.length).toBe(TIME_ZONES.length + 1);
+      expectedDropdownItems.forEach((item, index) => {
+        if (item === 'divider') {
+          expect(wrapper.vm.timeZones[index]).toMatchObject({ divider: true });
+        } else {
+          expect(wrapper.vm.timeZones[index]).toMatchObject({ value: item });
+        }
+      });
+    },
+  );
+
+  test.each([
+    ['Asia/Taipei', '08:00 AM'],
+    ['Asia/Tokyo', '09:00 AM'],
+  ])(
+    'formatDate should apply the current timeZone: %s', async (
+      timeZone, expectedDate,
+    ) => {
+      const { store } = createStore({
+        state: {
+          launchOptions: {
+            schedule: {
+              meetingWindowId: 'meetingWindowId',
+            },
+          },
+        },
+        modules: {
+          meetingWindow: {
+            initState() {
+              return {
+                id: 'id',
+                timeZone: MOCK_MEETING_WINDOW_TIMEZONE,
+              };
+            },
+          },
+        },
+      });
+
+      const wrapper = getWrapper(TimeSlots, {
+        store,
+      });
+      store.commit({
+        type: 'timeSlots/update',
+        name: 'timeZone',
+        value: timeZone,
+      });
+
+      expect(wrapper.vm.formatDate('fullHour', '2020-10-06T00:00:00Z'))
+        .toBe(expectedDate);
+    },
+  );
+});
+
+// TODO: Move this to e2e test, it's easier to verify if infinite scrolling
+// is reset on real browsers
+test('Changing timezone should restart infinite scrolling', async () => {
+  const availableSlots = [];
+  const initSlots = MAX_TIME_SLOTS_PER_SCROLL * 3;
+  for (let i = 0; i < initSlots; i += 1) {
+    availableSlots.push(i);
+  }
+  const { store } = createStore({
+    state: {
+      launchOptions: {
+        schedule: {
+          meetingWindowId: 'meetingWindowId',
+        },
+      },
+    },
+    modules: {
+      meetingWindow: {
+        initState() {
+          return {
+            id: 'id',
+            timeZone: 'Asia/Taipei',
+          };
+        },
+      },
+    },
+  });
+  const wrapper = getWrapper(TimeSlots, {
+    store,
+  });
+  await wrapper.setData({ timeSlotsRenderOffset: initSlots });
+  wrapper.vm.selectTimeZone({ value: 'Asia/Tokyo' });
+  await wrapper.vm.$nextTick();
+  expect(wrapper.vm.timeSlotsRenderOffset).toBe(0);
 });

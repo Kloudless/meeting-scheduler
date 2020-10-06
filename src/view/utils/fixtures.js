@@ -79,7 +79,11 @@ export const HOURS = [
   { text: '00:00 AM', value: '24:00:00' },
 ];
 
-export const TIME_ZONES = moment.tz.names().map(tz => ({
+export const createTimeZoneDropdownItem = tz => ({
   text: `(GMT${now.tz(tz).format('Z')}) ${tz.replace(/_/g, ' ')}`,
   value: tz,
-}));
+});
+
+export const TIME_ZONES = moment.tz.names().map(
+  tz => createTimeZoneDropdownItem(tz),
+);

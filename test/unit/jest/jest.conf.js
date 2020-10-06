@@ -29,4 +29,5 @@ module.exports = {
   roots: [
     '<rootDir>/test/unit',
   ],
+  globalSetup: '<rootDir>/test/unit/jest/global-setup',
 };

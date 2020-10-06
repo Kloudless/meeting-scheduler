@@ -93,5 +93,9 @@ InputField(:label="label").dropdown
     v-model="selected", :items="options", :rules="rules",
     item-text="text", :label="placeholder", :loading="loading"
     @change="onChange", :hide-details="hideDetails")
+    template(#item="{item}")
+      slot(name="item" v-bind="item") {{ item.text }}
+    template(#selection="{item}")
+      slot(name="selection" v-bind="item") {{ item.text }}
 
 </template>

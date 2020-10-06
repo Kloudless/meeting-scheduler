@@ -864,6 +864,12 @@ An object containing the following keys:
   - `meetingWindowId`: _Required_: String
     The Meeting Window ID .
     - Example: [Launch the Schedule View](#launch-the-schedule-view)
+  - `timeZone`: _Optional_: String  
+    Set the default time zone when the view is launched. The possible values
+    are:
+    - `'local'`: Use the browser's time zone. This is the default value.
+    - `'organizer'`: Use the time zone from the Meeting Window.
+    - Any IANA time zone string (e.g. `America/Los_Angeles`)
   - `afterSchedule`: _Optional_: Object
     - An object to specify the behavior after an event is scheduler, available
       options:
