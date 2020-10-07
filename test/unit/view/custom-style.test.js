@@ -1,114 +1,97 @@
 /* eslint-disable no-console */
 import buildCustomStyle from 'view/custom-style';
 
-const consoleError = console.error;
 const SCRIPT_SELECTOR = 'script[src="./less.js"]';
-const STYLE_SELECTOR = 'style[type="text/css"]';
-const LESS_SOURCE_SELECTOR = 'style[type="text/less"]';
-
-const queryLessScriptTags = () => document.querySelectorAll(SCRIPT_SELECTOR);
-const resolveLessScript = (loadSuccessful = true) => {
-  const scripts = queryLessScriptTags();
-  /**
-   * script tags won't be proceeded in jsdom environment
-   * we need to manually call onload and onerror to test results
-   */
-  return loadSuccessful ? scripts[0].onload() : scripts[0].onerror();
-};
-const expectLessScriptExists = (scriptExists = true) => {
-  const scripts = queryLessScriptTags();
-  expect(scripts.length).toEqual(scriptExists ? 1 : 0);
-};
-const expectNoLessSourceLeft = () => {
-  expect(document.querySelectorAll(LESS_SOURCE_SELECTOR).length).toEqual(0);
-};
+const LESS_SOURCE_SELECTOR = 'link[id="custom-style-vars"]';
 
 describe('Custom style builder tests', () => {
   beforeEach(() => {
+    document.head.innerHTML = '';
+    document.body.innerHTML = '';
+    // Simulate loading less script initialize window.less.
+    const originBodyAppend = document.body.append.bind(document.body);
+    document.body.append = jest.fn((el) => {
+      originBodyAppend(el);
+      window.less = {
+        registerStylesheetsImmediately: jest.fn(),
+        modifyVars: jest.fn().mockResolvedValue(),
+      };
+      el.onload();
+    });
     console.error = jest.fn();
-    window.less = {
-      modifyVars: jest.fn(() => {
-        // simulate the latency between modifyVars promise and when the style
-        // tag is actually changed to text/css
-        setTimeout(() => {
-          const style = document.querySelector('[type="text/less"]');
-          style.setAttribute('type', 'text/css');
-        }, 1000);
-        return Promise.resolve();
-      }),
-    };
-  });
-  afterEach(() => {
-    console.error = consoleError;
-    window.less = undefined;
-    document.querySelectorAll(STYLE_SELECTOR).forEach(e => e.remove());
   });
 
+  afterEach(() => {
+    jest.restoreAllMocks();
+    delete window.less;
+    document.head.innerHTML = '';
+    document.body.innerHTML = '';
+  });
+
+  test('Should resolve when less.js cannot be not loaded', async () => {
+    document.body.append.mockImplementationOnce(el => el.onerror());
+    await buildCustomStyle({ primary: 'red' });
+    expect(console.error).toBeCalled();
+  });
 
   test.each([
-    ['Should resolve when less.js cannot be not loaded', () => {}, false],
-    // this also verifies that loading less.js is retried after first failure
-    ['Should resolve when window.less is not defined', () => {
-      window.less = undefined;
-    }],
-    ['Should resolve when window.less.modifyVars is not a function', () => {
-      window.less.modifyVars = 'mock';
-    }],
-    ['Should resolve when window.less.modifyVars does not return Promise',
-      () => {
-        window.less.modifyVars = () => {};
-      }],
-    ['Should resolve when window.less.modifyVars failed', () => {
-      window.less.modifyVars = () => Promise.reject();
-    }],
-  ])('%s', async (_, setupFunc, loadLessScriptSuccessful = true) => {
-    setupFunc();
-    const customStylePromise = buildCustomStyle();
-    resolveLessScript(loadLessScriptSuccessful);
-    await expect(customStylePromise).toResolve();
-    expectLessScriptExists(loadLessScriptSuccessful);
+    [
+      'Should resolve when window.less.registerStylesheetsImmediately failed',
+      false, true,
+    ],
+    [
+      'Should resolve when window.less.modifyVars failed',
+      true, false,
+    ],
+  ])('%s', async (_, registerStylesheetsResult, modifyVarsResult) => {
+    const mockRegisterStylesheetsImmediately = jest.fn();
+    const mockModifyVars = jest.fn().mockResolvedValue();
+    if (!registerStylesheetsResult) {
+      mockRegisterStylesheetsImmediately.mockImplementation(
+        () => { throw new Error('fake error'); },
+      );
+    }
+    if (!modifyVarsResult) {
+      mockModifyVars.mockRejectedValue();
+    }
+    const originBodyAppend = document.body.append.bind(document.body);
+    document.body.append.mockImplementationOnce((el) => {
+      originBodyAppend(el);
+      window.less = {
+        registerStylesheetsImmediately: mockRegisterStylesheetsImmediately,
+        modifyVars: mockModifyVars,
+      };
+      el.onload();
+    });
+    await buildCustomStyle({ primary: 'red' });
     expect(console.error).toBeCalled();
-    expectNoLessSourceLeft();
   });
 
+  test('Should resolve after style is compiled', async () => {
+    const customStyleVars = { primary: 'red' };
+    await buildCustomStyle(customStyleVars);
+    const scripts = document.querySelectorAll(SCRIPT_SELECTOR);
+    const links = document.querySelectorAll(LESS_SOURCE_SELECTOR);
+    expect(scripts.length).toBe(1);
+    expect(links.length).toBe(1);
+    expect(window.less.registerStylesheetsImmediately).toBeCalledTimes(1);
+    expect(window.less.modifyVars).toBeCalled();
+    expect(window.less.modifyVars.mock.calls[0][0])
+      .toMatchObject(customStyleVars);
+    expect(console.error).not.toBeCalled();
+  });
 
-  test('Should resolve after style is compiled',
-    async () => {
-      const customStyleVars = { primary: 'red' };
-      const customStylePromise = buildCustomStyle(customStyleVars);
-      resolveLessScript(true);
-      await customStylePromise;
-      expectLessScriptExists();
-      expect(window.less.modifyVars).toBeCalled();
-      expect(window.less.modifyVars.mock.calls[0][0])
-        .toMatchObject(customStyleVars);
-      expect(console.error).not.toBeCalled();
-      expectNoLessSourceLeft();
-    });
+  test('Do not load <script> and <link> if already exist', async () => {
+    await buildCustomStyle({ primary: 'red' });
+    const scripts = document.querySelectorAll(SCRIPT_SELECTOR);
+    const links = document.querySelectorAll(LESS_SOURCE_SELECTOR);
+    expect(scripts.length).toBe(1);
+    expect(links.length).toBe(1);
 
-  test('Should remove previous compiled styles after appending the new one',
-    async () => {
-      let styles = document.querySelectorAll(STYLE_SELECTOR);
-      expect(styles.length).toBe(0);
-      const customStyleVars = { primary: 'red' };
-      let customStylePromise = buildCustomStyle(customStyleVars);
-      resolveLessScript(true);
-      await customStylePromise;
-      styles = document.querySelectorAll(STYLE_SELECTOR);
-      expect(styles.length).toBe(1);
-      const firstBuiltStyle = styles[0];
-
-      // after customizing styles for the second time, there should still
-      // be just one stylesheet
-      customStylePromise = buildCustomStyle(customStyleVars);
-      await customStylePromise;
-      expectLessScriptExists();
-      styles = document.querySelectorAll(STYLE_SELECTOR);
-      expect(styles.length).toBe(1);
-      // Make sure the style tag on page now is not
-      // the same one generated by the first build
-      // eslint-disable-next-line eqeqeq
-      expect(styles[0] != firstBuiltStyle).toBe(true);
-      expectNoLessSourceLeft();
-    });
+    await buildCustomStyle({ primary: 'blue' });
+    const scripts2 = document.querySelectorAll(SCRIPT_SELECTOR);
+    const links2 = document.querySelectorAll(LESS_SOURCE_SELECTOR);
+    expect(scripts).toEqual(scripts2);
+    expect(links).toEqual(links2);
+  });
 });
