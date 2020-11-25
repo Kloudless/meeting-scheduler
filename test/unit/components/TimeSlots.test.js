@@ -1,20 +1,22 @@
+/* eslint-disable no-underscore-dangle */
 import TimeSlots from 'view/components/TimeSlots';
 import { MAX_TIME_SLOTS_PER_SCROLL, EVENTS } from 'constants';
 import { TIME_ZONES } from 'view/utils/fixtures';
+import recaptchaHelper from 'view/utils/recaptcha-helper';
 import { getWrapper, createStore } from '../jest/vue-utils';
 import { MOCK_BROWSER_TIMEZONE } from '../jest/constants';
 
-const { beforeMount } = TimeSlots;
+const DEFAULT_ROUTE = '/timeSlots/create';
 const MOCK_MEETING_WINDOW_TIMEZONE = 'Europe/London';
 
 describe('afterSchedule config tests', () => {
   beforeAll(() => {
     // disable making API requests when mounting TimeSlots view
-    TimeSlots.beforeMount = jest.fn();
+    jest.spyOn(TimeSlots, 'beforeMount').mockResolvedValue();
   });
 
   afterAll(() => {
-    TimeSlots.beforeMount = beforeMount;
+    jest.restoreAllMocks();
   });
 
   test.each([
@@ -32,12 +34,10 @@ describe('afterSchedule config tests', () => {
         },
       },
     });
-    const wrapper = getWrapper(TimeSlots, {
-      store,
-    });
+    const wrapper = getWrapper(TimeSlots, { store }, DEFAULT_ROUTE);
     wrapper.vm.afterSubmit();
     if (showResult) {
-      expect(wrapper.vm.$route.path).toBe('/timeSlotsCompletion/');
+      expect(wrapper.vm.$route.path).toBe('/timeSlotsCompletion/create');
     } else {
       expect(store.messenger.send).toBeCalledWith({
         event: EVENTS.CLOSE,
@@ -49,11 +49,11 @@ describe('afterSchedule config tests', () => {
 describe('Infinite scroll tests', () => {
   const offset = 10; // need to be less than MAX_TIME_SLOTS_PER_SCROLL;
   beforeAll(() => {
-    TimeSlots.beforeMount = jest.fn();
+    jest.spyOn(TimeSlots, 'beforeMount').mockResolvedValue();
   });
 
   afterAll(() => {
-    TimeSlots.beforeMount = beforeMount;
+    jest.restoreAllMocks();
   });
   test.each([
     [
@@ -353,9 +353,7 @@ describe('Infinite scroll tests', () => {
     };
 
     // act
-    const wrapper = getWrapper(TimeSlots, {
-      store,
-    });
+    const wrapper = getWrapper(TimeSlots, { store }, DEFAULT_ROUTE);
     wrapper.vm.$mount();
     wrapper.vm.timeSlotsRenderOffset = initTimeSlotsRenderOffset;
     wrapper.vm.hasMoreTimeSlotsPages = initHasMoreTimeSlotsPages;
@@ -393,132 +391,7 @@ describe('Infinite scroll tests', () => {
   });
 });
 
-describe('Recaptcha tests', () => {
-  beforeAll(() => {
-    // mock window.grecaptcha object
-    window.grecaptcha = {
-      render: jest.fn(),
-      execute: jest.fn(),
-    };
-  });
-
-  describe('Script tag tests', () => {
-    afterAll(() => {
-      // assume recaptcha key script tag finished loading
-      window.recaptchaLoaded();
-    });
-
-    test.each([
-      ['Should not add script tag if site key is not provided', false, 0],
-      ['Should add script tag if siteKey is provided', true, 1],
-      ['Should not add another script tag for the second time', true, 1],
-    ])('%s', async (_, hasSiteKey, numOfScriptTags) => {
-      const { store } = createStore({
-        state: {
-          launchOptions: {
-            schedule: {
-              meetingWindowId: 'meetingWindowId',
-            },
-          },
-        },
-        modules: {
-          meetingWindow: {
-            initState() {
-              return {
-                recaptchaSiteKey: hasSiteKey ? 'siteKey' : null,
-                timeZone: MOCK_MEETING_WINDOW_TIMEZONE,
-              };
-            },
-            actions: {
-              getMeetingWindow: () => Promise.resolve({}),
-            },
-          },
-        },
-      });
-
-      const wrapper = getWrapper(TimeSlots, {
-        store,
-      });
-
-      await wrapper.vm.$nextTick();
-
-      const scriptTags = document.querySelectorAll(
-        'script[src^="https://www.google.com/recaptcha/api.js"]',
-      );
-
-      expect(scriptTags.length).toBe(numOfScriptTags);
-    });
-  });
-
-  // This block depends on afterAll() above because recaptcha script is only
-  // loaded once and it has been done in previous tests
-  describe('Execute recaptcha on submit test', () => {
-    test.each([
-      [
-        'Should call vm.submit() on submit if siteKey is not provided',
-        false,
-      ],
-      [
-        'Should call grecaptcha.execute() on submit if siteKey is provided',
-        true,
-      ],
-    ])('%s', async (_, hasSiteKey) => {
-      const { store } = createStore({
-        state: {
-          launchOptions: {
-            schedule: {
-              meetingWindowId: 'meetingWindowId',
-            },
-          },
-        },
-        modules: {
-          meetingWindow: {
-            initState() {
-              return {
-                recaptchaSiteKey: hasSiteKey ? 'siteKey' : null,
-                timeZone: MOCK_MEETING_WINDOW_TIMEZONE,
-              };
-            },
-            actions: {
-              getMeetingWindow: () => Promise.resolve({}),
-            },
-          },
-        },
-      });
-
-      const wrapper = getWrapper(TimeSlots, {
-        store,
-      });
-
-      wrapper.vm.submit = jest.fn();
-
-      // wait for loadRecaptchaScript promise
-      await wrapper.vm.$nextTick();
-      wrapper.vm.executeRecaptcha();
-      // wait for executeRecaptcha to finish
-      await wrapper.vm.$nextTick();
-      await wrapper.vm.$nextTick();
-
-      if (hasSiteKey) {
-        expect(window.grecaptcha.execute).toHaveBeenCalled();
-        expect(wrapper.vm.submit).not.toHaveBeenCalled();
-      } else {
-        expect(window.grecaptcha.execute).not.toHaveBeenCalled();
-        expect(wrapper.vm.submit).toHaveBeenCalled();
-      }
-    });
-  });
-});
-
 describe('extraDescription field visibility test', () => {
-  beforeAll(() => {
-    // disable making API requests when mounting TimeSlots view
-    TimeSlots.beforeMount = jest.fn();
-  });
-
-  afterAll(() => {
-    TimeSlots.beforeMount = beforeMount;
-  });
   test.each([
     [
       'Should not show extraDescription if event metadata is not allowed',
@@ -554,6 +427,7 @@ describe('extraDescription field visibility test', () => {
         meetingWindow: {
           initState() {
             return {
+              id: 'fakeID',
               allowEventMetadata,
               timeZone: MOCK_MEETING_WINDOW_TIMEZONE,
             };
@@ -564,7 +438,6 @@ describe('extraDescription field visibility test', () => {
 
     const launchOptions = {
       schedule: {
-        meetingWindowId: 'meetingWindowId',
         formOptions: {
           extraDescription: { visible: setVisible },
         },
@@ -575,9 +448,7 @@ describe('extraDescription field visibility test', () => {
       launchOptions,
     });
 
-    const wrapper = getWrapper(TimeSlots, {
-      store,
-    });
+    const wrapper = getWrapper(TimeSlots, { store }, DEFAULT_ROUTE);
 
     // test extraDescription input
     wrapper.vm.step = 1;
@@ -612,7 +483,6 @@ describe('extraDescription field visibility test', () => {
 });
 
 describe('timeZone launch option and dropdown tests', () => {
-
   beforeAll(() => {
     /**
      * The following tests expect the mocked browser timezone and
@@ -652,9 +522,7 @@ describe('timeZone launch option and dropdown tests', () => {
         },
       });
 
-      const wrapper = getWrapper(TimeSlots, {
-        store,
-      });
+      const wrapper = getWrapper(TimeSlots, { store }, DEFAULT_ROUTE);
       expect(wrapper.vm.timeZone).toBe(expectedTimeZone);
     },
   );
@@ -693,9 +561,7 @@ describe('timeZone launch option and dropdown tests', () => {
         },
       });
 
-      const wrapper = getWrapper(TimeSlots, {
-        store,
-      });
+      const wrapper = getWrapper(TimeSlots, { store }, DEFAULT_ROUTE);
       await wrapper.vm.$nextTick();
       expect(wrapper.vm.timeZones.length).toBe(TIME_ZONES.length + 1);
       expectedDropdownItems.forEach((item, index) => {
@@ -777,9 +643,7 @@ test('Changing timezone should restart infinite scrolling', async () => {
       },
     },
   });
-  const wrapper = getWrapper(TimeSlots, {
-    store,
-  });
+  const wrapper = getWrapper(TimeSlots, { store }, DEFAULT_ROUTE);
   await wrapper.setData({ timeSlotsRenderOffset: initSlots });
   wrapper.vm.selectTimeZone({ value: 'Asia/Tokyo' });
   await wrapper.vm.$nextTick();

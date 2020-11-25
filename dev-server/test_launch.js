@@ -37,17 +37,24 @@ window.setupTestLaunch = function setupTestLaunch(MeetingScheduler, appId) {
   };
 
   // set default launch options
-  const params = MeetingScheduler.getQueryParams();
+  const {
+    meetingWindowId,
+    scheduledEventId,
+  } = MeetingScheduler.getQueryParams();
 
-  const isSetupView = params.meetingWindowId === undefined;
+  const isSetupView = !meetingWindowId && !scheduledEventId;
   const launchOptions = isSetupView ? SETUP : SCHEDULE;
 
   if (appId) {
     launchOptions.appId = appId;
   }
 
-  if (!isSetupView) {
-    launchOptions.schedule.meetingWindowId = params.meetingWindowId;
+  if (meetingWindowId) {
+    launchOptions.schedule.meetingWindowId = meetingWindowId;
+  }
+
+  if (scheduledEventId) {
+    launchOptions.schedule.scheduledEventId = scheduledEventId;
   }
   options.value = stringify(launchOptions);
 };

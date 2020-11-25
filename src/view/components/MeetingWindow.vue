@@ -1,6 +1,6 @@
 <script>
 import { mapState } from 'vuex';
-import { SUBMIT_STATUS, EVENTS } from 'constants';
+import { EVENTS, ACTIONS } from 'constants';
 import Authenticator from './Authenticator';
 import Accordion from './common/Accordion';
 import Title from './common/Title';
@@ -15,6 +15,7 @@ import AvailabilityField from './common/AvailabilityField';
 import {
   HOURS, TIME_SLOT_INTERVALS, DURATIONS, TIME_ZONES, WEEKDAYS, WEEKDAY_PRESETS,
 } from '../utils/fixtures.js';
+import iziToastHelper from '../utils/izitoast-helper';
 
 export default {
   name: 'MeetingWindow',
@@ -104,9 +105,8 @@ export default {
       const { afterSubmit } = this.launchOptions;
       if (afterSubmit.showResult) {
         this.$router.push(
-          `/meetingWindowCompletion/${
-            this.isEditMode ? SUBMIT_STATUS.UPDATED : SUBMIT_STATUS.CREATED
-          }`,
+          '/meetingWindowCompletion/'
+          + `${this.isEditMode ? ACTIONS.UPDATE : ACTIONS.CREATE}`,
         );
       } else {
         this.$store.dispatch('event', {
@@ -124,7 +124,18 @@ export default {
       promise.then(this.afterSubmit);
     },
     deleteWindow() {
-      this.$router.push('/meetingWindowDeletion/');
+      iziToastHelper.confirm(
+        `Are you sure you want to delete "${this.meetingWindow.title}"?`,
+        async () => {
+          await this.$store.dispatch('meetingWindow/delete');
+          const { afterSubmit } = this.launchOptions;
+          if (afterSubmit.showResult) {
+            this.$router.push(`/meetingWindowCompletion/${ACTIONS.DELETE}`);
+          } else {
+            await this.$store.dispatch('event', { event: EVENTS.CLOSE });
+          }
+        },
+      );
     },
   },
 };

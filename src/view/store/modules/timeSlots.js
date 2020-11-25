@@ -1,4 +1,4 @@
-import { EVENTS } from 'constants';
+import { EVENTS, ACTIONS } from 'constants';
 import common from '../common.js';
 import { getJson as getMeetingWindowJson } from './meetingWindow';
 
@@ -26,6 +26,12 @@ export default {
     return {
       availableSlots: [],
       nextPage: null,
+      /**
+       * Users might switch between TimeSlots.vue and ViewScheduledEvent.vue
+       * several times. So we need `hasNextPage` to record whether there are
+       * more pages to load.
+       * */
+      hasNextPage: true,
       selectedSlot: null,
       name: '',
       email: '',
@@ -57,6 +63,7 @@ export default {
     setTimeSlots(state, payload) {
       payload.availableSlots.forEach(slot => state.availableSlots.push(slot));
       state.nextPage = payload.nextPage;
+      state.hasNextPage = Boolean(payload.nextPage);
     },
   },
   actions: {
@@ -69,9 +76,10 @@ export default {
      * @param rootState
      * @returns {Promise<boolean>} - if it has more items.
      */
-    async getTimeSlots({
-      dispatch, commit, state, rootState,
-    }) {
+    async getTimeSlots({ dispatch, commit, state, rootState }) {
+      if (state.hasNextPage === false) {
+        return state.hasNextPage;
+      }
       const meetingWindowId = rootState.meetingWindow.id;
       const timeSlots = await dispatch('api/request', {
         options: {
@@ -90,21 +98,24 @@ export default {
         availableSlots: slotsList,
         nextPage: timeSlots.next_page,
       });
-      return Boolean(timeSlots.next_page);
+      return state.hasNextPage;
     },
     /**
-     * Schedule the selected time slot.
+     * Create/Update a scheduled event.
+     * It will obtain meetingWindow and scheduledEvent from rootState.
      *
      * @param {object} payload
-     * {
-     *    type {string} - action type
-     *    recaptchaToken {string} - token returned by reCAPTCHA
-     * }
+     * @param {string} payload.action - UPDATE or CREATE
+     * @param {string=} payload.recaptchaToken - token returned by reCAPTCHA
      */
-    async submit({ dispatch, state, rootState }, payload) {
-      let json = getJson(state, payload.recaptchaToken);
+    async submit({ dispatch, state, rootState, commit }, payload) {
+      const { recaptchaToken, action } = payload;
+      let json = getJson(state, recaptchaToken);
 
-      const { meetingWindow } = rootState;
+      const {
+        meetingWindow,
+        scheduledEvent,
+      } = rootState;
       const jsonOverwrite = await dispatch('event', {
         event: EVENTS.PRE_SCHEDULE,
         wait: true,
@@ -116,21 +127,60 @@ export default {
         json = jsonOverwrite;
       }
 
-      const responseData = await dispatch({
-        type: 'api/request',
-        options: {
-          method: 'post',
-          data: json,
-          uri: `windows/${meetingWindow.id}/schedule`,
-          loading: 'timeSlots/submit',
-        },
-      }, { root: true });
+      if (action === ACTIONS.UPDATE) {
+        // We don't support update description yet. API server will ignore this
+        // field event if we send it.
+        if (json.event_metadata) {
+          delete json.event_metadata.extra_description;
+        }
+      }
 
-      dispatch('event', {
-        event: EVENTS.SCHEDULE,
-        scheduledEvent: responseData,
-      }, { root: true });
+      /**
+       * responseData example:
+       * {
+       *    attendees: [{id: null, name: "", email: ""}],
+       *    description: "",
+       *    start: "2020-11-28T12:30:00+08:00",
+       *    end: "2020-11-28T13:30:00+08:00",
+       *    id: "event_cG9*****",
+       *    scheduled_event_id: "gaY0s*****",
+       *    meeting_window_id: "*****"
+       * }
+       */
+      const responseData = await dispatch(
+        'api/request',
+        {
+          options: {
+            method: action === ACTIONS.UPDATE ? 'patch' : 'post',
+            data: json,
+            uri: (action === ACTIONS.UPDATE ?
+              `events/${scheduledEvent.id}`
+              : `windows/${meetingWindow.id}/schedule`),
+            loading: 'timeSlots/submit',
+          },
+        },
+        { root: true },
+      );
+
+      commit(
+        'scheduledEvent/setScheduledEvent',
+        { scheduledEvent: responseData },
+        { root: true },
+      );
+      await dispatch('event',
+        { event: EVENTS.SCHEDULE, scheduledEvent: responseData },
+        { root: true });
+
       return responseData;
+    },
+
+    /**
+     * Set initial value from scheduledEvent.
+     */
+    async loadScheduledEvent({ rootState, commit }) {
+      const { scheduledEvent: { attendees } } = rootState;
+      commit('update', { name: 'name', value: attendees[0].name });
+      commit('update', { name: 'email', value: attendees[0].email });
     },
   },
 };

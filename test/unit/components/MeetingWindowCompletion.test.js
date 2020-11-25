@@ -1,7 +1,7 @@
 import MeetingWindowCompletion from 'view/components/MeetingWindowCompletion';
 import Button from 'view/components/common/Button';
+import { ACTIONS } from 'constants';
 import { getWrapper, createStore } from '../jest/vue-utils';
-import { SUBMIT_STATUS } from 'constants';
 
 describe('Action buttons test', () => {
   test.each([
@@ -10,11 +10,11 @@ describe('Action buttons test', () => {
     ['Has two actions', ['close', 'restart'], 2],
     ['Ignore invalid actions', ['close', 'test'], 1],
     ['Restart only works for create window', ['close', 'restart'],
-      1, SUBMIT_STATUS.UPDATED],
+      1, ACTIONS.UPDATE],
     ['Restart only works for create window', ['close', 'restart'],
-      1, SUBMIT_STATUS.DELETED],
+      1, ACTIONS.DELETE],
   ])('%s', (
-    _, actions, expectedNumOfButtons, submitStatus = SUBMIT_STATUS.CREATED,
+    _, actions, expectedNumOfButtons, action = ACTIONS.CREATE,
   ) => {
     const { store } = createStore({
       state: {
@@ -29,7 +29,7 @@ describe('Action buttons test', () => {
     });
     const wrapper = getWrapper(MeetingWindowCompletion, {
       store,
-    }, `/meetingWindowCompletion/${submitStatus}/`);
+    }, `/meetingWindowCompletion/${action}`);
     const buttons = wrapper.findAll(Button);
     expect(buttons.length).toBe(expectedNumOfButtons);
   });

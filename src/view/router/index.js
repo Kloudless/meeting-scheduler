@@ -2,9 +2,10 @@ import Vue from 'vue';
 import Router from 'vue-router';
 import MeetingWindow from 'view/components/MeetingWindow';
 import MeetingWindowCompletion from 'view/components/MeetingWindowCompletion';
-import MeetingWindowDeletion from 'view/components/MeetingWindowDeletion';
 import TimeSlots from 'view/components/TimeSlots';
 import TimeSlotsCompletion from 'view/components/TimeSlotsCompletion';
+import ViewScheduledEvent from 'view/components/ViewScheduledEvent';
+
 
 Vue.use(Router);
 
@@ -16,20 +17,20 @@ export default new Router({
       component: MeetingWindow,
     },
     {
-      path: '/meetingWindowCompletion/:submitStatus',
+      path: '/meetingWindowCompletion/:action',
       component: MeetingWindowCompletion,
     },
     {
-      path: '/meetingWindowDeletion/',
-      component: MeetingWindowDeletion,
-    },
-    {
-      path: '/timeSlots/',
+      path: '/timeSlots/:action',
       component: TimeSlots,
     },
     {
-      path: '/timeSlotsCompletion/',
+      path: '/timeSlotsCompletion/:action',
       component: TimeSlotsCompletion,
+    },
+    {
+      path: '/viewScheduledEvent',
+      component: ViewScheduledEvent,
     },
   ],
 });

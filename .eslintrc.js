@@ -10,6 +10,14 @@ module.exports = {
     browser: true,
     jest: true,
   },
+  globals: {
+    grecaptcha: 'readonly',
+    VERSION: 'readonly',
+    BASE_URL: 'readonly',
+    SCHEDULE_URL: 'readonly',
+    SCHEDULER_PATH: 'readonly',
+    RESCHEDULE_URL: 'readonly',
+  },
   extends: [
     'plugin:vue/essential',
     'airbnb-base',
@@ -30,9 +38,24 @@ module.exports = {
     'max-len': ['error', { code: 80 }],
     'operator-linebreak': 'off',
     'no-underscore-dangle': [
-      'error', {
+      'error',
+      {
         allow: ['_options'],
         allowAfterThis: true,
-      }],
+      },
+    ],
+    // Since it's common to have more than 4 destructuring assignments for
+    // Vuex's action arguments. Increase minProperties to avoid un-necessary
+    // multiline.
+    'object-curly-newline': [
+      'error',
+      {
+        ObjectPattern: {
+          multiline: true,
+          minProperties: 5,
+        },
+      },
+    ],
+
   },
 };

@@ -25,9 +25,7 @@ export default {
     },
   },
   actions: {
-    async setAccount({
-      dispatch, commit, rootState, state,
-    }, payload) {
+    async setAccount({ dispatch, commit, rootState, state }, payload) {
       const { id = null, account = null, token = null } = payload;
       const { bookingCalendarId: showBookingCalendarId }
         = rootState.meetingWindow.visible;

@@ -38,6 +38,7 @@ describe('loader._applyDefaultOptions tests', () => {
       options: { schedule: {} },
       expected: {
         schedule: {
+          rescheduleUrl: RESCHEDULE_URL,
           afterSchedule: {
             showResult: true,
             actions: ['close'],

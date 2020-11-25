@@ -11,6 +11,7 @@
  */
 import Vue from 'vue';
 import 'material-design-icons-iconfont/dist/material-design-icons.css';
+import 'izitoast/dist/css/iziToast.css';
 
 // Vuetify base stylesheet, required
 import 'vuetify/src/stylus/app.styl';

@@ -1,19 +1,44 @@
 <script>
-import { mapState } from 'vuex';
 import { createTimeZoneDropdownItem } from '../utils/fixtures';
 import date from '../utils/date';
 
 export default {
-  computed: mapState({
-    selectedSlot: state => state.timeSlots.selectedSlot,
-    timeZone: state => state.timeSlots.timeZone,
-    timeZoneString: state => (
-      createTimeZoneDropdownItem(state.timeSlots.timeZone).text
-    ),
-  }),
+  computed: {
+    displayTimeZone() {
+      const { timeZone } = this;
+      if (timeZone) {
+        return createTimeZoneDropdownItem(timeZone).text;
+      }
+      return '';
+    },
+    startTime() {
+      return this.formatDate('fullHour', this.start);
+    },
+    endTime() {
+      return this.formatDate('fullHour', this.end);
+    },
+    date() {
+      return this.formatDate('date', this.start);
+    },
+  },
+  props: {
+    start: {
+      type: String,
+    },
+    end: {
+      type: String,
+    },
+    timeZone: {
+      type: String,
+    },
+  },
   methods: {
     formatDate(format, dateStr) {
-      return date(format, dateStr, this.timeZone);
+      const { timeZone } = this;
+      if (timeZone && dateStr) {
+        return date(format, dateStr, timeZone);
+      }
+      return '';
     },
   },
 };
@@ -23,11 +48,11 @@ export default {
 <template lang="pug">
 div
   div.font-size--lg.secondary--text.font-weight-bold
-    | {{ formatDate('fullHour', selectedSlot.start) }}
+    | {{ startTime }}
     | -
-    | {{ formatDate('fullHour', selectedSlot.end) }}
+    | {{ endTime }}
   div.font-size--md.secondary--text
-    | {{ formatDate('date', selectedSlot.start) }}
+    | {{ date }}
     br
-    | {{ timeZoneString }}
+    | {{ displayTimeZone }}
 </template>
