@@ -5,8 +5,8 @@ import moment from 'moment-timezone';
 import Textarea from './common/Textarea';
 import Title from './common/Title';
 import InputLabel from './common/InputLabel';
+import SelectedTimeSlot from './SelectedTimeSlot';
 import Button from './common/Button';
-import date from '../utils/date';
 
 
 export default {
@@ -16,6 +16,7 @@ export default {
     Textarea,
     Button,
     InputLabel,
+    SelectedTimeSlot,
   },
   data() {
     return {
@@ -34,9 +35,6 @@ export default {
   props: [
   ],
   methods: {
-    formatDate(format, dateStr) {
-      return date(format, dateStr, this.timeZone);
-    },
     close() {
       this.$store.dispatch('event', {
         event: EVENTS.CLOSE,
@@ -63,14 +61,7 @@ div
         | {{ meetingWindow.title }}
       div.font-size--md.secondary--text
         | {{ meetingWindow.location }}
-    div.mb-4
-      div.font-size--lg.secondary--text.font-weight-bold
-        | {{ formatDate('fullHour', timeSlots.selectedSlot.start) }}
-        | -
-        | {{ formatDate('fullHour', timeSlots.selectedSlot.end) }}
-        | ({{timeZone}} time)
-      div.font-size--md.secondary--text
-        | {{ formatDate('date', timeSlots.selectedSlot.start) }}
+    SelectedTimeSlot.mb-4
     Textarea(
       v-if="meetingWindow.allowEventMetadata && timeSlots.extraDescription",
       name="extraDescription" label="Note",

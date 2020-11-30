@@ -5,12 +5,16 @@ import InfiniteLoading from 'vue-infinite-loading';
 import { MAX_TIME_SLOTS_PER_SCROLL, EVENTS } from 'constants';
 import { mapState } from 'vuex';
 import date from '../utils/date';
+import { createTimeZoneDropdownItem, TIME_ZONES } from '../utils/fixtures';
 import TextInput from './common/TextInput';
 import Textarea from './common/Textarea';
 import InputLabel from './common/InputLabel';
 import Title from './common/Title';
 import Button from './common/Button';
 import TimeSlotBlock from './TimeSlotBlock';
+import Dropdown from './common/Dropdown';
+import TimeZoneDropdownItem from './TimeZoneDropdownItem';
+import SelectedTimeSlot from './SelectedTimeSlot';
 
 
 let onRecaptchaScriptLoad;
@@ -51,6 +55,9 @@ export default {
     Title,
     Button,
     TimeSlotBlock,
+    Dropdown,
+    TimeZoneDropdownItem,
+    SelectedTimeSlot,
   },
   data() {
     return {
@@ -63,9 +70,9 @@ export default {
         'Confirm your meeting details',
       ],
       isTargetFormValid: true,
-      timeZone: moment.tz.guess(),
       enableRecaptcha: false,
       recaptchaId: null,
+      timeZones: [],
     };
   },
   computed: mapState({
@@ -97,34 +104,105 @@ export default {
       const { allowEventMetadata } = state.meetingWindow;
       return allowEventMetadata && visible.extraDescription;
     },
+    // bind timeZone exclusively since it is used widely in this view
+    timeZone: state => state.timeSlots.timeZone,
   }),
-  beforeMount() {
+  async beforeMount() {
     if (!this.meetingWindow.id) {
-      this.$store.dispatch({
+      await this.$store.dispatch({
         type: 'meetingWindow/getMeetingWindow',
         meetingWindowId: this.launchOptions.meetingWindowId,
-      }).then(() => {
-        if (this.meetingWindow.recaptchaSiteKey) {
-          this.enableRecaptcha = true;
-          loadRecaptchaScript().then(() => {
-            const lang = 'en';
-            this.recaptchaId = grecaptcha.render('recaptcha', {
-              badge: 'bottomleft',
-              sitekey: this.meetingWindow.recaptchaSiteKey,
-              size: 'invisible',
-              callback: this.onRecaptchaVerify,
-              'error-callback': this.onRecaptchaError,
-              isolated: true,
-              lang,
-            });
-          });
-        }
       });
+      if (this.meetingWindow.recaptchaSiteKey) {
+        this.enableRecaptcha = true;
+        await loadRecaptchaScript();
+        const lang = 'en';
+        this.recaptchaId = grecaptcha.render('recaptcha', {
+          badge: 'bottomleft',
+          sitekey: this.meetingWindow.recaptchaSiteKey,
+          size: 'invisible',
+          callback: this.onRecaptchaVerify,
+          'error-callback': this.onRecaptchaError,
+          isolated: true,
+          lang,
+        });
+      }
     }
+    this.initTimeZoneDropdown();
+    this.selectDefaultTimeZone();
   },
   props: [
   ],
   methods: {
+    selectTimeZone(event) {
+      if (!event.value) {
+        // Do not process when dropdown value is cleared
+        return;
+      }
+      this.$store.commit({
+        type: 'timeSlots/update',
+        name: 'timeZone',
+        value: event.value,
+      });
+      this.timeSlotsRenderOffset = 0;
+    },
+    selectDefaultTimeZone() {
+      const { launchOptions: { timeZone } } = this;
+
+      if (timeZone === 'organizer') {
+        this.$store.commit({
+          type: 'timeSlots/update',
+          name: 'timeZone',
+          value: this.meetingWindow.timeZone,
+        });
+      } else if (this.timeZones.find(
+        item => !item.divider && item.value === timeZone,
+      )) {
+        this.$store.commit({
+          type: 'timeSlots/update',
+          name: 'timeZone',
+          value: timeZone,
+        });
+      } else {
+        // Use browser time as default
+        this.$store.commit({
+          type: 'timeSlots/update',
+          name: 'timeZone',
+          value: moment.tz.guess(),
+        });
+      }
+    },
+    /**
+     * Init Time Zone Dropdown items as follows:
+     *   Local Browser Time Zone
+     *   Meeting Window Time Zone
+     *   ----- (divider) ---
+     *   (Rest of the Time Zones)
+     * OR
+     *   Local Browser and Meeting Window Time Zone
+     *   ----- (divider) ---
+     *   (Rest of the Time Zones)
+     * If Local Browser time zone and the Meeting Window time zone is the same.
+     */
+    initTimeZoneDropdown() {
+      const { meetingWindow: { timeZone: organizer } } = this;
+      const local = moment.tz.guess();
+      const localItem = createTimeZoneDropdownItem(local);
+      const timeZones = [];
+      timeZones.push(localItem);
+      if (organizer === local) {
+        localItem.suffix = '(Current / Organizer\'s)';
+      } else {
+        localItem.suffix = '(Current)';
+        const organizerItem = createTimeZoneDropdownItem(organizer);
+        organizerItem.suffix = '(Organizer\'s)';
+        timeZones.push(organizerItem);
+      }
+      timeZones.push({ divider: true });
+      this.timeZones = timeZones.concat(TIME_ZONES.filter(
+        item => item.value !== local && item.value !== organizer,
+      ));
+    },
     selectTimeSlot(slot, selected) {
       this.$store.commit({
         type: 'timeSlots/selectTimeSlot',
@@ -262,7 +340,7 @@ v-layout(column).time-slots
             .time-slot-block(v-for="(slot, index) in slots", :key="index")
               TimeSlotBlock(:timeSlot="slot", :timeZone="timeZone",
                             :formatDate="formatDate")
-        InfiniteLoading(@infinite="infiniteHandler")
+        InfiniteLoading(@infinite="infiniteHandler", :identifier="timeZone")
           div(slot="spinner")
             div.progress-container
               v-progress-circular(size="70", color="primary", indeterminate)
@@ -272,8 +350,15 @@ v-layout(column).time-slots
             | Sorry. There are no available times for this event.
     div.pt-3.pb-4
       v-layout(row, justify-space-between)
-        div.text-xs-left.subheading.surface--text
-          | All times are in {{timeZone}} time
+        v-flex.mr-4
+          Dropdown(
+            v-if="meetingWindow.id", :required="true",
+            label="Time Zone", name="timeZone", :value="timeZone",
+            :options="timeZones", @update="selectTimeZone")
+            template(#item="item")
+              TimeZoneDropdownItem(:item="item")
+            template(#selection="item")
+              TimeZoneDropdownItem(:item="item")
         Button(@click="moveStep(1)", :disabled="!timeSlots.selectedSlot").ma-0
           | Next
 
@@ -306,14 +391,7 @@ v-layout(column).time-slots
       div.font-size--subtitle.secondary--text.font-weight-bold {{ meetingWindow.title }}
       div.mb-5.on-primary--text.font-size--md {{ meetingWindow.location }}
       InputLabel.mb-1 SCHEDULED TIME
-      div.mb-4
-        div.font-size--lg.secondary--text.font-weight-bold
-          | {{ formatDate('fullHour', timeSlots.selectedSlot.start) }}
-          | -
-          | {{ formatDate('fullHour', timeSlots.selectedSlot.end) }}
-          | ({{timeZone}} time)
-        div.font-size--md.secondary--text
-          | {{ formatDate('date', timeSlots.selectedSlot.start) }}
+      SelectedTimeSlot.mb-4
       InputLabel.mb-1 CONTACT INFO
       div.mb-4
         div.font-size--lg.secondary--text.font-weight-bold {{ timeSlots.name }}
