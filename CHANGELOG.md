@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Support changing displayed time zone in the Schedule view
+
 ## [1.8.0]
 
 ### Added
