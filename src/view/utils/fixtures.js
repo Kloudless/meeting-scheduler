@@ -5,7 +5,8 @@
 
 import moment from 'moment-timezone';
 
-const now = moment();
+const NOW = moment();
+export const LOCAL_TIME_ZONE = moment.tz.guess();
 
 export const WEEKDAYS = [
   'Sunday',
@@ -79,11 +80,32 @@ export const HOURS = [
   { text: '00:00 AM', value: '24:00:00' },
 ];
 
-export const createTimeZoneDropdownItem = tz => ({
-  text: `(GMT${now.tz(tz).format('Z')}) ${tz.replace(/_/g, ' ')}`,
+export const createTimeZoneDropdownItem = (tz, suffix) => ({
+  text: `(GMT${NOW.tz(tz).format('Z')}) ${tz.replace(/_/g, ' ')}`,
   value: tz,
+  suffix,
 });
 
 export const TIME_ZONES = moment.tz.names().map(
   tz => createTimeZoneDropdownItem(tz),
 );
+
+/**
+ * Return the default display timeZone for Schedule View based on launchOptions
+ * and Meeting Window's timeZone.
+ *
+ * @param {*} launchOptions - Schedule View launch options.
+ * @param {*} meetingWindow - The meeting window object.
+ */
+export function getDefaultTimeZone(launchOptions, meetingWindow) {
+  let result = launchOptions.timeZone;
+  if (result === 'organizer' && meetingWindow.timeZone) {
+    result = meetingWindow.timeZone;
+  }
+  // Fallback to browser's timeZone if it's not valid, includes 'organizer'
+  // and 'local'.
+  if (!result || !TIME_ZONES.find(e => e.value === result)) {
+    result = LOCAL_TIME_ZONE;
+  }
+  return result;
+}

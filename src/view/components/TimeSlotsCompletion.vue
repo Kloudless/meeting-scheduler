@@ -1,47 +1,72 @@
 <script>
 import { mapState } from 'vuex';
-import { EVENTS } from 'constants';
-import moment from 'moment-timezone';
-import Textarea from './common/Textarea';
+import { EVENTS, ACTIONS } from 'constants';
 import Title from './common/Title';
 import InputLabel from './common/InputLabel';
-import SelectedTimeSlot from './SelectedTimeSlot';
 import Button from './common/Button';
+import TextInput from './common/TextInput';
+import ScheduledEventInfo from './ScheduledEventInfo';
+import CopyTextField from './common/CopyTextField';
 
 
 export default {
-  name: 'MeetingWindow',
   components: {
     Title,
-    Textarea,
     Button,
     InputLabel,
-    SelectedTimeSlot,
+    TextInput,
+    ScheduledEventInfo,
+    CopyTextField,
   },
   data() {
+    const { action } = this.$route.params;
     return {
-      timeZone: moment.tz.guess(),
-      actionButtonText: {
-        close: 'Finish',
+      action,
+      isDeleteMode: action === ACTIONS.DELETE,
+      titles: {
+        [ACTIONS.CREATE]: 'Meeting scheduled!',
+        [ACTIONS.UPDATE]: 'Meeting updated!',
+        [ACTIONS.DELETE]: 'Meeting deleted!',
+      },
+      subtitles: {
+        [ACTIONS.CREATE]: ('Your meeting has been scheduled! '
+          + 'A calendar invite will be sent to your email shortly.'),
+        [ACTIONS.UPDATE]: ('Your scheduled meeting was updated. '
+          + 'A calendar invite will be sent to your email shortly.'),
+        [ACTIONS.DELETE]: 'Your scheduled meeting was deleted.',
       },
     };
   },
   computed: mapState({
     meetingWindow: state => state.meetingWindow,
-    timeSlots: state => state.timeSlots,
     isModal: state => state.launchOptions.mode === 'modal',
     launchOptions: state => state.launchOptions.schedule,
+    scheduledEvent: state => state.scheduledEvent,
+    rescheduleUrl(state) {
+      const { action } = this.$route.params;
+      if (action === ACTIONS.DELETE) {
+        return '';
+      }
+      const {
+        scheduledEvent: { id },
+        launchOptions: { schedule: { rescheduleUrl } },
+      } = state;
+      if (!id || !rescheduleUrl) {
+        return '';
+      }
+      return rescheduleUrl.replace('SCHEDULED_EVENT_ID', id);
+    },
+    showCloseButton: state => (
+      state.launchOptions.schedule.afterSchedule.actions.includes('close')),
+    // state.timeSlots.timeZone should be initilized in TimeSlots.vue.
+    timeZone: state => state.timeSlots.timeZone,
   }),
-  props: [
-  ],
+  props: [],
   methods: {
     close() {
       this.$store.dispatch('event', {
         event: EVENTS.CLOSE,
       });
-    },
-    buttonAction(action) {
-      this[action]();
     },
   },
 };
@@ -50,28 +75,23 @@ export default {
 </script>
 
 <template lang="pug">
-div
-  Title Meeting scheduled!
-  div.mt-5.font-size--md.on-primary--text
-    | A calendar invite will be sent to your email shortly.
-  div.text-xs-left
-    InputLabel.mt-5 EVENT INFO
-    div.mb-4
-      div.font-size--lg.secondary--text.font-weight-bold
-        | {{ meetingWindow.title }}
-      div.font-size--md.secondary--text
-        | {{ meetingWindow.location }}
-    SelectedTimeSlot.mb-4
-    Textarea(
-      v-if="meetingWindow.allowEventMetadata && timeSlots.extraDescription",
-      name="extraDescription" label="Note",
-      :value="timeSlots.extraDescription", :readonly="true")
-  div.mt-5
-    template(v-for="action in launchOptions.afterSchedule.actions")
-      Button(
-        v-if="actionButtonText[action]",
-        @click="buttonAction(action)")
-        | {{ actionButtonText[action] }}
-  
-
+v-layout(column).time-slots
+  div
+    Title {{ titles[action] }}
+  div.timeslots-scroll-panel
+    template(v-if="isDeleteMode")
+      div.py-5.font-size--subtitle.on-primary--text
+        | {{ subtitles[action] }}
+    template(v-else)
+      div.pb-4.pt-2.font-size--md.on-primary--text
+        | {{ subtitles[action] }}
+      div.text-xs-left
+        ScheduledEventInfo(:timeZone="timeZone")
+  div.pt-3.pb-4.time-slots-completion__footer(
+      :class="{[`time-slots-completion__footer--${action}`]:true}")
+    CopyTextField.time-slots-completion__copy-field(
+      label="Link to Reschedule/Cancel",
+      :value="rescheduleUrl")
+    Button.time-slots-completion__finish-button(
+      v-if="showCloseButton", @click="close") Finish
 </template>

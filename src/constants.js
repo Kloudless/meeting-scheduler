@@ -1,3 +1,8 @@
+export const CAN_COPY = (
+  (typeof document.queryCommandSupported === 'function') &&
+  (typeof document.execCommand === 'function') &&
+  document.queryCommandSupported('Copy'));
+
 export const ROLES = {
   LOADER: 'LOADER',
   VIEW: 'VIEW',
@@ -28,10 +33,10 @@ export const INTERNAL_EVENTS = {
 
 export const EVENTS_LIST = Object.values(EVENTS);
 
-export const SUBMIT_STATUS = {
-  CREATED: 'CREATED',
-  UPDATED: 'UPDATED',
-  DELETED: 'DELETED',
+export const ACTIONS = {
+  CREATE: 'create',
+  UPDATE: 'update',
+  DELETE: 'delete',
 };
 
 export const MAX_TIME_SLOTS_PER_SCROLL = 100;

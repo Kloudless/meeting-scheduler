@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Support editing the scheduled event.
+- Introduce `rescheduleUrl` option.
 
 ## [1.9.0]
 

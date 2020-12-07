@@ -1,0 +1,38 @@
+.time-slots-completion__footer {
+  display: flex;
+  flex-direction: row;
+}
+
+.time-slots-completion__footer--update,
+.time-slots-completion__footer--create {
+
+  .time-slots-completion__copy-field {
+    padding-top: 12px;
+    flex: 1 0 auto;
+  }
+
+  .time-slots-completion__finish-button {
+    flex: 0 1 auto;
+    margin-left: 30px;
+  }
+
+  @media screen and (max-width: 350px) {
+    .time-slots-completion__footer {
+      flex-direction: column;
+    }
+
+    .time-slots-completion__finish-button {
+      flex: 1 0 auto;
+      margin-left: 0px;
+      margin-right: 0px;
+    }
+  }
+}
+
+.time-slots-completion__footer--delete {
+  justify-content: center;
+
+  .time-slots-completion__copy-field {
+    display: none;
+  }
+}

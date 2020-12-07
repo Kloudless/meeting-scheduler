@@ -48,6 +48,7 @@ export const SETUP = {
       timeBufferAfter: {
         default: 10,
       },
+      allowEventMetadata: true,
     },
   },
 };
@@ -55,6 +56,13 @@ export const SETUP = {
 export const SCHEDULE = {
   ...BASE,
   schedule: {
+    rescheduleUrl: 'http://localhost:8080/?scheduledEventId=SCHEDULED_EVENT_ID',
     meetingWindowId: '',
+    formOptions: {
+      extraDescription: {
+        default: 'put your note here',
+        visible: true,
+      },
+    },
   },
 };

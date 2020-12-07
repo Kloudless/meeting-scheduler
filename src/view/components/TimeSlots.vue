@@ -1,11 +1,13 @@
 <script>
-/* global grecaptcha */
-import moment from 'moment-timezone';
 import InfiniteLoading from 'vue-infinite-loading';
-import { MAX_TIME_SLOTS_PER_SCROLL, EVENTS } from 'constants';
+import {
+  MAX_TIME_SLOTS_PER_SCROLL, EVENTS, ACTIONS,
+} from 'constants';
 import { mapState } from 'vuex';
 import date from '../utils/date';
-import { createTimeZoneDropdownItem, TIME_ZONES } from '../utils/fixtures';
+import {
+  createTimeZoneDropdownItem, getDefaultTimeZone, TIME_ZONES, LOCAL_TIME_ZONE,
+} from '../utils/fixtures';
 import TextInput from './common/TextInput';
 import Textarea from './common/Textarea';
 import InputLabel from './common/InputLabel';
@@ -15,35 +17,8 @@ import TimeSlotBlock from './TimeSlotBlock';
 import Dropdown from './common/Dropdown';
 import TimeZoneDropdownItem from './TimeZoneDropdownItem';
 import SelectedTimeSlot from './SelectedTimeSlot';
+import Recaptcha from './common/Recaptcha';
 
-
-let onRecaptchaScriptLoad;
-/**
-* Load reCaptcha script
-*
-* @returns {Promise}
-*/
-function loadRecaptchaScript() {
-  if (!onRecaptchaScriptLoad) {
-    const recaptchaScript = document.createElement('script');
-    // TODO: modify the language of reCAPTCHA when we enable i18n
-    const lang = 'en';
-    recaptchaScript.src = 'https://www.google.com/recaptcha/api.js' +
-      `?onload=recaptchaLoaded&render=explicit&hl=${lang}`;
-    recaptchaScript.async = true;
-    recaptchaScript.defer = true;
-
-    onRecaptchaScriptLoad = new Promise((resolve) => {
-      if (typeof window !== 'undefined') {
-        // window.recaptchaLoaded will be called when reCaptcha script is
-        // loaded
-        window.recaptchaLoaded = resolve;
-      }
-    });
-    document.head.appendChild(recaptchaScript);
-  }
-  return onRecaptchaScriptLoad;
-}
 
 export default {
   name: 'TimeSlots',
@@ -58,38 +33,52 @@ export default {
     Dropdown,
     TimeZoneDropdownItem,
     SelectedTimeSlot,
+    Recaptcha,
   },
   data() {
+    const { action } = this.$route.params;
     return {
+      // false if beforeMount is resolved.
+      initing: true,
+      action,
+      isUpdateMode: action === ACTIONS.UPDATE,
       step: 0,
       timeSlotsRenderOffset: 0,
       hasMoreTimeSlotsPages: true,
-      stepTitles: [
-        'Choose an available time slot',
-        'What\'s your name and email?',
-        'Confirm your meeting details',
-      ],
+      titles: {
+        [ACTIONS.CREATE]: [
+          'Choose an available time slot',
+          'What\'s your name and email?',
+          'Confirm your meeting details',
+        ],
+        [ACTIONS.UPDATE]: [
+          'Change the selected time slot',
+          'Change the contact info',
+          'Confirm your changes',
+        ],
+      },
       isTargetFormValid: true,
-      enableRecaptcha: false,
-      recaptchaId: null,
-      timeZones: [],
+      // Only used in update mode.
+      origTimeSlot: { start: null, end: null, selected: false },
     };
   },
   computed: mapState({
+    scheduledEvent: state => state.scheduledEvent,
     meetingWindow: state => state.meetingWindow,
     timeSlots: state => state.timeSlots,
     loading: state => state.api.loading.timeSlots,
     launchOptions: state => state.launchOptions.schedule,
     slotGroups(state) {
-      let availableSlots = state.timeSlots.availableSlots || [];
-      availableSlots = availableSlots.slice(0, this.timeSlotsRenderOffset);
+      const { availableSlots, timeZone } = state.timeSlots;
+      const { timeSlotsRenderOffset } = this;
 
       const slotGroups = {};
+      if (!timeZone) {
+        return slotGroups;
+      }
 
-      availableSlots.forEach((slot) => {
-        const offsetStartDate = moment(slot.start);
-
-        const groupKey = offsetStartDate.format('YYYY-MM-DD');
+      availableSlots.slice(0, timeSlotsRenderOffset).forEach((slot) => {
+        const groupKey = this.formatDate('date', slot.start);
         if (typeof slotGroups[groupKey] === 'undefined') {
           slotGroups[groupKey] = [];
         }
@@ -99,40 +88,82 @@ export default {
       return slotGroups;
     },
     visible: state => state.timeSlots.visible,
-    isExtraDescriptionVisible: (state) => {
+    isExtraDescriptionVisible(state) {
+      const { action } = this;
       const { visible } = state.timeSlots;
       const { allowEventMetadata } = state.meetingWindow;
-      return allowEventMetadata && visible.extraDescription;
+      return (
+        action === ACTIONS.CREATE && allowEventMetadata
+        && visible.extraDescription);
     },
     // bind timeZone exclusively since it is used widely in this view
     timeZone: state => state.timeSlots.timeZone,
+    /**
+     * The Time Zone Dropdown items would be:
+     *   Local Browser Time Zone
+     *   Meeting Window Time Zone
+     *   ----- (divider) ---
+     *   (Rest of the Time Zones)
+     * OR
+     *   Local Browser and Meeting Window Time Zone
+     *   ----- (divider) ---
+     *   (Rest of the Time Zones)
+     * If Local Browser time zone and the Meeting Window time zone is the same.
+     */
+    timeZones: (state) => {
+      const { meetingWindow: { timeZone: organizerTimeZone } } = state;
+      const timeZones = [
+        createTimeZoneDropdownItem(LOCAL_TIME_ZONE, '(Current)'),
+      ];
+      if (organizerTimeZone) {
+        if (organizerTimeZone === LOCAL_TIME_ZONE) {
+          timeZones[0].suffix = '(Current / Organizer\'s)';
+        } else {
+          timeZones.push(
+            createTimeZoneDropdownItem(organizerTimeZone, '(Organizer\'s)'),
+          );
+        }
+      }
+      timeZones.push({ divider: true });
+      return timeZones.concat(
+        TIME_ZONES.filter(item => (
+          item.value !== LOCAL_TIME_ZONE && item.value !== organizerTimeZone)),
+      );
+    },
   }),
   async beforeMount() {
-    if (!this.meetingWindow.id) {
-      await this.$store.dispatch({
-        type: 'meetingWindow/getMeetingWindow',
-        meetingWindowId: this.launchOptions.meetingWindowId,
-      });
-      if (this.meetingWindow.recaptchaSiteKey) {
-        this.enableRecaptcha = true;
-        await loadRecaptchaScript();
-        const lang = 'en';
-        this.recaptchaId = grecaptcha.render('recaptcha', {
-          badge: 'bottomleft',
-          sitekey: this.meetingWindow.recaptchaSiteKey,
-          size: 'invisible',
-          callback: this.onRecaptchaVerify,
-          'error-callback': this.onRecaptchaError,
-          isolated: true,
-          lang,
+    try {
+      // Since Vue won't wait for beforeMount being resolved. So we have to
+      // control whether the initialization finishes.
+      this.initing = true;
+      if (this.action === ACTIONS.UPDATE) {
+        // Set initial value from scheduled event.
+        await this.$store.dispatch('timeSlots/loadScheduledEvent');
+        this.origTimeSlot = {
+          start: this.scheduledEvent.start,
+          end: this.scheduledEvent.end,
+          selected: true,
+        };
+        this.selectTimeSlot(this.origTimeSlot);
+      }
+
+      if (!this.meetingWindow.id) {
+        await this.$store.dispatch({
+          type: 'meetingWindow/getMeetingWindow',
+          meetingWindowId: this.launchOptions.meetingWindowId,
         });
       }
+      this.selectDefaultTimeZone();
+      this.initing = false;
+    } catch (err) {
+      console.error(err);
     }
-    this.initTimeZoneDropdown();
-    this.selectDefaultTimeZone();
   },
-  props: [
-  ],
+  props: [],
+  watch: {
+    'launchOptions.timeZone': 'selectDefaultTimeZone',
+    'meetingWindow.timeZone': 'selectDefaultTimeZone',
+  },
   methods: {
     selectTimeZone(event) {
       if (!event.value) {
@@ -147,71 +178,24 @@ export default {
       this.timeSlotsRenderOffset = 0;
     },
     selectDefaultTimeZone() {
-      const { launchOptions: { timeZone } } = this;
-
-      if (timeZone === 'organizer') {
-        this.$store.commit({
-          type: 'timeSlots/update',
-          name: 'timeZone',
-          value: this.meetingWindow.timeZone,
-        });
-      } else if (this.timeZones.find(
-        item => !item.divider && item.value === timeZone,
-      )) {
-        this.$store.commit({
-          type: 'timeSlots/update',
-          name: 'timeZone',
-          value: timeZone,
-        });
-      } else {
-        // Use browser time as default
-        this.$store.commit({
-          type: 'timeSlots/update',
-          name: 'timeZone',
-          value: moment.tz.guess(),
-        });
-      }
-    },
-    /**
-     * Init Time Zone Dropdown items as follows:
-     *   Local Browser Time Zone
-     *   Meeting Window Time Zone
-     *   ----- (divider) ---
-     *   (Rest of the Time Zones)
-     * OR
-     *   Local Browser and Meeting Window Time Zone
-     *   ----- (divider) ---
-     *   (Rest of the Time Zones)
-     * If Local Browser time zone and the Meeting Window time zone is the same.
-     */
-    initTimeZoneDropdown() {
-      const { meetingWindow: { timeZone: organizer } } = this;
-      const local = moment.tz.guess();
-      const localItem = createTimeZoneDropdownItem(local);
-      const timeZones = [];
-      timeZones.push(localItem);
-      if (organizer === local) {
-        localItem.suffix = '(Current / Organizer\'s)';
-      } else {
-        localItem.suffix = '(Current)';
-        const organizerItem = createTimeZoneDropdownItem(organizer);
-        organizerItem.suffix = '(Organizer\'s)';
-        timeZones.push(organizerItem);
-      }
-      timeZones.push({ divider: true });
-      this.timeZones = timeZones.concat(TIME_ZONES.filter(
-        item => item.value !== local && item.value !== organizer,
-      ));
-    },
-    selectTimeSlot(slot, selected) {
       this.$store.commit({
-        type: 'timeSlots/selectTimeSlot',
-        slot,
-        selected,
+        type: 'timeSlots/update',
+        name: 'timeZone',
+        value: getDefaultTimeZone(this.launchOptions, this.meetingWindow),
       });
     },
+    selectTimeSlot(slot) {
+      this.$store.commit('timeSlots/selectTimeSlot', { slot });
+    },
     formatDate(format, dateStr) {
-      return date(format, dateStr, this.timeZone);
+      // Make sure this method is called after this.timeZone initialized.
+      if (this.timeZone) {
+        return date(format, dateStr, this.timeZone);
+      }
+      return '';
+    },
+    goToScheduledEventView() {
+      this.$router.push('/viewScheduledEvent');
     },
     moveStep(step) {
       this.step += step;
@@ -225,20 +209,24 @@ export default {
       });
     },
     afterSubmit() {
-      const { afterSchedule } = this.launchOptions;
+      const { launchOptions: { afterSchedule }, action } = this;
       if (afterSchedule.showResult) {
-        this.$router.push('/timeSlotsCompletion/');
+        this.$router.push(`/timeSlotsCompletion/${action}`);
       } else {
         this.$store.dispatch('event', {
           event: EVENTS.CLOSE,
         });
       }
     },
-    submit(recaptchaToken) {
-      const promise = this.$store.dispatch('timeSlots/submit', {
+    async _submit(recaptchaToken) {
+      await this.$store.dispatch('timeSlots/submit', {
         recaptchaToken,
+        action: this.action,
       });
-      promise.then(() => this.afterSubmit());
+      await this.afterSubmit();
+    },
+    async submit() {
+      await this.$refs.recaptcha.execute();
     },
     validateForm() {
       if (this.$refs.form.validate()) {
@@ -251,29 +239,13 @@ export default {
      * @param {string} recaptchaToken - token returned by reCAPTCHA
      */
     onRecaptchaVerify(recaptchaToken) {
-      this.submit(recaptchaToken);
+      this._submit(recaptchaToken);
     },
     /**
      * Run when any error is encountered by reCAPTCHA
      */
     onRecaptchaError() {
-      // There is no error message from recaptcha, the common errors may be
-      // invalid site key or no internet connection.
-      const message = 'Error: reCAPTCHA error. Please try again or contact ' +
-        'support.';
-      this.$store.commit({
-        type: 'api/setErrorMessage',
-        message,
-      });
-    },
-    executeRecaptcha() {
-      if (this.enableRecaptcha) {
-        onRecaptchaScriptLoad.then(
-          () => grecaptcha.execute(this.recaptchaId),
-        );
-      } else {
-        this.submit();
-      }
+      // Do nothing
     },
     /**
      * Render the next MAX_TIME_SLOTS_PER_SCROLL slots from the time slots list
@@ -325,21 +297,31 @@ export default {
 
 <template lang="pug">
 v-layout(column).time-slots
-  div(v-if="loading.meetingWindow")
+  div(v-if="initing")
     Title Retrieving Event Details...
   div(v-else)
-    Title {{ stepTitles[step] }}
+    Title {{ titles[action][step] }}
 
   template(v-if="step === 0")
     div.timeslots-scroll-panel
-      template(v-if="meetingWindow.id")
+      template(v-if="!initing")
+        div(v-if="isUpdateMode")
+          div.text-xs-left.font-size--subtitle.secondary--text.font-weight-medium
+            | {{ formatDate('date', origTimeSlot.start) }}
+            |
+            span.font-size--md (current)
+            v-layout(row, wrap, px-3, pb-2)
+              TimeSlotBlock(
+                :timeSlot="origTimeSlot", :timeZone="timeZone",
+                @onClick="selectTimeSlot")
+          hr.mb-3
         div(v-for="(slots, date) in slotGroups", :key="date")
           div.text-xs-left.font-size--subtitle.secondary--text.font-weight-medium
-            | {{ formatDate('date', date) }}
-          v-layout(row, wrap, pa-3)
+            | {{ date }}
+          v-layout(row, wrap, px-3, pb-3)
             .time-slot-block(v-for="(slot, index) in slots", :key="index")
               TimeSlotBlock(:timeSlot="slot", :timeZone="timeZone",
-                            :formatDate="formatDate")
+                            @onClick="selectTimeSlot")
         InfiniteLoading(@infinite="infiniteHandler", :identifier="timeZone")
           div(slot="spinner")
             div.progress-container
@@ -349,18 +331,21 @@ v-layout(column).time-slots
           div(slot='no-results').font-size--subtitle.secondary--text
             | Sorry. There are no available times for this event.
     div.pt-3.pb-4
-      v-layout(row, justify-space-between)
-        v-flex.mr-4
-          Dropdown(
+      v-layout(row)
+        Dropdown(
             v-if="meetingWindow.id", :required="true",
             label="Time Zone", name="timeZone", :value="timeZone",
-            :options="timeZones", @update="selectTimeZone")
-            template(#item="item")
-              TimeZoneDropdownItem(:item="item")
-            template(#selection="item")
-              TimeZoneDropdownItem(:item="item")
-        Button(@click="moveStep(1)", :disabled="!timeSlots.selectedSlot").ma-0
+            :options="timeZones", @update="selectTimeZone",
+            :loading="!timeZone")
+          template(#item="item")
+            TimeZoneDropdownItem(:item="item")
+          template(#selection="item")
+            TimeZoneDropdownItem(:item="item")
+      v-layout(row, reverse, justify-space-between)
+        Button.ma-0(@click="moveStep(1)", :disabled="!timeSlots.selectedSlot")
           | Next
+        Button.ma-0(v-if="isUpdateMode", @click="goToScheduledEventView")
+          | Back
 
   template(v-if="step === 1")
     div.timeslots-scroll-panel
@@ -388,12 +373,19 @@ v-layout(column).time-slots
 
   template(v-if="step === 2")
     div.timeslots-scroll-panel.text-xs-left
-      div.font-size--subtitle.secondary--text.font-weight-bold {{ meetingWindow.title }}
-      div.mb-5.on-primary--text.font-size--md {{ meetingWindow.location }}
-      InputLabel.mb-1 SCHEDULED TIME
-      SelectedTimeSlot.mb-4
-      InputLabel.mb-1 CONTACT INFO
       div.mb-4
+        div.font-size--subtitle.secondary--text.font-weight-bold
+          | {{ meetingWindow.title }}
+        div.secondary--text.font-size--md
+          | {{ meetingWindow.location }}
+      div.mb-4
+        InputLabel.mb-1 SCHEDULED TIME
+        SelectedTimeSlot(
+          :start="timeSlots.selectedSlot.start",
+          :end="timeSlots.selectedSlot.end",
+          :timeZone="timeZone")
+      div.mb-4
+        InputLabel.mb-1 CONTACT INFO
         div.font-size--lg.secondary--text.font-weight-bold {{ timeSlots.name }}
         div.font-size--md.secondary--text {{ timeSlots.email }}
       Textarea(v-if="isExtraDescriptionVisible && timeSlots.extraDescription"
@@ -401,8 +393,13 @@ v-layout(column).time-slots
                :value="timeSlots.extraDescription", :readonly="true")
     div.pt-3.pb-4
       v-layout(row, wrap, justify-space-between)
-        Button(@click="moveStep(-1)").ma-0 Back
-        Button(@click="executeRecaptcha" :loading="loading.submit").ma-0
-          | Schedule Meeting
-  div#recaptcha
+        Button(@click="moveStep(-1)", :disabled="loading.submit").ma-0 Back
+        Button(@click="submit" :loading="loading.submit").ma-0
+          template(v-if="isUpdateMode")
+            | Update Meeting
+          template(v-else)
+            | Schedule Meeting
+  Recaptcha(
+    ref="recaptcha",
+    @onVerify="onRecaptchaVerify", @onError="onRecaptchaError")
 </template>

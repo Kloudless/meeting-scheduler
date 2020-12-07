@@ -50,10 +50,12 @@ using our [zero-configuration embed script](#embed-the-widget), or
   - [Customize the Schedule URL](#customize-the-schedule-url)
   - [Launch the Schedule View](#launch-the-schedule-view)
   - [Configure the Scheduler Beforehand](#configure-the-scheduler-beforehand)
+  - [Customize the Re-Schedule URL](#customize-the-re-schedule-url)
 - [Advanced Usage](#advanced-usage)
   - [Handling Events](#handling-events)
   - [Save the Connected Account's Access Token](#save-the-connected-accounts-access-token)
   - [Edit Meeting Window](#edit-meeting-window)
+  - [Edit Scheduled Event](#edit-scheduled-event)
   - [Display Your Own Result Screen](#display-your-own-result-screen)
   - [Auto-fill Form Fields](#auto-fill-form-fields)
   - [Customize UI Styling](#customize-ui-styling)
@@ -362,6 +364,36 @@ scheduler.config({
 scheduler.launch();
 ```
 
+### Customize the Re-Schedule URL
+By default, after scheduling an event in the Schedule View, a URL link with the
+format `https://kloudl.es/m/s/SCHEDULED_EVENT_ID` is generated.
+Kloudless hosts this URL by default so your users can use this URL to launch
+the Schedule View and re-schedule events.
+
+However, if you'd like to host your own page that launches the Schedule View, 
+or if you'd like to customize the view in any way, you would need to
+configure the re-schedule URL by using the `rescheduleUrl` option.
+
+The `rescheduleUrl` option is a template string that contains the text
+`SCHEDULED_EVENT_ID` as a placeholder for the scheduled event.
+An example is shown below.
+
+```javascript
+scheduler.launch({
+  appId: '<your_app_id>',
+  schedule: {
+    rescheduleUrl: 'https://your.website/?scheduledEventId=SCHEDULED_EVENT_ID'
+  }
+})
+```
+
+The Meeting Scheduler will replace `SCHEDULED_EVENT_ID` with an actual ID to
+generate the appropriate URL for each scheduled event.
+
+Since the Schedule View is now accessible to users at a different URL, please
+refer to [Edit Scheduled Event](#edit-scheduled-event) for details on
+launching the Schedule View in edit mode.
+
 ## Advanced Usage
 
 ### Handling Events
@@ -401,18 +433,18 @@ with your app (connected to the calendar account).
 
 ### Edit Meeting Window
 
-To edit a Meeting Window, you need to provide both the accountToken and
-meetingWindowId, which are all returned from the `submitMeetingWindow` event
+To edit a Meeting Window, you need to provide both the `accountToken` and
+`meetingWindowId`, which are all returned from the `submitMeetingWindow` event
 when a user creates a Meeting Window from the Setup View.
 
 ```js
 scheduler.on('submitMeetingWindow', (eventData) => {
   // put your own code to record account token and meeting window id
-  console.log('Account Token:' eventData.accountToken);
+  console.log('Account Token:', eventData.accountToken);
   console.log('Meeting Window ID:', eventData.meetingWindow.id);
 });
 scheduler.launch({
-  appId: '<yout_app_id>',
+  appId: '<your_app_id>',
   setup: {},
 });
 ```
@@ -420,10 +452,38 @@ scheduler.launch({
 To launch Edit Mode, pass these two values back to scheduler:
 ```js
 scheduler.launch({
-  appId: '<yout_app_id>',
+  appId: '<your_app_id>',
   setup: {
     accountToken: '<saved_account_token>',
     meetingWindowId: '<saved_meeting_window_id>'
+  },
+});
+```
+
+### Edit Scheduled Event
+
+To edit a scheduled event, provide the `scheduledEventId` attribute, which is
+returned in the callback to the `schedule` event when a user schedules a
+meeting from the Schedule View.
+
+```js
+scheduler.on('schedule', (eventData) => {
+  console.log('Scheduled Event ID:', eventData.scheduled_event_id);
+});
+scheduler.launch({
+  appId: '<your_app_id>',
+  schedule: {
+    meetingWindowId: '<your_meeting_window_id>'
+  },
+});
+```
+
+To launch the Edit Mode, pass `scheduledEventId` back to the Scheduler:
+```js
+scheduler.launch({
+  appId: '<your_app_id>',
+  schedule: {
+    scheduledEventId: '<saved_scheduled_event_id>'
   },
 });
 ```
@@ -709,9 +769,9 @@ An object containing the following keys:
     and the widget will instead use this imported account.  
     __Required__ for Edit existing Meeting Window
     - Example: [Launch the Setup View with a connected calendar account](#launch-the-setup-view-with-a-connected-calendar-account)
-  - `scheduleUrl`: _Optional (default: 'https://kloudl.es/m/SCHEDULE_URL')_: String  
+  - `scheduleUrl`: _Optional (default: 'https://kloudl.es/m/MEETING_WINDOW_ID')_: String  
     A template string for the URL provided to users to schedule the event.
-    The `SCHEDULE_URL` in the string will be replaced with the
+    The `MEETING_WINDOW_ID` in the string will be replaced with the
     actual meeting window ID.
     - Example: [Customize the event URL format](#customize-the-event-url-format)
   - `meetingWindowId`: _Optional (default: null)_: String  
@@ -861,6 +921,11 @@ An object containing the following keys:
 
 - `schedule`: _Required for the Schedule View_: Object  
   Options to launch the Schedule View. Available options:
+  - `rescheduleUrl`: _Optional (default: 'https://kloudl.es/m/s/SCHEDULED_EVENT_ID')_: String  
+    A template string for the URL provided to users to edit the scheduled event.
+    The `SCHEDULED_EVENT_ID` in the string will be replaced with the actual
+    scheduled event ID.
+    - Example: [Customize the Re-Schedule URL](#customize-the-re-schedule-url)
   - `meetingWindowId`: _Required_: String
     The Meeting Window ID .
     - Example: [Launch the Schedule View](#launch-the-schedule-view)
@@ -1174,7 +1239,6 @@ List the user's Meeting Windows. The user is identified by the bearer token.
       "time_buffer_after": 0,
       "time_slot_interval": 30,
       "availability_range": 60,
-      "public_choice_token": "V9x7YyrET7ekURSAxChBDVgoj9TJS3",
       "time_zone": "America/Los_Angeles",
       "api": "meeting_scheduler",
       "allow_event_metadata": false,
@@ -1222,7 +1286,6 @@ Retrieve the meeting window via meeting window ID.
   "time_buffer_after": 0,
   "time_slot_interval": 30,
   "availability_range": 60,
-  "public_choice_token": "V9x7YyrET7ekURSAxChBDVgoj9TJS3",
   "time_zone": "America/Los_Angeles",
   "api": "meeting_scheduler",
   "allow_event_metadata": false,
@@ -1298,7 +1361,6 @@ Create a Meeting Window.
   "time_buffer_after": 0,
   "time_slot_interval": 30,
   "availability_range": 60,
-  "public_choice_token": "V9x7YyrET7ekURSAxChBDVgoj9TJS3",
   "time_zone": "America/Los_Angeles",
   "api": "meeting_scheduler",
   "allow_event_metadata": false,
@@ -1351,7 +1413,6 @@ Update the meeting window.
   "time_buffer_after": 0,
   "time_slot_interval": 30,
   "availability_range": 60,
-  "public_choice_token": "C86cptTTP9OvLmWyHw3VmgUwFucUU8",
   "time_zone": "America/Los_Angeles",
   "api": "meeting_scheduler",
   "allow_event_metadata": false,
@@ -1387,8 +1448,8 @@ The Kloudless API supports
 [WebHooks](https://developers.kloudless.com/docs/latest/events#webhooks) to
 send notifications whenever activity occurs in a connected calendar account.
 
-This includes both activity as a result of time slots booked via the Meeting
-Scheduler as well as general usage of the calendar account.
+This includes both activity as a result of time slots booked / updated via
+the Meeting Scheduler as well as general usage of the calendar account.
 
 Check the [Kloudless API Docs](https://developers.kloudless.com/docs/latest/events#webhooks)
 for information on how to configure webhooks for your application.
@@ -1405,12 +1466,16 @@ Most notifications only include the account ID or limited information in
 the payload, but notifications from the Meeting Scheduler have the following
 attributes that your application should check for:
 
-- `event_category`: Always `calendar`.
-- `event_type`: Always `add`.
-- `event_subtype`: Always `meeting_scheduler_slot_booked`.
+
+Action | event_category | event_type | event_subtype
+-------| ---------------|------------|--------------
+A slot is booked | calendar | add | meeting_scheduler_slot_booked
+A scheduled event is updated or rescheduled | calendar | update | meeting_scheduler_slot_updated
+A scheduled event is deleted | calendar | delete | meeting_scheduler_slot_deleted
+
 
 If your application sees a notification with the data above, check the
-remaining included data for which calendar event was created:
+remaining included data for which calendar event was associated:
 
 - `meeting_window_id`: ID of the Meeting Window used to schedule the
                        calendar event.
@@ -1612,7 +1677,8 @@ Variable Name | Purpose | Default
 ----|---|---
 BASE_URL | URL to Kloudless API Server | https://api.kloudless.com
 SCHEDULER_PATH | URL for the scheduler page | https://static-cdn.kloudless.com/p/platform/scheduler/index.html
-SCHEDULE_URL | Default schedule URL | https://kloudl.es/m/s/MEETING_WINDOW_ID
+SCHEDULE_URL | Default schedule URL | https://kloudl.es/m/MEETING_WINDOW_ID
+RESCHEDULE_URL | Default re-schedule URL | https://kloudl.es/m/s/SCHEDULED_EVENT_ID
 
 
 ### Test the Build

@@ -1,7 +1,7 @@
 import MeetingWindow from 'view/components/MeetingWindow';
 import Button from 'view/components/common/Button';
 import TextInput from 'view/components/common/TextInput';
-import { SUBMIT_STATUS, EVENTS } from 'constants';
+import { ACTIONS, EVENTS } from 'constants';
 import { getWrapper, createStore } from '../jest/vue-utils';
 
 describe('afterSubmit config tests', () => {
@@ -26,7 +26,7 @@ describe('afterSubmit config tests', () => {
     wrapper.vm.afterSubmit();
     if (showResult) {
       expect(wrapper.vm.$route.path).toBe(
-        `/meetingWindowCompletion/${SUBMIT_STATUS.CREATED}`,
+        `/meetingWindowCompletion/${ACTIONS.CREATE}`,
       );
     } else {
       expect(store.messenger.send).toBeCalledWith({

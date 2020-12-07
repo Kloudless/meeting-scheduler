@@ -1,6 +1,6 @@
 <script>
 import { mapState } from 'vuex';
-import { EVENTS } from 'constants';
+import { EVENTS, ACTIONS } from 'constants';
 import Footer from './Footer';
 
 export default {
@@ -16,17 +16,37 @@ export default {
   computed: {
     ...mapState({
       launchOptions: state => state.launchOptions,
-      requestErrorMsg: state => state.api.errorMessage,
     }),
-    isTimeSlotPage() {
-      return this.$route.path.includes('timeSlots');
+    innerScroll() {
+      /**
+       * Fix the outer container's height and only the inner container can be
+       * scrolled. Should be used along with `v-layout`, `.time-slots` and
+       * `timeslots-scroll-panel`.
+       *
+       * For example, the HTML mockup should be:
+       * div.app-padding__content.app-padding__content--fix
+       *   v-layout.time-slots(column)
+       *     div
+       *       | header (can't scroll)
+       *     div.timeslots-scroll-panel
+       *       | the scrollable content
+       *     div
+       *       | footer (can't scroll)
+       */
+      const { path } = this.$route;
+      return !path.includes('/meetingWindow/');
     },
   },
   created() {
-    const defaultRoute = this.launchOptions.setup ?
-      '/meetingWindow/' : '/timeSlots/';
     // in vue-router abstract mode, we need to set the initial route.
-    this.$router.push(defaultRoute);
+    const { setup, schedule } = this.launchOptions;
+    if (setup) {
+      this.$router.push('/meetingWindow/');
+    } else if (schedule.scheduledEventId) {
+      this.$router.push('/viewScheduledEvent');
+    } else {
+      this.$router.push(`/timeSlots/${ACTIONS.CREATE}`);
+    }
   },
   mounted() {
     /** workaround:
@@ -65,10 +85,8 @@ div.kloudless-meeting-scheduler
           div.text-xs-right
             v-icon(color="primary", size="28", @click="closeDialog")
               | cancel
-        div.app-padding__error.error(:class="{'d-none': !requestErrorMsg}")
-          div {{ requestErrorMsg }}
-        div.app-padding__content.text-xs-center(:class=`{
-            'app-padding__content--fix': isTimeSlotPage}`)
+        div.app-padding__content.text-xs-center(
+            :class="{'app-padding__content--fix': innerScroll}")
           router-view
         Footer
 </template>

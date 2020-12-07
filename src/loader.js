@@ -1,4 +1,3 @@
-/* global VERSION, BASE_URL, SCHEDULE_URL, SCHEDULER_PATH */
 /**
  * loader script
  */
@@ -221,11 +220,10 @@ class MeetingScheduler {
       _options.element = parentElement;
     }
 
-    if (_options.setup && !_options.setup.scheduleUrl) {
-      _options.setup.scheduleUrl = SCHEDULE_URL;
-    }
-
     if (_options.setup) {
+      if (!_options.setup.scheduleUrl) {
+        _options.setup.scheduleUrl = SCHEDULE_URL;
+      }
       _options.setup.afterSubmit = {
         showResult: true,
         actions: ['close'],
@@ -264,6 +262,9 @@ class MeetingScheduler {
         }
       }
     } else if (_options.schedule) {
+      if (!_options.schedule.rescheduleUrl) {
+        _options.schedule.rescheduleUrl = RESCHEDULE_URL;
+      }
       _options.schedule.afterSchedule = {
         showResult: true,
         actions: ['close'],
@@ -340,8 +341,11 @@ class MeetingScheduler {
     if (setup && setup.meetingWindowId && !setup.accountToken) {
       errors.push('accountToken is required to edit meeting window');
     }
-    if (schedule && !schedule.meetingWindowId) {
-      errors.push('meetingWindowId is required for schedule view.');
+    if (schedule && (!schedule.meetingWindowId && !schedule.scheduledEventId)) {
+      errors.push(
+        'Either meetingWindowId or scheduledEventId is required for '
+        + 'schedule view.',
+      );
     }
     if (!(options.element instanceof HTMLElement)) {
       errors.push(

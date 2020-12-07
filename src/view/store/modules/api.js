@@ -5,6 +5,7 @@
  */
 import axios from 'axios';
 import { EVENTS } from '../../../constants';
+import iziToastHelper from '../../utils/izitoast-helper';
 
 export default {
   namespaced: true,
@@ -28,28 +29,35 @@ export default {
     };
   },
   mutations: {
-    setErrorMessage(state, payload) {
-      // DO NOT call this mutation directly
-      // use actions.setErrorMessage instead
-      state.errorMessage = payload.message;
-    },
     loading(state, payload) {
       const flags = payload.flag.split('/');
       state.loading[flags[0]][flags[1]] = payload.loading;
     },
   },
   actions: {
-    setErrorMessage({ dispatch, commit }, payload) {
-      if (payload.message) {
-        dispatch('event', {
-          event: EVENTS.ERROR,
-          message: payload.message,
-        }, { root: true });
+    /**
+     * Fire error event and show error dialog.
+     * Ignore if payload.message is empty.
+     * @param {object} payload
+     * @param {string=} payload.message
+     * @param {string=} payload.detail
+     * @param {boolean=} payload.fireEvent - Whether to fire error event.
+     *  Defaults to true.
+     */
+    setErrorMessage({ dispatch }, payload = {}) {
+      const { message, detail = null, fireEvent = true } = payload;
+      if (message) {
+        if (fireEvent) {
+          // TODO:
+          // 1. Sort out what kind of errors should be fired.
+          // 2. Send error code.
+          dispatch('event', {
+            event: EVENTS.ERROR,
+            message: payload.message,
+          }, { root: true });
+        }
+        iziToastHelper.error(payload.message, { detail });
       }
-      commit({
-        ...payload,
-        type: 'setErrorMessage',
-      });
     },
     getAccount({ dispatch }) {
       return dispatch('request', {
@@ -58,7 +66,6 @@ export default {
           uri: '',
           loading: 'account/account',
           tokenType: 'account',
-          resetErrorMessage: false,
         },
       });
     },
@@ -83,7 +90,7 @@ export default {
         },
       });
     },
-    request({ rootState, commit, dispatch }, payload) {
+    async request({ rootState, commit, dispatch }, payload) {
       /** payload.options
        * uri, method, data, params, api, onSuccess, onError, loading
        */
@@ -91,7 +98,6 @@ export default {
       const options = Object.assign({
         method: 'GET',
         api: 'meetings',
-        resetErrorMessage: true,
       }, payload.options);
 
       let prefix;
@@ -134,8 +140,6 @@ export default {
         requestOptions.headers.Authorization = `Bearer ${token}`;
       }
 
-      const promise = axios(requestOptions);
-
       if (options.loading) {
         commit({
           type: 'loading',
@@ -144,46 +148,44 @@ export default {
         });
       }
 
-      return promise
-        .then((response) => {
-          if (options.resetErrorMessage) {
-            dispatch('setErrorMessage', {
-              message: null,
-            });
-          }
-          return (options.onSuccess || Object)(response.data);
-        }).catch((error) => {
-          let message;
-          if (error.response) {
-            const { response } = error;
-            if (response.headers['content-type'] === 'application/json') {
-              message = response.data.message || response.statusText;
-            } else {
-              message = response.statusText;
-            }
-          } else if (error.request) {
-            message = 'There is no response from service';
+      try {
+        const response = await axios(requestOptions);
+        return (options.onSuccess || Object)(response.data);
+      } catch (error) {
+        let message;
+        let detail = null;
+        if (error.response) {
+          const { response } = error;
+          if (response.headers['content-type'] === 'application/json') {
+            message = response.data.message || response.statusText;
+            // Only show error details when it's an API error.
+            detail = JSON.stringify(response.data);
           } else {
-            // The exception is thrown before making a request
-            // axios will provide error message in this case
-            ({ message } = error);
+            message = response.statusText;
           }
-          const errorMessage = `Error: ${message}. Please contact Support.`;
-          dispatch('setErrorMessage', {
-            message: errorMessage,
-          });
-          (options.onError || Object)(error);
-          throw error;
-        })
-        .finally(() => {
-          if (options.loading) {
-            commit({
-              type: 'loading',
-              flag: options.loading,
-              loading: false,
-            });
-          }
+        } else if (error.request) {
+          message = 'There is no response from service';
+        } else {
+          // The exception is thrown before making a request
+          // axios will provide error message in this case
+          ({ message } = error);
+        }
+        const errorMessage = `Error: ${message}. Please contact Support.`;
+        await dispatch('setErrorMessage', {
+          message: errorMessage,
+          detail,
         });
+        (options.onError || Object)(error);
+        throw error;
+      } finally {
+        if (options.loading) {
+          commit({
+            type: 'loading',
+            flag: options.loading,
+            loading: false,
+          });
+        }
+      }
     },
   },
 };

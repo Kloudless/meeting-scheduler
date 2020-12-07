@@ -5,6 +5,7 @@ import meetingWindow from './modules/meetingWindow';
 import timeSlots from './modules/timeSlots';
 import common from './common';
 import api from './modules/api';
+import scheduledEvent from './modules/scheduledEvent';
 
 Vue.use(Vuex);
 
@@ -21,6 +22,7 @@ export const schema = {
     meetingWindow,
     timeSlots,
     api,
+    scheduledEvent,
   },
   mutations: {
     setLaunchOptions(state, payload) {
@@ -41,14 +43,11 @@ export const schema = {
   },
   actions: {
     async initialize({ state, commit, dispatch }, payload) {
-      const { launchOptions: { setup, schedule } } = payload;
-      const shouldGetAppConfig
-        = state.launchOptions.appId !== payload.launchOptions.appId;
+      const { launchOptions } = payload;
+      const { setup, schedule, appId } = launchOptions;
+      const shouldGetAppConfig = (state.launchOptions.appId !== appId);
 
-      commit({
-        type: 'setLaunchOptions',
-        launchOptions: payload.launchOptions,
-      });
+      commit('setLaunchOptions', { launchOptions });
 
       if (shouldGetAppConfig) {
         dispatch('getAppConfig');
@@ -57,6 +56,8 @@ export const schema = {
       commit('meetingWindow/reset');
       commit('timeSlots/reset');
       commit('api/reset');
+      commit('scheduledEvent/reset');
+
       if (setup && setup.accountToken
           && state.account.token !== setup.accountToken) {
         /** Reset account if accountToken is provided and not the same

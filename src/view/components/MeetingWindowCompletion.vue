@@ -1,50 +1,38 @@
 <script>
 import { mapState } from 'vuex';
-import { SUBMIT_STATUS, EVENTS } from 'constants';
+import { ACTIONS, EVENTS } from 'constants';
 import Title from './common/Title';
-import TextInput from './common/TextInput';
+import Textarea from './common/Textarea';
 import Button from './common/Button';
+import CopyTextField from './common/CopyTextField';
 
 
 export default {
   name: 'MeetingWindowCompletion',
   components: {
     Title,
-    TextInput,
+    Textarea,
     Button,
+    CopyTextField,
   },
   data() {
     const { state } = this.$store;
-    const { params } = this.$route;
-    const { submitStatus } = params;
-
-    const actionButtonText = {
-      close: 'Finish',
-    };
-
-    if (submitStatus === SUBMIT_STATUS.CREATED) {
-      actionButtonText.restart = 'Create Another Event';
-    }
-
-    let action = '';
-    switch (submitStatus) {
-      case SUBMIT_STATUS.CREATED:
-        action = 'created';
-        break;
-      case SUBMIT_STATUS.UPDATED:
-        action = 'updated';
-        break;
-      case SUBMIT_STATUS.DELETED:
-        action = 'deleted';
-        break;
-      default:
+    const { params: { action } } = this.$route;
+    const buttons = ['close'];
+    // Only show 'Create Another Event' button when in creation mode.
+    if (action === ACTIONS.CREATE) {
+      buttons.push('restart');
     }
 
     return {
       scheduleUrl: state.scheduleUrl,
       action,
-      isDeleted: submitStatus === SUBMIT_STATUS.DELETED,
-      actionButtonText,
+      isDeleted: action === ACTIONS.DELETE,
+      buttons,
+      buttonTexts: {
+        close: 'Finish',
+        restart: 'Create Another Event',
+      },
     };
   },
   computed: mapState({
@@ -66,8 +54,8 @@ export default {
         event: EVENTS.CLOSE,
       });
     },
-    buttonAction(action) {
-      this[action]();
+    onClickHandler(act) {
+      this[act]();
     },
   },
 };
@@ -76,20 +64,21 @@ export default {
 </script>
 
 <template lang="pug">
-div
-  Title.capitalize Event {{ action }}
-  div.font-size--subtitle.mb-3.text-xs-left.on-primary--text
-    | You have successfully {{ action }} the event 
-    span.surface--text {{ meetingWindow.title }}
-  template(v-if="!isDeleted")
-    div.mt-5.mb-3.font-size--md.text-xs-left.secondary--text
-      | SHARE YOUR EVENT
-    TextInput(label=" ", readonly, :value="scheduleUrl").mb-5
-  div.mt-5
-    template(v-for="action in launchOptions.afterSubmit.actions")
-      Button(
-        v-if="actionButtonText[action]",
-        @click="buttonAction(action)")
-        | {{ actionButtonText[action] }}
+v-layout(column).time-slots
+  div
+    Title.capitalize Event {{ action }}d
+  div.timeslots-scroll-panel
+    div.py-5.font-size--subtitle.on-primary--text
+      | You have successfully {{ action }}d the event 
+      span.surface--text {{ meetingWindow.title }}
+      | .
+    template(v-if="!isDeleted")
+      div.mt-5.font-size--md.text-xs-left.secondary--text
+        | SHARE YOUR EVENT
+      CopyTextField(:value="scheduleUrl")
+  div.pt-3.pb-4
+    template(v-for="act in launchOptions.afterSubmit.actions")
+      Button(v-if="buttons.includes(act)", @click="onClickHandler(act)")
+        | {{ buttonTexts[act] }}
   
 </template>

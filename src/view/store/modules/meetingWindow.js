@@ -118,7 +118,6 @@ export default {
           method: 'get',
           uri: `windows/${payload.meetingWindowId}`,
           loading: 'meetingWindow/meetingWindow',
-          resetErrorMessage: false,
         },
       }, { root: true });
       commit({
@@ -162,7 +161,6 @@ export default {
       commit({
         type: 'setScheduleUrl',
       }, { root: true });
-      /* eslint-enable */
       dispatch('event', {
         event: EVENTS.SUBMIT_MEETING_WINDOW,
         scheduleUrl: rootState.scheduleUrl,

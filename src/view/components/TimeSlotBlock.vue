@@ -1,5 +1,6 @@
 <script>
 import Button from './common/Button';
+import date from '../utils/date';
 
 /**
  * Split out this button component so that when props in the timeSlot object
@@ -23,19 +24,41 @@ export default {
     },
     timeZone: {
       type: String,
-      required: true,
     },
-    formatDate: {
-      type: Function,
-      required: true,
+  },
+  computed: {
+    startHour() {
+      const { timeSlot, timeZone } = this;
+      if (timeZone) {
+        return date('hour', timeSlot.start, timeZone);
+      }
+      return '';
+    },
+    startAmPm() {
+      const { timeSlot, timeZone } = this;
+      if (timeZone) {
+        return date('amPm', timeSlot.start, timeZone);
+      }
+      return '';
+    },
+    endHour() {
+      const { timeSlot, timeZone } = this;
+      if (timeZone) {
+        return date('hour', timeSlot.end, timeZone);
+      }
+      return '';
+    },
+    endAmPm() {
+      const { timeSlot, timeZone } = this;
+      if (timeZone) {
+        return date('amPm', timeSlot.end, timeZone);
+      }
+      return '';
     },
   },
   methods: {
     selectSlot() {
-      this.$store.commit({
-        type: 'timeSlots/selectTimeSlot',
-        slot: this.timeSlot,
-      });
+      this.$emit('onClick', this.timeSlot);
     },
   },
 };
@@ -44,24 +67,28 @@ export default {
 </script>
 
 <template lang="pug">
-Button(:padding="false"
+Button.time-slot(:padding="false"
        :btnProps="{depressed: !timeSlot.selected, outline: !timeSlot.selected}",
-       @click="selectSlot").hour-block
+       @click="selectSlot")
   v-layout(v-if="timeSlot.selected", row, wrap, align-center, justify-space-around)
     v-flex
-      div.hour.on-primary-variant--text {{ formatDate('hour', timeSlot.start) }}
-      div.ampm.on-secondary-variant--text
-        | {{ formatDate('amPm', timeSlot.start) }}
+      div.time-slot__hour.on-primary-variant--text
+        | {{ startHour }}
+      div.time-slot__ampm.on-secondary-variant--text
+        | {{ startAmPm }}
     v-flex
-      div.hour-to.on-secondary-variant--text.pt-1 —
+      div.hour-to.on-secondary-variant--text.pt-1
+        | —
       //- required for en-dash to align with hours
     v-flex
-      div.hour.on-primary-variant--text {{ formatDate('hour', timeSlot.end) }}
-      div.ampm.on-secondary-variant--text
-        | {{ formatDate('amPm', timeSlot.end) }}
+      div.time-slot__hour.on-primary-variant--text
+        | {{ endHour }}
+      div.time-slot__ampm.on-secondary-variant--text
+        | {{ endAmPm }}
   template(v-else)
-    span.hour.pr-1.primary--text {{ formatDate('hour', timeSlot.start) }}
-    span.ampm.on-secondary-variant--text
-      | {{ formatDate('amPm', timeSlot.start) }}
+    span.time-slot__hour.pr-1.primary--text
+      | {{ startHour }}
+    span.time-slot__ampm.on-secondary-variant--text
+      | {{ startAmPm }}
 
 </template>
