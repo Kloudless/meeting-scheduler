@@ -177,7 +177,7 @@ export default {
           uri: `windows/${state.id}`,
           tokenType: 'account',
           method: 'delete',
-          loading: 'meetingWindow/submit',
+          loading: 'meetingWindow/delete',
         },
       }, { root: true });
       dispatch('event', {

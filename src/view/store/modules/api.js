@@ -16,6 +16,7 @@ export default {
         meetingWindow: {
           submit: false,
           meetingWindow: false,
+          delete: false,
         },
         timeSlots: {
           timeSlots: true,

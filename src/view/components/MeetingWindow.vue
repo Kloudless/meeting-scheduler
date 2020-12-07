@@ -231,9 +231,11 @@ div.meeting-window
           :options="options.timeZones", @update="updateInput")
       div.mt-5
         Button.action-submit(
-          @click="submit", :loading="loading.submit", :disabled="!isFormValid")
+            @click="submit", :loading="loading.submit",
+            :disabled="!isFormValid || loading.delete")
           | {{ isEditMode ? 'Update' : 'Create' }} Event
         Button.action-delete(
-            v-if="isEditMode" @click="deleteWindow", color="error")
+            v-if="isEditMode", :loading="loading.delete",
+            :disabled="loading.submit", @click="deleteWindow", color="error")
           | Delete Event
 </template>
