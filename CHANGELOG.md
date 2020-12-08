@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
+## [1.10.2]
+### Fix
+
+- Fix the issue that `document.execCommand('selectAll')` doesn't work on Firefox.
+
 ## [1.10.1]
 ### Fix
 
