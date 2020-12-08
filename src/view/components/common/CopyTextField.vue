@@ -25,9 +25,8 @@ export default {
   },
   methods: {
     copy() {
-      this.$refs.input.focus();
+      this.$refs.input.$el.getElementsByTagName('input')[0].select();
       if (CAN_COPY) {
-        document.execCommand('selectAll');
         this.copied = document.execCommand('copy');
         this.hint = 'Copied!';
         clearTimeout(this.timeoutHandler);
