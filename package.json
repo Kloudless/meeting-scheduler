@@ -66,7 +66,7 @@
     "postcss-discard-font-face": "3.0.0",
     "postcss-less": "3.1.4",
     "postcss-loader": "3.0.0",
-    "pug": "2.0.3",
+    "pug": "3.0.1",
     "pug-plain-loader": "1.0.0",
     "shelljs": "0.8.3",
     "stylus": "0.54.5",
